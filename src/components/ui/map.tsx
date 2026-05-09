@@ -166,7 +166,7 @@ function getViewport(map: MapLibreGL.Map): MapViewport {
   };
 }
 
-const Map = forwardRef<MapRef, MapProps>(function Map(
+const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
   {
     children,
     className,
@@ -454,9 +454,7 @@ function MapMarker({
     return () => {
       marker.remove();
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map]);
+  }, [map, marker]);
 
   if (
     marker.getLngLat().lng !== longitude ||
@@ -1827,7 +1825,7 @@ function MapClusterLayer<
 }
 
 export {
-  Map,
+  MapContainer as Map,
   useMap,
   MapMarker,
   MarkerContent,

@@ -1,3 +1,4 @@
+import { EphemerisOverlay } from "@/components/ephemeris-overlay";
 import { LeftPane } from "@/components/left-pane";
 import { MapView } from "@/components/map-view";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -12,6 +13,7 @@ export default function Home() {
       <main className="flex flex-1 overflow-hidden relative">
         <MapView />
         <LeftPane />
+        <EphemerisOverlay />
       </main>
     </div>
   );

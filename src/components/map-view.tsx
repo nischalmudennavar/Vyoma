@@ -1,5 +1,6 @@
 "use client";
 
+import { CelestialRadar } from "@/components/celestial-radar";
 import {
   Map as MapComponent,
   MapControls,
@@ -19,9 +20,9 @@ export function MapView() {
           center: [location.lng, location.lat],
           zoom: 4,
         }}
-        onViewportChange={(_vp) => {
-          // You could optionally sync map center back to state on drag:
-          // updateLocation(_vp.center[1], _vp.center[0], location.label);
+        onViewportChange={(vp) => {
+          // Sync map center back to state on drag:
+          updateLocation(vp.center[1], vp.center[0], location.label);
         }}
       >
         <MapControls
@@ -42,6 +43,9 @@ export function MapView() {
           <MarkerContent />
         </MapMarker>
       </MapComponent>
+
+      {/* 2D Celestial Radar Overlay */}
+      <CelestialRadar />
     </div>
   );
 }
