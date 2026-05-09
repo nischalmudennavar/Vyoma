@@ -1,0 +1,140 @@
+"use client";
+
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { useMemo } from "react";
+import { CelestialTimeline } from "@/components/celestial-timeline";
+import { Button } from "@/components/ui/button";
+import {
+  type CelestialEvent,
+  getGalacticCoreVisibility,
+  getMoonPhase,
+  getMoonRiseSet,
+  getSunPosition,
+  getTwilightPhases,
+} from "@/lib/astrometry";
+import { useVyomaStore } from "@/store/use-vyoma-store";
+
+export default function TimelinePage() {
+  const { viewDate, location } = useVyomaStore();
+
+  const events = useMemo(() => {
+    const celestialEvents: CelestialEvent[] = [];
+    const { lat, lng } = location;
+
+    // 1. Twilight Phases
+    const twilight = getTwilightPhases(viewDate, lat, lng);
+    for (const [key, date] of Object.entries(twilight)) {
+      if (date) {
+        let title = key.replace(/([A-Z])/g, " $1").trim();
+        title = title.charAt(0).toUpperCase() + title.slice(1);
+
+        celestialEvents.push({
+          id: `sun-${key}`,
+          timestamp: date,
+          title: title,
+          type: "sun",
+          subtitle: `Sun's elevation: ${getSunPosition(date, lat, lng).alt.toFixed(1)}°`,
+        });
+      }
+    }
+
+    // 2. Moon Rise/Set
+    const moon = getMoonRiseSet(viewDate, lat, lng);
+    if (moon.rise) {
+      celestialEvents.push({
+        id: "moon-rise",
+        timestamp: moon.rise,
+        title: "Moonrise",
+        type: "moon",
+        subtitle: `Sun's elevation: ${getSunPosition(moon.rise, lat, lng).alt.toFixed(1)}°`,
+      });
+    }
+    if (moon.set) {
+      celestialEvents.push({
+        id: "moon-set",
+        timestamp: moon.set,
+        title: "Moonset",
+        type: "moon",
+        subtitle: `Sun's elevation: ${getSunPosition(moon.set, lat, lng).alt.toFixed(1)}°`,
+      });
+    }
+
+    // 3. Moon Phase
+    const phase = getMoonPhase(viewDate);
+    celestialEvents.push({
+      id: "moon-phase",
+      timestamp: new Date(new Date(viewDate).setHours(12, 0, 0, 0)), // Marker for midday phase
+      title: `Moon Phase: ${phase.name}`,
+      type: "phase",
+      subtitle: `Illumination: ${(((1 - Math.cos((phase.phase * Math.PI) / 180)) / 2) * 100).toFixed(1)}%`,
+    });
+
+    // 4. Galactic Center
+    const galactic = getGalacticCoreVisibility(viewDate, lat, lng);
+    if (galactic.rise) {
+      celestialEvents.push({
+        id: "galactic-rise",
+        timestamp: galactic.rise,
+        title: "Galactic Center Rise",
+        type: "galactic",
+        subtitle: "Primary target visibility begins",
+      });
+    }
+    if (galactic.set) {
+      celestialEvents.push({
+        id: "galactic-set",
+        timestamp: galactic.set,
+        title: "Galactic Center Set",
+        type: "galactic",
+        subtitle: "Visibility ends",
+      });
+    }
+
+    return celestialEvents;
+  }, [viewDate, location]);
+
+  return (
+    <div className="min-h-screen bg-[#050505] text-white">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-5 bg-[#050505]/80 backdrop-blur-md border-b border-neutral-900">
+        <div className="flex items-center gap-5">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-neutral-400 hover:text-white hover:bg-neutral-900"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </Button>
+          </Link>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-bold tracking-tight">
+              Celestial Timeline
+            </h1>
+            <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium">
+              {viewDate.toLocaleDateString([], {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium">
+            Location
+          </p>
+          <p className="text-xs font-semibold text-neutral-300">
+            {location.label ||
+              `${location.lat.toFixed(2)}, ${location.lng.toFixed(2)}`}
+          </p>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-6 py-10">
+        <CelestialTimeline events={events} />
+      </main>
+    </div>
+  );
+}
