@@ -1,6 +1,9 @@
 "use client";
 
+import { ListTree } from "lucide-react";
+import Link from "next/link";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import {
   getGalacticCoreTrajectory,
   getMoonTrajectory,
@@ -13,19 +16,16 @@ import { EphemerisTimeline } from "./ephemeris-timeline";
 export function EphemerisOverlay() {
   const { viewDate, location, updateTime, updateDate } = useVyomaStore();
 
-  const { trajectories, twilightPhases, bufferStart } = useMemo(() => {
+  const { trajectories, twilightPhases } = useMemo(() => {
     // Create a buffer starting 24 hours before the current viewDate
     const bufferStartDate = new Date(viewDate);
     bufferStartDate.setHours(0, 0, 0, 0);
     bufferStartDate.setDate(bufferStartDate.getDate() - 1);
 
     return {
-      bufferStart: bufferStartDate,
       trajectories: [
         {
           id: "sun" as const,
-          // Since SVG lines don't process CSS vars in the same way standard CSS does inside the 'stroke' attribute
-          // without strict `var(--...)` syntax, we'll use currentColor/primary or literal CSS vars.
           color: "var(--color-chart-4)",
           points: getSunTrajectory(
             bufferStartDate,
@@ -60,7 +60,6 @@ export function EphemerisOverlay() {
   }, [viewDate, location.lat, location.lng]);
 
   const handleTimeChange = (newTime: Date) => {
-    // If dragging crosses a date boundary, update the date as well
     if (
       newTime.getDate() !== viewDate.getDate() ||
       newTime.getMonth() !== viewDate.getMonth() ||
@@ -72,7 +71,7 @@ export function EphemerisOverlay() {
   };
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] min-w-[600px] max-w-[1000px] h-[120px] rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] min-w-[600px] max-w-[1000px] h-24 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group">
       <EphemerisTimeline
         activeDate={viewDate}
         currentTime={viewDate}
@@ -80,6 +79,20 @@ export function EphemerisOverlay() {
         twilightPhases={twilightPhases}
         onTimeChange={handleTimeChange}
       />
+
+      <Link
+        href="/timeline"
+        className="absolute -top-10 right-0 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <Button
+          variant="secondary"
+          size="sm"
+          className="h-8 text-[10px] uppercase tracking-widest font-bold"
+        >
+          <ListTree className="w-3 h-3 mr-2" />
+          Detailed Timeline
+        </Button>
+      </Link>
     </div>
   );
 }

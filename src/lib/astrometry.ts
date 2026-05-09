@@ -173,3 +173,67 @@ export function getTwilightPhases(
     astronomicalDusk: search(-1, -18),
   };
 }
+
+export function getMoonRiseSet(
+  date: Date,
+  lat: number,
+  lng: number,
+): { rise: Date | null; set: Date | null } {
+  const observer = new Observer(lat, lng, 0);
+  const baseDate = new Date(date);
+  baseDate.setHours(0, 0, 0, 0);
+  const time = MakeTime(baseDate);
+
+  const rise = SearchAltitude("Moon", observer, 1, time, 1, 0);
+  const set = SearchAltitude("Moon", observer, -1, time, 1, 0);
+
+  return {
+    rise: rise ? rise.date : null,
+    set: set ? set.date : null,
+  };
+}
+
+export function getGalacticCoreVisibility(
+  date: Date,
+  lat: number,
+  lng: number,
+): { rise: Date | null; set: Date | null } {
+  // astronomy-engine doesn't have a named "GalacticCore" for SearchAltitude,
+  // but we can use SearchAltitude with a custom function if needed,
+  // or just approximate from the trajectory if it's too complex.
+  // Actually, SearchAltitude only takes body names.
+  // We can use Search for a fixed point by creating a custom search or using trajectory.
+  // For now, let's use the trajectory to find transitions as it's already implemented.
+  const traj = getGalacticCoreTrajectory(date, lat, lng);
+  let rise: Date | null = null;
+  let set: Date | null = null;
+
+  for (let i = 0; i < traj.length - 1; i++) {
+    if (traj[i].alt < 0 && traj[i + 1].alt >= 0) {
+      rise = traj[i + 1].time;
+    } else if (traj[i].alt >= 0 && traj[i + 1].alt < 0) {
+      set = traj[i + 1].time;
+    }
+  }
+
+  return { rise, set };
+}
+
+import { MoonPhase } from "astronomy-engine";
+
+export function getMoonPhase(date: Date): { phase: number; name: string } {
+  const time = MakeTime(date);
+  const phase = MoonPhase(time);
+
+  let name = "";
+  if (phase < 1.0 || phase > 359.0) name = "New Moon";
+  else if (phase < 89.0) name = "Waxing Crescent";
+  else if (phase < 91.0) name = "First Quarter";
+  else if (phase < 179.0) name = "Waxing Gibbous";
+  else if (phase < 181.0) name = "Full Moon";
+  else if (phase < 269.0) name = "Waning Gibbous";
+  else if (phase < 271.0) name = "Last Quarter";
+  else name = "Waning Crescent";
+
+  return { phase, name };
+}

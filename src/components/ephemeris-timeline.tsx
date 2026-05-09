@@ -77,7 +77,7 @@ export function EphemerisTimeline({
     return (
       <div
         ref={containerRef}
-        className="w-full h-full min-h-[120px] rounded-xl bg-muted/50"
+        className="w-full h-full min-h-24 rounded-xl bg-muted/50"
       />
     );
   }
@@ -283,8 +283,8 @@ export function EphemerisTimeline({
               {hourLabel % 3 === 0 && (
                 <text
                   x={x + 4}
-                  y={14}
-                  className="fill-foreground/50 text-[10px] font-mono"
+                  y={12}
+                  className="fill-foreground/50 text-[8px] font-mono"
                 >{`${hourLabel}:00`}</text>
               )}
             </g>
@@ -320,21 +320,21 @@ export function EphemerisTimeline({
         <circle
           cx={width / 2}
           cy={thumbY}
-          r={6}
-          className="fill-primary stroke-background stroke-2 shadow-lg drop-shadow-[0_0_12px_rgba(var(--primary),0.8)]"
+          r={4}
+          className="fill-primary stroke-background stroke-1 shadow-lg drop-shadow-[0_0_12px_rgba(var(--primary),0.8)]"
         />
       </svg>
 
       {/* Soft Fade Gradients overlay to make it look like a rolling cylinder */}
-      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+      <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background to-transparent pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
 
       {/* Info Overlay */}
-      <div className="absolute bottom-2 right-4 pointer-events-none text-right">
-        <div className="text-xl font-bold tracking-tighter text-foreground leading-none">
+      <div className="absolute bottom-1 right-4 pointer-events-none text-right">
+        <div className="text-sm font-bold tracking-tighter text-foreground leading-none">
           {timeString}
         </div>
-        <div className="text-[10px] uppercase font-mono text-muted-foreground">
+        <div className="text-[8px] uppercase font-mono text-muted-foreground">
           {dayString}
         </div>
       </div>
