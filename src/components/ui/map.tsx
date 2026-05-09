@@ -148,9 +148,9 @@ function DefaultLoader() {
   return (
     <div className="bg-background/50 absolute inset-0 z-10 flex items-center justify-center backdrop-blur-xs">
       <div className="flex gap-1">
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full" />
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full [animation-delay:150ms]" />
-        <span className="bg-muted-foreground/60 size-1.5 animate-pulse rounded-full [animation-delay:300ms]" />
+        <span className="bg-muted-foreground/60 size-1.5 animate-pulse " />
+        <span className="bg-muted-foreground/60 size-1.5 animate-pulse  [animation-delay:150ms]" />
+        <span className="bg-muted-foreground/60 size-1.5 animate-pulse  [animation-delay:300ms]" />
       </div>
     </div>
   );
@@ -524,7 +524,7 @@ function PopupCloseButton({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="Close popup"
-      className="focus-visible:ring-ring hover:bg-muted text-foreground absolute top-0.5 right-0.5 z-10 inline-flex size-5 cursor-pointer items-center justify-center rounded-sm transition-colors focus:outline-none focus-visible:ring-2"
+      className="focus-visible:ring-ring hover:bg-muted text-foreground absolute top-0.5 right-0.5 z-10 inline-flex size-5 cursor-pointer items-center justify-center  transition-colors focus:outline-none focus-visible:ring-2"
     >
       <X className="size-3.5" />
     </button>
@@ -732,15 +732,15 @@ type MapControlsProps = {
 };
 
 const positionClasses = {
-  "top-left": "top-2 left-2",
-  "top-right": "top-2 right-2",
-  "bottom-left": "bottom-2 left-2",
-  "bottom-right": "bottom-10 right-2",
+  "top-left": "top-6 left-6",
+  "top-right": "top-6 right-6",
+  "bottom-left": "bottom-6 left-6",
+  "bottom-right": "bottom-10 right-6",
 };
 
 function ControlGroup({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-border bg-background [&>button:not(:last-child)]:border-border flex flex-col overflow-hidden rounded-md border shadow-sm [&>button:not(:last-child)]:border-b">
+    <div className="border-border bg-background [&>button:not(:last-child)]:border-border flex flex-col overflow-hidden  border shadow-sm [&>button:not(:last-child)]:border-b">
       {children}
     </div>
   );
@@ -1014,7 +1014,7 @@ function MapPopup({
   return createPortal(
     <div
       className={cn(
-        "bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md",
+        "bg-popover text-popover-foreground relative max-w-62 border p-3 shadow-md",
         "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
         className,
       )}

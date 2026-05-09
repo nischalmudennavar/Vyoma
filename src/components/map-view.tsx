@@ -2,6 +2,7 @@
 
 import {
   Map as MapComponent,
+  MapControls,
   MapMarker,
   MarkerContent,
 } from "@/components/ui/map";
@@ -23,6 +24,13 @@ export function MapView() {
           // updateLocation(_vp.center[1], _vp.center[0], location.label);
         }}
       >
+        <MapControls
+          position="top-right"
+          showZoom
+          showCompass
+          showLocate
+          showFullscreen
+        />
         <MapMarker
           longitude={location.lng}
           latitude={location.lat}

@@ -35,7 +35,7 @@ export function LeftPane() {
   const timeString = `${hours}:${minutes}`;
 
   return (
-    <aside className="w-[15vw] min-w-[240px] max-w-[320px] h-full border-r bg-background flex flex-col p-4 gap-6">
+    <aside className="absolute top-6 left-6 z-20 w-[320px]  border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto">
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Location</h2>
         <LocationAutocomplete />
