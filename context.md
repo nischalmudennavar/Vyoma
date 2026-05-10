@@ -16,10 +16,10 @@ A dedicated library wrapping `astronomy-engine` for high-precision celestial cal
 
 ## 3. UI and Navigation
 
-### Left Pane & Controls (`src/components/left-pane.tsx`)
+### Left Pane & Controls (`src/components/control-panel/left-pane.tsx`)
 - A floating, glassmorphism sidebar positioned on the left side.
 - Contains controls to update the global `location`, `date`, and `time` states.
-- Integrates `LocationAutocomplete` (`src/components/location-autocomplete.tsx`), which performs debounced (400ms) geocoding against the OpenStreetMap Nominatim API. Selecting a location smoothly pans the map and updates the entire astrometry math context.
+- Integrates `LocationAutocomplete` (`src/components/control-panel/location-autocomplete.tsx`), which performs debounced (400ms) geocoding against the OpenStreetMap Nominatim API. Selecting a location smoothly pans the map and updates the entire astrometry math context.
 
 ### The Map View (`src/components/map-view.tsx` & `src/components/ui/map.tsx`)
 - A full-screen interactive MapLibre map component acting as the base layer.
@@ -28,16 +28,17 @@ A dedicated library wrapping `astronomy-engine` for high-precision celestial cal
 
 ## 4. Visualization Overlays
 
-### 2D Celestial Radar (`src/components/celestial-radar.tsx`)
-- An SVG overlay sitting directly on top of the map view (`pointer-events-none`).
-- Visualizes the celestial sphere mapped onto a 2D plane using an **Azimuthal Equidistant projection**.
+### Geographically-synced Celestial Overlay (`src/components/control-panel/map-celestial-overlay.tsx`)
+- An SVG overlay sitting directly on the map view, synced to the coordinate system.
+- Follows a Modern Swiss and Analog Instrument aesthetic.
 - Renders:
-  - Concentric grid rings for Alt 0° (Horizon), 30°, and 60°, along with N/S/E/W cardinal axes.
-  - Distinct glowing indicators for the **Galactic Core** (Primary/Pink), **Sun** (Gold), and **Moon** (Silver).
-  - Trajectory arcs showing the path of the Milky Way across the sky over the course of the day.
-  - Dynamic visual fading (opacity drop to 30%) and clamping when objects set below the horizon.
+  - Concentric reticle rings (etched glass look) for distance/elevation.
+  - Precise ephemeris lines for Sun and Moon Rise/Set azimuths.
+  - A dynamic dotted Galactic Arc that scales based on core elevation.
+  - A subtle FOV/Visibility Wedge with a frosted-glass gradient.
+  - A mechanical-watch-inspired center pivot at the observer's location.
 
-### Ephemeris Timeline (`src/components/ephemeris-timeline.tsx` & `src/components/ephemeris-overlay.tsx`)
+### Ephemeris Timeline (`src/components/control-panel/ephemeris-timeline.tsx` & `src/components/control-panel/ephemeris-overlay.tsx`)
 - A continuous, infinitely-pannable 2D Cartesian timeline acting as an interactive time scrubber, located at the bottom of the screen.
 - **Backdrop (Twilight Map):** Renders colored SVG blocks for twilight phases (Night, Blue Hour, Golden Hour, Day) computed dynamically.
 - **Curves:** Plots smooth, color-coded altitude curves for the Sun, Moon, and Galactic Core over a 72-hour rolling buffer window.

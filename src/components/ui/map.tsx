@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 const defaultStyles = {
   dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-  light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+  light: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
 };
 
 type Theme = "light" | "dark";
@@ -140,6 +140,11 @@ type MapProps = {
    * to enable controlled mode where the map viewport is driven by your state.
    */
   onViewportChange?: (viewport: MapViewport) => void;
+  /**
+   * Callback fired once when the viewport stops changing (after pan, zoom, etc. is complete).
+   * Useful for performance-heavy operations like reverse geocoding.
+   */
+  onViewportChangeEnd?: (viewport: MapViewport) => void;
   /** Show a loading indicator on the map */
   loading?: boolean;
 } & Omit<MapLibreGL.MapOptions, "container" | "style">;
@@ -175,6 +180,7 @@ const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
     projection,
     viewport,
     onViewportChange,
+    onViewportChangeEnd,
     loading = false,
     ...props
   },
@@ -193,6 +199,9 @@ const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
 
   const onViewportChangeRef = useRef(onViewportChange);
   onViewportChangeRef.current = onViewportChange;
+
+  const onViewportChangeEndRef = useRef(onViewportChangeEnd);
+  onViewportChangeEndRef.current = onViewportChangeEnd;
 
   const mapStyles = useMemo(
     () => ({
@@ -251,9 +260,15 @@ const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
       onViewportChangeRef.current?.(getViewport(map));
     };
 
+    const handleMoveEnd = () => {
+      if (internalUpdateRef.current) return;
+      onViewportChangeEndRef.current?.(getViewport(map));
+    };
+
     map.on("load", loadHandler);
     map.on("styledata", styleDataHandler);
     map.on("move", handleMove);
+    map.on("moveend", handleMoveEnd);
     setMapInstance(map);
 
     return () => {
@@ -261,13 +276,14 @@ const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
       map.off("load", loadHandler);
       map.off("styledata", styleDataHandler);
       map.off("move", handleMove);
+      map.off("moveend", handleMoveEnd);
       map.remove();
       setIsLoaded(false);
       setIsStyleLoaded(false);
       setMapInstance(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [clearStyleTimeout, mapStyles.dark, mapStyles.light, projection, resolvedTheme]);
 
   // Sync controlled viewport to map
   useEffect(() => {
@@ -407,7 +423,7 @@ function MapMarker({
     const markerInstance = new MapLibreGL.Marker({
       ...markerOptions,
       element: document.createElement("div"),
-      draggable,
+      draggable: draggable ?? false,
     }).setLngLat([longitude, latitude]);
 
     const handleClick = (e: MouseEvent) => callbacksRef.current.onClick?.(e);
@@ -442,7 +458,6 @@ function MapMarker({
     markerInstance.on("dragend", handleDragEnd);
 
     return markerInstance;
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -512,7 +527,10 @@ function MarkerContent({ children, className }: MarkerContentProps) {
 
 function DefaultMarkerIcon() {
   return (
-    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-blue-500 shadow-lg" />
+    <div className="relative group">
+      <div className="absolute inset-0 bg-primary/40 rounded-none blur-md group-hover:bg-primary/60 transition-colors animate-pulse" />
+      <div className="relative h-4 w-4 rounded-none border-2 border-primary-foreground bg-primary shadow-[0_0_15px_rgba(var(--primary),0.5)] transition-transform group-hover:scale-110 active:scale-95" />
+    </div>
   );
 }
 
@@ -591,7 +609,7 @@ function MarkerPopup({
   return createPortal(
     <div
       className={cn(
-        "bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md",
+        "bg-popover text-popover-foreground relative max-w-62 rounded-none border p-3 shadow-md",
         "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
         className,
       )}
@@ -668,7 +686,7 @@ function MarkerTooltip({
   return createPortal(
     <div
       className={cn(
-        "bg-foreground text-background pointer-events-none rounded-md px-2 py-1 text-xs text-balance shadow-md",
+        "bg-foreground text-background pointer-events-none rounded-none px-2 py-1 text-xs text-balance shadow-md",
         "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
         className,
       )}
@@ -762,7 +780,7 @@ function ControlButton({
       type="button"
       className={cn(
         "flex size-8 items-center justify-center transition-all",
-        "first:rounded-t-md last:rounded-b-md",
+        "rounded-none",
         "hover:bg-accent dark:hover:bg-accent/40",
         "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none focus-visible:ring-inset",
         "disabled:pointer-events-none disabled:opacity-50",
@@ -1012,7 +1030,7 @@ function MapPopup({
   return createPortal(
     <div
       className={cn(
-        "bg-popover text-popover-foreground relative max-w-62 border p-3 shadow-md",
+        "bg-popover text-popover-foreground relative max-w-62 border p-3 shadow-md rounded-none",
         "animate-in fade-in-0 zoom-in-95 duration-200 ease-out",
         className,
       )}
@@ -1736,8 +1754,7 @@ function MapClusterLayer<
       if (!features.length) return;
 
       const feature = features[0];
-      const clusterId = feature.properties?.cluster_id as number;
-      const pointCount = feature.properties?.point_count as number;
+      const clusterId = feature.properties?.cluster_id as number;      const pointCount = feature.properties?.point_count as number;
       const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [
         number,
         number,

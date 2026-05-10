@@ -1,14 +1,19 @@
 import {
+  Body,
   Equator,
   Horizon,
+  Libration,
   MakeTime,
+  MoonPhase,
   Observer,
   SearchAltitude,
 } from "astronomy-engine";
 
-// Sagittarius A* Coordinates
+// Constants
 const GALACTIC_CORE_RA = 17.76; // Hours (266.4 degrees)
 const GALACTIC_CORE_DEC = -29.0; // Degrees
+const SUN_RADIUS_KM = 695700;
+const AU_TO_KM = 149597870.7;
 
 export interface CelestialCoordinates {
   alt: number;
@@ -20,6 +25,9 @@ export interface TrajectoryPoint extends CelestialCoordinates {
   time: Date;
 }
 
+/**
+ * Calculates the current position of the Galactic Core.
+ */
 export function getGalacticCorePosition(
   date: Date,
   lat: number,
@@ -28,8 +36,6 @@ export function getGalacticCorePosition(
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
 
-  // The Galactic Core's RA is 17.76h. astronomy-engine Horizon expects RA in hours.
-  // dec is in degrees.
   const horizon = Horizon(
     time,
     observer,
@@ -45,6 +51,9 @@ export function getGalacticCorePosition(
   };
 }
 
+/**
+ * Calculates the current position of the Sun.
+ */
 export function getSunPosition(
   date: Date,
   lat: number,
@@ -52,7 +61,7 @@ export function getSunPosition(
 ): CelestialCoordinates {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
-  const eq = Equator("Sun", time, observer, true, true);
+  const eq = Equator(Body.Sun, time, observer, true, true);
   const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
 
   return {
@@ -62,6 +71,9 @@ export function getSunPosition(
   };
 }
 
+/**
+ * Calculates the current position of the Moon.
+ */
 export function getMoonPosition(
   date: Date,
   lat: number,
@@ -69,7 +81,7 @@ export function getMoonPosition(
 ): CelestialCoordinates {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
-  const eq = Equator("Moon", time, observer, true, true);
+  const eq = Equator(Body.Moon, time, observer, true, true);
   const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
 
   return {
@@ -154,11 +166,11 @@ export function getTwilightPhases(
 ): TwilightPhases {
   const observer = new Observer(lat, lng, 0);
   const baseDate = new Date(date);
-  baseDate.setHours(0, 0, 0, 0); // Start of day
+  baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude("Sun", observer, direction, time, 1, altitude);
+    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
     return res ? res.date : null;
   };
 
@@ -184,8 +196,8 @@ export function getMoonRiseSet(
   baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
-  const rise = SearchAltitude("Moon", observer, 1, time, 1, 0);
-  const set = SearchAltitude("Moon", observer, -1, time, 1, 0);
+  const rise = SearchAltitude(Body.Moon, observer, 1, time, 1, 0);
+  const set = SearchAltitude(Body.Moon, observer, -1, time, 1, 0);
 
   return {
     rise: rise ? rise.date : null,
@@ -193,17 +205,35 @@ export function getMoonRiseSet(
   };
 }
 
+/**
+ * Calculates the azimuth of a body at the moment of rise and set.
+ */
+export function getRiseSetAzimuths(
+  date: Date,
+  lat: number,
+  lng: number,
+  body: "sun" | "moon",
+) {
+  if (body === "sun") {
+    const phases = getTwilightPhases(date, lat, lng);
+    return {
+      rise: phases.sunrise ? getSunPosition(phases.sunrise, lat, lng).az : null,
+      set: phases.sunset ? getSunPosition(phases.sunset, lat, lng).az : null,
+    };
+  } else {
+    const rs = getMoonRiseSet(date, lat, lng);
+    return {
+      rise: rs.rise ? getMoonPosition(rs.rise, lat, lng).az : null,
+      set: rs.set ? getMoonPosition(rs.set, lat, lng).az : null,
+    };
+  }
+}
+
 export function getGalacticCoreVisibility(
   date: Date,
   lat: number,
   lng: number,
 ): { rise: Date | null; set: Date | null } {
-  // astronomy-engine doesn't have a named "GalacticCore" for SearchAltitude,
-  // but we can use SearchAltitude with a custom function if needed,
-  // or just approximate from the trajectory if it's too complex.
-  // Actually, SearchAltitude only takes body names.
-  // We can use Search for a fixed point by creating a custom search or using trajectory.
-  // For now, let's use the trajectory to find transitions as it's already implemented.
   const traj = getGalacticCoreTrajectory(date, lat, lng);
   let rise: Date | null = null;
   let set: Date | null = null;
@@ -219,11 +249,16 @@ export function getGalacticCoreVisibility(
   return { rise, set };
 }
 
-import { MoonPhase } from "astronomy-engine";
-
-export function getMoonPhase(date: Date): { phase: number; name: string } {
+export function getMoonPhase(date: Date): {
+  phase: number;
+  name: string;
+  illumination: number;
+} {
   const time = MakeTime(date);
   const phase = MoonPhase(time);
+
+  // Illumination calculation based on phase angle
+  const illumination = ((1 - Math.cos((phase * Math.PI) / 180)) / 2) * 100;
 
   let name = "";
   if (phase < 1.0 || phase > 359.0) name = "New Moon";
@@ -235,5 +270,74 @@ export function getMoonPhase(date: Date): { phase: number; name: string } {
   else if (phase < 271.0) name = "Last Quarter";
   else name = "Waning Crescent";
 
-  return { phase, name };
+  return { phase, name, illumination };
+}
+
+/**
+ * Calculates Golden Hour (when Sun altitude is between -4 and 6 degrees).
+ */
+export function getGoldenHour(
+  date: Date,
+  lat: number,
+  lng: number,
+): {
+  morning: { start: Date | null; end: Date | null };
+  evening: { start: Date | null; end: Date | null };
+} {
+  const observer = new Observer(lat, lng, 0);
+  const baseDate = new Date(date);
+  baseDate.setHours(0, 0, 0, 0);
+  const time = MakeTime(baseDate);
+
+  const search = (direction: number, altitude: number) => {
+    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
+    return res ? res.date : null;
+  };
+
+  return {
+    morning: {
+      start: search(1, -4),
+      end: search(1, 6),
+    },
+    evening: {
+      start: search(-1, 6),
+      end: search(-1, -4),
+    },
+  };
+}
+
+/**
+ * Calculates Angular Diameter of a body.
+ */
+function calculateAngularDiameter(
+  radiusKm: number,
+  distanceKm: number,
+): number {
+  return 2 * Math.atan(radiusKm / distanceKm) * (180 / Math.PI);
+}
+
+export function getSunDetails(date: Date, lat: number, lng: number) {
+  const time = MakeTime(date);
+  const observer = new Observer(lat, lng, 0);
+  // Using Equator for Sun with the observer to get topocentric distance
+  const eq = Equator(Body.Sun, time, observer, true, true);
+  const distanceAU = eq.dist;
+  const distanceKm = distanceAU * AU_TO_KM;
+  const angularDiameter = calculateAngularDiameter(SUN_RADIUS_KM, distanceKm);
+
+  return {
+    distanceKm,
+    angularDiameter,
+  };
+}
+
+export function getMoonDetails(date: Date) {
+  const time = MakeTime(date);
+  // Libration gives distance in km and angular diameter in degrees directly
+  const lib = Libration(time);
+
+  return {
+    distanceKm: lib.dist_km,
+    angularDiameter: lib.diam_deg,
+  };
 }

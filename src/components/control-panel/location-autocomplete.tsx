@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";
@@ -100,7 +100,7 @@ export function LocationAutocomplete() {
           {results.map((result) => (
             <li
               key={result.place_id}
-              className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-xs outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+              className="relative flex w-full cursor-pointer select-none items-center rounded-none py-1.5 px-2 text-xs outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
               onClick={() => {
                 const lat = parseFloat(result.lat);
                 const lng = parseFloat(result.lon);
