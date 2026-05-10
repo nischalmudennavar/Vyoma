@@ -9,6 +9,10 @@ import {
 } from "@/components/ui/map";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 
+/**
+ * MapView component that integrates the interactive map with celestial data.
+ * Updates the global observer location automatically as the user drags the map.
+ */
 export function MapView() {
   const location = useVyomaStore((state) => state.location);
   const updateLocation = useVyomaStore((state) => state.updateLocation);
@@ -21,7 +25,7 @@ export function MapView() {
           zoom: 4,
         }}
         onViewportChange={(vp) => {
-          // Sync map center back to state on drag:
+          // Automatically sync map center back to global state on drag
           updateLocation(vp.center[1], vp.center[0], location.label);
         }}
       >
@@ -32,6 +36,8 @@ export function MapView() {
           showLocate
           showFullscreen
         />
+
+        {/* Observer's active location marker */}
         <MapMarker
           longitude={location.lng}
           latitude={location.lat}
@@ -40,11 +46,11 @@ export function MapView() {
             updateLocation(lngLat.lat, lngLat.lng, location.label);
           }}
         >
-          <MarkerContent />
+          <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-full" />
         </MapMarker>
       </MapComponent>
 
-      {/* 2D Celestial Radar Overlay */}
+      {/* 2D Celestial Radar Overlay - Locked to the center (committed location) */}
       <CelestialRadar />
     </div>
   );

@@ -1,3 +1,4 @@
+import { AstronomyDetails } from "@/components/astronomy-details";
 import { EphemerisOverlay } from "@/components/ephemeris-overlay";
 import { LeftPane } from "@/components/left-pane";
 import { MapView } from "@/components/map-view";
@@ -13,6 +14,7 @@ export default function Home() {
       <main className="flex flex-1 overflow-hidden relative">
         <MapView />
         <LeftPane />
+        <AstronomyDetails />
         <EphemerisOverlay />
       </main>
     </div>

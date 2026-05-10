@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 
 const defaultStyles = {
   dark: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-  light: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+  light: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
 };
 
 type Theme = "light" | "dark";
@@ -512,7 +512,10 @@ function MarkerContent({ children, className }: MarkerContentProps) {
 
 function DefaultMarkerIcon() {
   return (
-    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-blue-500 shadow-lg" />
+    <div className="relative group">
+      <div className="absolute inset-0 bg-primary/40 rounded-full blur-md group-hover:bg-primary/60 transition-colors animate-pulse" />
+      <div className="relative h-4 w-4 rounded-full border-2 border-primary-foreground bg-primary shadow-[0_0_15px_rgba(var(--primary),0.5)] transition-transform group-hover:scale-110 active:scale-95" />
+    </div>
   );
 }
 
