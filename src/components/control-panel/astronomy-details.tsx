@@ -31,6 +31,21 @@ function getMoonIcon(phaseAngle: number): string {
 }
 
 /**
+ * Converts an azimuth angle (0-360) to a cardinal direction string (e.g., N, NE, E).
+ */
+function getCardinalDirection(azimuth: number): string {
+  const directions = [
+    "N", "NNE", "NE", "ENE",
+    "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW",
+    "W", "WNW", "NW", "NNW",
+  ];
+  // 360 / 16 = 22.5 degrees per sector
+  const index = Math.floor((azimuth + 11.25) / 22.5) % 16;
+  return directions[index];
+}
+
+/**
  * Formats a date to HH:mm string.
  * @param date - The date to format.
  * @returns Formatted time string or --:-- if null.
@@ -85,8 +100,11 @@ export function AstronomyDetails() {
             <Label className="text-muted-foreground group-hover:text-foreground/70 transition-colors">
               Azimuth
             </Label>
-            <span className="font-mono text-foreground font-semibold tabular-nums">
+            <span className="font-mono text-foreground font-semibold tabular-nums flex items-center gap-1.5">
               {gcPos.az.toFixed(2)}°
+              <span className="text-[10px] text-muted-foreground font-bold tracking-widest">
+                {getCardinalDirection(gcPos.az)}
+              </span>
             </span>
           </div>
           <div className="flex justify-between items-center pt-1 border-t border-border/10">

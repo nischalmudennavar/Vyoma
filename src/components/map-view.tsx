@@ -4,10 +4,10 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
 
-const CelestialRadar = dynamic(
+const MapCelestialOverlay = dynamic(
   () =>
-    import("@/components/celestial-radar").then((mod) => ({
-      default: mod.CelestialRadar,
+    import("@/components/control-panel/map-celestial-overlay").then((mod) => ({
+      default: mod.MapCelestialOverlay,
     })),
   { ssr: false },
 );
@@ -143,6 +143,9 @@ export function MapView() {
         >
           <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-none" />
         </MapMarker>
+
+        {/* Geographically-synced Celestial Overlay */}
+        <MapCelestialOverlay />
       </MapComponent>
 
       {/* Map Visibility Overlay */}
@@ -150,9 +153,6 @@ export function MapView() {
         className="absolute inset-0 bg-background pointer-events-none z-[5]"
         style={{ opacity: 1 - mapVisibility / 100 }}
       />
-
-      {/* 2D Celestial Radar Overlay - Locked to the center (committed location) */}
-      <CelestialRadar />
     </div>
   );
 }
