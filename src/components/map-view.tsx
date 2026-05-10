@@ -28,22 +28,6 @@ const MapControls = dynamic(
   { ssr: false },
 );
 
-const MapMarker = dynamic(
-  () =>
-    import("@/components/ui/map").then((mod) => ({
-      default: mod.MapMarker,
-    })),
-  { ssr: false },
-);
-
-const MarkerContent = dynamic(
-  () =>
-    import("@/components/ui/map").then((mod) => ({
-      default: mod.MarkerContent,
-    })),
-  { ssr: false },
-);
-
 /**
  * Performs reverse geocoding to get a human-readable address from coordinates.
  */
@@ -78,23 +62,6 @@ export function MapView() {
       "updateZoom",
       "mapVisibility",
     ]);
-
-  const handleDrag = useCallback(
-    (lngLat: { lat: number; lng: number }) => {
-      // Fast update for radar/visuals during drag (preserving label)
-      updateLocation(lngLat.lat, lngLat.lng, location.label);
-    },
-    [updateLocation, location.label],
-  );
-
-  const handleDragEnd = useCallback(
-    async (lngLat: { lat: number; lng: number }) => {
-      // On drop, update with reverse geocoded label
-      const label = await getReverseGeocode(lngLat.lat, lngLat.lng);
-      updateLocation(lngLat.lat, lngLat.lng, label);
-    },
-    [updateLocation],
-  );
 
   const handleViewportChangeWrapper = useCallback(
     (vp: { center: [number, number]; zoom: number }) => {
@@ -131,18 +98,6 @@ export function MapView() {
           showLocate
           showFullscreen
         />
-
-        {/* Observer's active location marker - anchored at center to avoid shifting during zoom */}
-        <MapMarker
-          longitude={location.lng}
-          latitude={location.lat}
-          draggable={true}
-          anchor="center"
-          onDrag={handleDrag}
-          onDragEnd={handleDragEnd}
-        >
-          <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-none" />
-        </MapMarker>
 
         {/* Geographically-synced Celestial Overlay */}
         <MapCelestialOverlay />
