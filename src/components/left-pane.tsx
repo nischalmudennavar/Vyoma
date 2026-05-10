@@ -3,8 +3,8 @@
 import { LocationAutocomplete } from "@/components/location-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Container } from "@/components/container";
 
 export function LeftPane() {
   const {
@@ -14,11 +14,7 @@ export function LeftPane() {
     updateTime,
     updateLocation,
     showMoon,
-    uiOpacity,
-    mapVisibility,
     toggleMoon,
-    setUiOpacity,
-    setMapVisibility,
   } = useVyomaStore();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,9 +41,9 @@ export function LeftPane() {
   const timeString = `${hours}:${minutes}`;
 
   return (
-    <aside
+    <Container
+      applyUiOpacity
       className="absolute top-6 left-6 z-20 w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto"
-      style={{ opacity: uiOpacity / 100 }}
     >
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Controls</h2>
@@ -95,58 +91,21 @@ export function LeftPane() {
         <div className="flex items-center justify-between">
           <Label htmlFor="moon-toggle">Show Moon</Label>
           <button
+            type="button"
             id="moon-toggle"
             role="switch"
             aria-checked={showMoon}
             onClick={toggleMoon}
-            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 ${
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 ${
               showMoon ? "bg-primary" : "bg-muted"
             }`}
           >
             <span
-              className={`pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform ${
+              className={`pointer-events-none block h-4 w-4 rounded-none bg-white shadow-lg ring-0 transition-transform ${
                 showMoon ? "translate-x-4" : "translate-x-0"
               }`}
             />
           </button>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">UI Opacity</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label htmlFor="opacity">Opacity</Label>
-            <span className="text-xs text-muted-foreground">{uiOpacity}%</span>
-          </div>
-          <Slider
-            id="opacity"
-            value={[uiOpacity]}
-            onValueChange={([value]) => setUiOpacity(value)}
-            min={10}
-            max={100}
-            step={1}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">Map Visibility</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <Label htmlFor="map-visibility">Visibility</Label>
-            <span className="text-xs text-muted-foreground">
-              {mapVisibility}%
-            </span>
-          </div>
-          <Slider
-            id="map-visibility"
-            value={[mapVisibility]}
-            onValueChange={([value]) => setMapVisibility(value)}
-            min={0}
-            max={100}
-            step={1}
-          />
         </div>
       </div>
 
@@ -171,6 +130,6 @@ export function LeftPane() {
           />
         </div>
       </div>
-    </aside>
+    </Container>
   );
 }

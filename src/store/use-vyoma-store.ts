@@ -8,6 +8,7 @@ interface VyomaState {
   showMoon: boolean;
   uiOpacity: number;
   mapVisibility: number;
+  baseFontSize: number;
   updateTime: (hours: number, minutes: number) => void;
   updateDate: (date: Date) => void;
   updateLocation: (lat: number, lng: number, label?: string) => void;
@@ -15,6 +16,7 @@ interface VyomaState {
   toggleMoon: () => void;
   setUiOpacity: (opacity: number) => void;
   setMapVisibility: (visibility: number) => void;
+  setBaseFontSize: (size: number) => void;
 }
 
 export const useVyomaStore = create<VyomaState>((set) => ({
@@ -24,6 +26,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   showMoon: true,
   uiOpacity: 80,
   mapVisibility: 100,
+  baseFontSize: 14,
   updateTime: (hours, minutes) =>
     set((state) => {
       const newDate = new Date(state.viewDate);
@@ -42,6 +45,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   toggleMoon: () => set((state) => ({ showMoon: !state.showMoon })),
   setUiOpacity: (opacity) => set({ uiOpacity: opacity }),
   setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
+  setBaseFontSize: (size) => set({ baseFontSize: size }),
 }));
 
 /** Selector hook - only subscribes to the fields specified via key array. */

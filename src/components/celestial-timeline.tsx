@@ -57,7 +57,7 @@ export function CelestialTimeline({
               {/* Icon Node */}
               <div
                 className={cn(
-                  "relative z-10 flex items-center justify-center w-10 h-10 rounded-full bg-[#050505] border transition-all duration-300 shrink-0",
+                  "relative z-10 flex items-center justify-center w-10 h-10 rounded-none bg-[#050505] border transition-all duration-300 shrink-0",
                   event.type === "galactic"
                     ? "border-primary text-primary bg-primary/10 shadow-[0_0_20px_rgba(var(--primary),0.2)] group-hover:shadow-[0_0_30px_rgba(var(--primary),0.4)] group-hover:scale-110"
                     : "border-neutral-800 text-neutral-400 group-hover:border-neutral-500 group-hover:text-neutral-200 group-hover:scale-110 group-hover:bg-neutral-900",
@@ -76,7 +76,7 @@ export function CelestialTimeline({
                       hour12: true,
                     })}
                   </time>
-                  <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-neutral-800" />
+                  <div className="hidden sm:block w-1.5 h-1.5 rounded-none bg-neutral-800" />
                   <h3
                     className={cn(
                       "text-lg font-semibold tracking-tight transition-colors",
@@ -96,7 +96,7 @@ export function CelestialTimeline({
                 )}
 
                 {event.description && (
-                  <div className="mt-3 bg-neutral-900/30 border border-neutral-800/50 rounded-2xl p-4 transition-all duration-300 group-hover:bg-neutral-900/60 group-hover:border-neutral-700/60">
+                  <div className="mt-3 bg-neutral-900/30 border border-neutral-800/50 rounded-none p-4 transition-all duration-300 group-hover:bg-neutral-900/60 group-hover:border-neutral-700/60">
                     <p className="text-[13px] sm:text-sm text-neutral-400 leading-relaxed">
                       {event.description}
                     </p>
@@ -127,6 +127,7 @@ function DefaultIcon({ type }: { type: CelestialEventType }) {
           xmlns="http://www.w3.org/2000/svg"
           className="w-5 h-5"
         >
+          <title>Galactic Center Event</title>
           <circle cx="5" cy="2" r="2" fill="currentColor" />
           <circle cx="5" cy="9" r="3" fill="currentColor" />
           <circle cx="5" cy="18" r="4" fill="currentColor" />

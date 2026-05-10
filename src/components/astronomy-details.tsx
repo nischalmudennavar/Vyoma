@@ -12,6 +12,7 @@ import {
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Container } from "@/components/container";
 
 /**
  * Formats a date to HH:mm string.
@@ -32,7 +33,7 @@ function formatTime(date: Date | null): string {
  * Occupies 10% of the viewport width with a minimum width for readability.
  */
 export function AstronomyDetails() {
-  const { viewDate, location, uiOpacity } = useVyomaStore();
+  const { viewDate, location } = useVyomaStore();
 
   const gcPos = getGalacticCorePosition(viewDate, location.lat, location.lng);
   const gcVis = getGalacticCoreVisibility(viewDate, location.lat, location.lng);
@@ -43,9 +44,9 @@ export function AstronomyDetails() {
   const moonDetails = getMoonDetails(viewDate);
 
   return (
-    <aside
+    <Container
+      applyUiOpacity
       className="absolute top-6 right-6 z-20 w-[15vw] min-w-[300px] border border-border/40 bg-background/60 backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto transition-all duration-300"
-      style={{ opacity: uiOpacity / 100 }}
     >
       <div className="space-y-5">
         <div className="flex items-center gap-2.5 border-b border-border/40 pb-3">
@@ -95,7 +96,7 @@ export function AstronomyDetails() {
             </span>
           </div>
 
-          <div className="space-y-2.5 bg-orange-400/5 p-3 rounded-lg border border-orange-400/10">
+          <div className="space-y-2.5 bg-orange-400/5 p-3 rounded-none border border-orange-400/10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-orange-400/80" />
@@ -172,6 +173,6 @@ export function AstronomyDetails() {
           <span>{location.lng.toFixed(4)}°E</span>
         </div>
       </div>
-    </aside>
+    </Container>
   );
 }

@@ -11,6 +11,7 @@ import {
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Container } from "@/components/container";
 import { EphemerisTimeline } from "./ephemeris-timeline";
 
 export function EphemerisOverlay() {
@@ -26,7 +27,7 @@ export function EphemerisOverlay() {
       trajectories: [
         {
           id: "sun" as const,
-          color: "var(--color-chart-4)",
+          color: "var(--chart-4)",
           points: getSunTrajectory(
             bufferStartDate,
             location.lat,
@@ -36,7 +37,7 @@ export function EphemerisOverlay() {
         },
         {
           id: "moon" as const,
-          color: "var(--color-muted-foreground)",
+          color: "var(--muted-foreground)",
           points: getMoonTrajectory(
             bufferStartDate,
             location.lat,
@@ -46,7 +47,7 @@ export function EphemerisOverlay() {
         },
         {
           id: "core" as const,
-          color: "var(--color-primary)",
+          color: "var(--primary)",
           points: getGalacticCoreTrajectory(
             bufferStartDate,
             location.lat,
@@ -71,7 +72,10 @@ export function EphemerisOverlay() {
   };
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] min-w-[600px] max-w-[1000px] h-24 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group">
+    <Container
+      applyUiOpacity
+      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] min-w-[600px] max-w-[1000px] h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group"
+    >
       <EphemerisTimeline
         activeDate={viewDate}
         currentTime={viewDate}
@@ -93,6 +97,6 @@ export function EphemerisOverlay() {
           Detailed Timeline
         </Button>
       </Link>
-    </div>
+    </Container>
   );
 }

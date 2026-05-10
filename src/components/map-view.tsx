@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 const CelestialRadar = dynamic(
@@ -45,6 +45,27 @@ const MarkerContent = dynamic(
 );
 
 /**
+ * Performs reverse geocoding to get a human-readable address from coordinates.
+ */
+async function getReverseGeocode(lat: number, lng: number): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+      {
+        headers: {
+          "Accept-Language": "en",
+        },
+      },
+    );
+    const data = await res.json();
+    return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  } catch (error) {
+    console.error("[MapView] Reverse geocoding failed:", error);
+    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  }
+}
+
+/**
  * MapView component that integrates the interactive map with celestial data.
  * Updates the global observer location automatically as the user drags the map.
  */
@@ -57,20 +78,38 @@ export function MapView() {
       "updateZoom",
       "mapVisibility",
     ]);
-  const labelRef = useRef(location.label);
-  labelRef.current = location.label;
 
-  const handleViewportChange = useCallback(
-    (vp: { center: [number, number]; zoom: number }) => {
-      updateLocation(vp.center[1], vp.center[0], labelRef.current);
-      updateZoom(vp.zoom);
+  const handleDrag = useCallback(
+    (lngLat: { lat: number; lng: number }) => {
+      // Fast update for radar/visuals during drag (preserving label)
+      updateLocation(lngLat.lat, lngLat.lng, location.label);
     },
-    [updateLocation, updateZoom],
+    [updateLocation, location.label],
   );
 
   const handleDragEnd = useCallback(
-    (lngLat: { lat: number; lng: number }) => {
-      updateLocation(lngLat.lat, lngLat.lng, labelRef.current);
+    async (lngLat: { lat: number; lng: number }) => {
+      // On drop, update with reverse geocoded label
+      const label = await getReverseGeocode(lngLat.lat, lngLat.lng);
+      updateLocation(lngLat.lat, lngLat.lng, label);
+    },
+    [updateLocation],
+  );
+
+  const handleViewportChangeWrapper = useCallback(
+    (vp: { center: [number, number]; zoom: number }) => {
+      // Continuous update for visuals (preserving label to avoid search field jitter)
+      updateLocation(vp.center[1], vp.center[0], location.label);
+      updateZoom(vp.zoom);
+    },
+    [updateLocation, updateZoom, location.label],
+  );
+
+  const handleViewportChangeEnd = useCallback(
+    async (vp: { center: [number, number]; zoom: number }) => {
+      // Once movement stops, update with reverse geocoded label
+      const label = await getReverseGeocode(vp.center[1], vp.center[0]);
+      updateLocation(vp.center[1], vp.center[0], label);
     },
     [updateLocation],
   );
@@ -82,7 +121,8 @@ export function MapView() {
           center: [location.lng, location.lat],
           zoom: zoom,
         }}
-        onViewportChange={handleViewportChange}
+        onViewportChange={handleViewportChangeWrapper}
+        onViewportChangeEnd={handleViewportChangeEnd}
       >
         <MapControls
           position="bottom-right"
@@ -98,9 +138,10 @@ export function MapView() {
           latitude={location.lat}
           draggable={true}
           anchor="center"
+          onDrag={handleDrag}
           onDragEnd={handleDragEnd}
         >
-          <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-full" />
+          <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-none" />
         </MapMarker>
       </MapComponent>
 

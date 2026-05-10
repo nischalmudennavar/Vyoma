@@ -3,10 +3,12 @@
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
-import { CelestialTimeline } from "@/components/celestial-timeline";
+import {
+  CelestialTimeline,
+  type CelestialEvent as TimelineEvent,
+} from "@/components/celestial-timeline";
 import { Button } from "@/components/ui/button";
 import {
-  type CelestialEvent,
   getGalacticCoreVisibility,
   getMoonPhase,
   getMoonRiseSet,
@@ -19,7 +21,7 @@ export default function TimelinePage() {
   const { viewDate, location } = useVyomaStore();
 
   const events = useMemo(() => {
-    const celestialEvents: CelestialEvent[] = [];
+    const celestialEvents: TimelineEvent[] = [];
     const { lat, lng } = location;
 
     // 1. Twilight Phases

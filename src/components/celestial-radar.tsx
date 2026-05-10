@@ -277,9 +277,9 @@ export function CelestialRadar() {
 
       {/* Central Target Crosshair (Visual selection anchor) */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
-        <div className="absolute inset-0 bg-primary/10 rounded-full blur-xl animate-pulse" />
+        <div className="absolute inset-0 bg-primary/10 rounded-none blur-xl animate-pulse" />
         <Target className="w-10 h-10 text-primary/40 stroke-[1px]" />
-        <div className="absolute w-1 h-1 bg-primary/60 rounded-full" />
+        <div className="absolute w-1 h-1 bg-primary/60 rounded-none" />
       </div>
     </div>
   );

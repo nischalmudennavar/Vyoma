@@ -1,4 +1,5 @@
 import {
+  Body,
   Equator,
   Horizon,
   Libration,
@@ -60,7 +61,7 @@ export function getSunPosition(
 ): CelestialCoordinates {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
-  const eq = Equator("Sun", time, observer, true, true);
+  const eq = Equator(Body.Sun, time, observer, true, true);
   const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
 
   return {
@@ -80,7 +81,7 @@ export function getMoonPosition(
 ): CelestialCoordinates {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
-  const eq = Equator("Moon", time, observer, true, true);
+  const eq = Equator(Body.Moon, time, observer, true, true);
   const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
 
   return {
@@ -169,7 +170,7 @@ export function getTwilightPhases(
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude("Sun", observer, direction, time, 1, altitude);
+    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
     return res ? res.date : null;
   };
 
@@ -195,8 +196,8 @@ export function getMoonRiseSet(
   baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
-  const rise = SearchAltitude("Moon", observer, 1, time, 1, 0);
-  const set = SearchAltitude("Moon", observer, -1, time, 1, 0);
+  const rise = SearchAltitude(Body.Moon, observer, 1, time, 1, 0);
+  const set = SearchAltitude(Body.Moon, observer, -1, time, 1, 0);
 
   return {
     rise: rise ? rise.date : null,
@@ -261,7 +262,7 @@ export function getGoldenHour(
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude("Sun", observer, direction, time, 1, altitude);
+    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
     return res ? res.date : null;
   };
 
@@ -291,7 +292,7 @@ export function getSunDetails(date: Date, lat: number, lng: number) {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);
   // Using Equator for Sun with the observer to get topocentric distance
-  const eq = Equator("Sun", time, observer, true, true);
+  const eq = Equator(Body.Sun, time, observer, true, true);
   const distanceAU = eq.dist;
   const distanceKm = distanceAU * AU_TO_KM;
   const angularDiameter = calculateAngularDiameter(SUN_RADIUS_KM, distanceKm);

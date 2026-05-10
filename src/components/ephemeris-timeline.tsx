@@ -77,7 +77,7 @@ export function EphemerisTimeline({
     return (
       <div
         ref={containerRef}
-        className="w-full h-full min-h-24 rounded-xl bg-muted/50"
+        className="w-full h-full min-h-20 rounded-none bg-muted/50"
       />
     );
   }
@@ -175,15 +175,13 @@ export function EphemerisTimeline({
               width={width}
               height={height}
               style={{ fill: "#0B0F19" }}
-              opacity={0.8}
             />
             <rect
               x={startX}
               y={0}
-              width={endX - startX}
+              width={Math.max(0, endX - startX)}
               height={height}
               style={{ fill: phase.color }}
-              opacity={0.8}
             />
           </g>
         );
@@ -197,7 +195,6 @@ export function EphemerisTimeline({
           width={Math.max(0, endX - startX)}
           height={height}
           style={{ fill: phase.color }}
-          opacity={0.8}
         />
       );
     });
@@ -304,7 +301,7 @@ export function EphemerisTimeline({
               d={`M ${pts.join(" L ")}`}
               fill="none"
               stroke={traj.color}
-              className={`stroke-2 ${traj.id === "core" ? "drop-shadow-[0_0_8px_rgba(var(--primary),0.8)]" : ""}`}
+              className={`stroke-2 ${traj.id === "core" ? "drop-shadow-[0_0_8px_var(--primary)]" : ""}`}
             />
           );
         })}
@@ -321,7 +318,7 @@ export function EphemerisTimeline({
           cx={width / 2}
           cy={thumbY}
           r={4}
-          className="fill-primary stroke-background stroke-1 shadow-lg drop-shadow-[0_0_12px_rgba(var(--primary),0.8)]"
+          className="fill-primary stroke-background stroke-1 shadow-lg drop-shadow-[0_0_12px_var(--primary)]"
         />
       </svg>
 
