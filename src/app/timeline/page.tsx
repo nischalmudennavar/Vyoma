@@ -31,14 +31,21 @@ export default function TimelinePage() {
 
         let description = "";
         if (key.toLowerCase().includes("night")) {
-          description = "The sun is completely below the horizon. The sky is dark, providing excellent visibility for deep-sky objects and the Milky Way.";
+          description =
+            "The sun is completely below the horizon. The sky is dark, providing excellent visibility for deep-sky objects and the Milky Way.";
         } else if (key.toLowerCase().includes("astronomical")) {
-          description = "The sun is 12 to 18 degrees below the horizon. The sky is dark enough for most astronomical observations.";
+          description =
+            "The sun is 12 to 18 degrees below the horizon. The sky is dark enough for most astronomical observations.";
         } else if (key.toLowerCase().includes("nautical")) {
-          description = "The sun is 6 to 12 degrees below the horizon. Bright stars are visible and the horizon can be seen.";
+          description =
+            "The sun is 6 to 12 degrees below the horizon. Bright stars are visible and the horizon can be seen.";
         } else if (key.toLowerCase().includes("civil")) {
-          description = "The sun is less than 6 degrees below the horizon. Only the brightest stars and planets are visible.";
-        } else if (key.toLowerCase().includes("sunrise") || key.toLowerCase().includes("sunset")) {
+          description =
+            "The sun is less than 6 degrees below the horizon. Only the brightest stars and planets are visible.";
+        } else if (
+          key.toLowerCase().includes("sunrise") ||
+          key.toLowerCase().includes("sunset")
+        ) {
           description = `The moment of ${title.toLowerCase()}, marking the transition between day and twilight.`;
         } else {
           description = `The start of ${title.toLowerCase()}.`;
@@ -64,7 +71,8 @@ export default function TimelinePage() {
         title: "Moonrise",
         type: "moon",
         subtitle: `Sun's elevation: ${getSunPosition(moon.rise, lat, lng).alt.toFixed(1)}°`,
-        description: "The moon appears above the horizon. Its bright light will begin to illuminate the night sky, potentially washing out fainter stars and deep-sky objects.",
+        description:
+          "The moon appears above the horizon. Its bright light will begin to illuminate the night sky, potentially washing out fainter stars and deep-sky objects.",
       });
     }
     if (moon.set) {
@@ -74,13 +82,18 @@ export default function TimelinePage() {
         title: "Moonset",
         type: "moon",
         subtitle: `Sun's elevation: ${getSunPosition(moon.set, lat, lng).alt.toFixed(1)}°`,
-        description: "The moon drops below the horizon, returning the sky to darkness and providing better conditions for stargazing.",
+        description:
+          "The moon drops below the horizon, returning the sky to darkness and providing better conditions for stargazing.",
       });
     }
 
     // 3. Moon Phase
     const phase = getMoonPhase(viewDate);
-    const illumination = (((1 - Math.cos((phase.phase * Math.PI) / 180)) / 2) * 100).toFixed(1);
+    console.log(phase);
+    const illumination = (
+      ((1 - Math.cos((phase.phase * Math.PI) / 180)) / 2) *
+      100
+    ).toFixed(1);
     celestialEvents.push({
       id: "moon-phase",
       timestamp: new Date(new Date(viewDate).setHours(12, 0, 0, 0)), // Marker for midday phase
@@ -99,7 +112,8 @@ export default function TimelinePage() {
         title: "Galactic Center Rise",
         type: "galactic",
         subtitle: "Primary target visibility begins",
-        description: "The dense, bright core of the Milky Way galaxy becomes visible above the horizon. This marks the optimal time for astrophotography of the galactic center.",
+        description:
+          "The dense, bright core of the Milky Way galaxy becomes visible above the horizon. This marks the optimal time for astrophotography of the galactic center.",
       });
     }
     if (galactic.set) {
@@ -109,7 +123,8 @@ export default function TimelinePage() {
         title: "Galactic Center Set",
         type: "galactic",
         subtitle: "Visibility ends",
-        description: "The core of the Milky Way sets below the horizon, ending the observation window for the galactic center.",
+        description:
+          "The core of the Milky Way sets below the horizon, ending the observation window for the galactic center.",
       });
     }
 
