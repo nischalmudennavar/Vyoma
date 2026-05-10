@@ -49,12 +49,14 @@ const MarkerContent = dynamic(
  * Updates the global observer location automatically as the user drags the map.
  */
 export function MapView() {
-  const { location, updateLocation, zoom, updateZoom } = useVyomaSelector([
-    "location",
-    "updateLocation",
-    "zoom",
-    "updateZoom",
-  ]);
+  const { location, updateLocation, zoom, updateZoom, mapVisibility } =
+    useVyomaSelector([
+      "location",
+      "updateLocation",
+      "zoom",
+      "updateZoom",
+      "mapVisibility",
+    ]);
   const labelRef = useRef(location.label);
   labelRef.current = location.label;
 
@@ -101,6 +103,12 @@ export function MapView() {
           <MarkerContent className="scale-125 ring-4 ring-primary/20 rounded-full" />
         </MapMarker>
       </MapComponent>
+
+      {/* Map Visibility Overlay */}
+      <div
+        className="absolute inset-0 bg-background pointer-events-none z-[5]"
+        style={{ opacity: 1 - mapVisibility / 100 }}
+      />
 
       {/* 2D Celestial Radar Overlay - Locked to the center (committed location) */}
       <CelestialRadar />

@@ -15,8 +15,10 @@ export function LeftPane() {
     updateLocation,
     showMoon,
     uiOpacity,
+    mapVisibility,
     toggleMoon,
     setUiOpacity,
+    setMapVisibility,
   } = useVyomaStore();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,6 +124,26 @@ export function LeftPane() {
             value={[uiOpacity]}
             onValueChange={([value]) => setUiOpacity(value)}
             min={10}
+            max={100}
+            step={1}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold tracking-tight">Map Visibility</h2>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <Label htmlFor="map-visibility">Visibility</Label>
+            <span className="text-xs text-muted-foreground">
+              {mapVisibility}%
+            </span>
+          </div>
+          <Slider
+            id="map-visibility"
+            value={[mapVisibility]}
+            onValueChange={([value]) => setMapVisibility(value)}
+            min={0}
             max={100}
             step={1}
           />
