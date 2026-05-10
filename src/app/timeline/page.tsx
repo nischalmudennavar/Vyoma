@@ -90,19 +90,15 @@ export default function TimelinePage() {
     }
 
     // 3. Moon Phase
-    const phase = getMoonPhase(viewDate);
-    console.log(phase);
-    const illumination = (
-      ((1 - Math.cos((phase.phase * Math.PI) / 180)) / 2) *
-      100
-    ).toFixed(1);
+    const moonPhase = getMoonPhase(viewDate);
+    const illumination = moonPhase.illumination.toFixed(1);
     celestialEvents.push({
       id: "moon-phase",
       timestamp: new Date(new Date(viewDate).setHours(12, 0, 0, 0)), // Marker for midday phase
-      title: `Moon Phase: ${phase.name}`,
+      title: `Moon Phase: ${moonPhase.name}`,
       type: "phase",
       subtitle: `Illumination: ${illumination}%`,
-      description: `The moon is in its ${phase.name.toLowerCase()} phase with ${illumination}% of its surface illuminated. This affects overall sky brightness throughout the night.`,
+      description: `The moon is in its ${moonPhase.name.toLowerCase()} phase with ${illumination}% of its surface illuminated. This affects overall sky brightness throughout the night.`,
     });
 
     // 4. Galactic Center

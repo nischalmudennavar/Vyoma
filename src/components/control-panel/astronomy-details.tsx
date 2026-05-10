@@ -7,12 +7,28 @@ import {
   getGalacticCoreVisibility,
   getGoldenHour,
   getMoonDetails,
+  getMoonPhase,
   getMoonRiseSet,
   getSunDetails,
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Container } from "@/components/container";
+
+/**
+ * Returns the appropriate moon emoji for a given phase angle (0-360).
+ * Phase angles: 0 (New), 90 (First Quarter), 180 (Full), 270 (Last Quarter).
+ */
+function getMoonIcon(phaseAngle: number): string {
+  if (phaseAngle < 22.5 || phaseAngle >= 337.5) return "🌑";
+  if (phaseAngle < 67.5) return "🌒";
+  if (phaseAngle < 112.5) return "🌓";
+  if (phaseAngle < 157.5) return "🌔";
+  if (phaseAngle < 202.5) return "🌕";
+  if (phaseAngle < 247.5) return "🌖";
+  if (phaseAngle < 292.5) return "🌗";
+  return "🌘";
+}
 
 /**
  * Formats a date to HH:mm string.
@@ -30,7 +46,7 @@ function formatTime(date: Date | null): string {
 
 /**
  * A detail panel that displays astronomical data on the right side of the viewport.
- * Occupies 10% of the viewport width with a minimum width for readability.
+ * Occupies 15% of the viewport width with a minimum width for readability.
  */
 export function AstronomyDetails() {
   const { viewDate, location } = useVyomaStore();
@@ -42,6 +58,7 @@ export function AstronomyDetails() {
   const goldenHour = getGoldenHour(viewDate, location.lat, location.lng);
   const sunDetails = getSunDetails(viewDate, location.lat, location.lng);
   const moonDetails = getMoonDetails(viewDate);
+  const moonPhase = getMoonPhase(viewDate);
 
   return (
     <Container
@@ -147,6 +164,17 @@ export function AstronomyDetails() {
             <Label className="text-muted-foreground">Rise / Set</Label>
             <span className="font-mono text-foreground font-semibold tabular-nums">
               {formatTime(moonRiseSet.rise)} / {formatTime(moonRiseSet.set)}
+            </span>
+          </div>
+          <div className="flex justify-between items-center group">
+            <Label className="text-muted-foreground group-hover:text-foreground/70 transition-colors">
+              Phase & Illum.
+            </Label>
+            <span className="font-mono text-foreground font-bold tabular-nums flex items-center gap-1.5">
+              <span className="text-base leading-none">
+                {getMoonIcon(moonPhase.phase)}
+              </span>
+              {moonPhase.illumination.toFixed(1)}%
             </span>
           </div>
           <div className="flex justify-between items-center group">

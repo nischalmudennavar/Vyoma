@@ -1,6 +1,6 @@
 "use client";
 
-import { LocationAutocomplete } from "@/components/location-autocomplete";
+import { LocationAutocomplete } from "./location-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";

@@ -16,10 +16,10 @@ A dedicated library wrapping `astronomy-engine` for high-precision celestial cal
 
 ## 3. UI and Navigation
 
-### Left Pane & Controls (`src/components/left-pane.tsx`)
+### Left Pane & Controls (`src/components/control-panel/left-pane.tsx`)
 - A floating, glassmorphism sidebar positioned on the left side.
 - Contains controls to update the global `location`, `date`, and `time` states.
-- Integrates `LocationAutocomplete` (`src/components/location-autocomplete.tsx`), which performs debounced (400ms) geocoding against the OpenStreetMap Nominatim API. Selecting a location smoothly pans the map and updates the entire astrometry math context.
+- Integrates `LocationAutocomplete` (`src/components/control-panel/location-autocomplete.tsx`), which performs debounced (400ms) geocoding against the OpenStreetMap Nominatim API. Selecting a location smoothly pans the map and updates the entire astrometry math context.
 
 ### The Map View (`src/components/map-view.tsx` & `src/components/ui/map.tsx`)
 - A full-screen interactive MapLibre map component acting as the base layer.
@@ -37,7 +37,7 @@ A dedicated library wrapping `astronomy-engine` for high-precision celestial cal
   - Trajectory arcs showing the path of the Milky Way across the sky over the course of the day.
   - Dynamic visual fading (opacity drop to 30%) and clamping when objects set below the horizon.
 
-### Ephemeris Timeline (`src/components/ephemeris-timeline.tsx` & `src/components/ephemeris-overlay.tsx`)
+### Ephemeris Timeline (`src/components/control-panel/ephemeris-timeline.tsx` & `src/components/control-panel/ephemeris-overlay.tsx`)
 - A continuous, infinitely-pannable 2D Cartesian timeline acting as an interactive time scrubber, located at the bottom of the screen.
 - **Backdrop (Twilight Map):** Renders colored SVG blocks for twilight phases (Night, Blue Hour, Golden Hour, Day) computed dynamically.
 - **Curves:** Plots smooth, color-coded altitude curves for the Sun, Moon, and Galactic Core over a 72-hour rolling buffer window.

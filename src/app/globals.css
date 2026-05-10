@@ -167,3 +167,15 @@
         @apply hidden!;
     }
 }
+
+
+.logo-container {
+
+    /* biome-ignore lint/correctness/noUnknownProperty: future update */
+    corner-shape: bevel;
+    border-radius: 10px;
+    border-top-left-radius: none;
+    border-top-right-radius: none;
+
+   
+}

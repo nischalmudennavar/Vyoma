@@ -205,6 +205,30 @@ export function getMoonRiseSet(
   };
 }
 
+/**
+ * Calculates the azimuth of a body at the moment of rise and set.
+ */
+export function getRiseSetAzimuths(
+  date: Date,
+  lat: number,
+  lng: number,
+  body: "sun" | "moon",
+) {
+  if (body === "sun") {
+    const phases = getTwilightPhases(date, lat, lng);
+    return {
+      rise: phases.sunrise ? getSunPosition(phases.sunrise, lat, lng).az : null,
+      set: phases.sunset ? getSunPosition(phases.sunset, lat, lng).az : null,
+    };
+  } else {
+    const rs = getMoonRiseSet(date, lat, lng);
+    return {
+      rise: rs.rise ? getMoonPosition(rs.rise, lat, lng).az : null,
+      set: rs.set ? getMoonPosition(rs.set, lat, lng).az : null,
+    };
+  }
+}
+
 export function getGalacticCoreVisibility(
   date: Date,
   lat: number,
@@ -228,9 +252,13 @@ export function getGalacticCoreVisibility(
 export function getMoonPhase(date: Date): {
   phase: number;
   name: string;
+  illumination: number;
 } {
   const time = MakeTime(date);
   const phase = MoonPhase(time);
+
+  // Illumination calculation based on phase angle
+  const illumination = ((1 - Math.cos((phase * Math.PI) / 180)) / 2) * 100;
 
   let name = "";
   if (phase < 1.0 || phase > 359.0) name = "New Moon";
@@ -242,7 +270,7 @@ export function getMoonPhase(date: Date): {
   else if (phase < 271.0) name = "Last Quarter";
   else name = "Waning Crescent";
 
-  return { phase, name };
+  return { phase, name, illumination };
 }
 
 /**

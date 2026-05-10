@@ -189,7 +189,7 @@ export function EphemerisTimeline({
 
       return (
         <rect
-          key={`twilight-${i}`}
+          key={`twilight-${phase.t.getTime()}`}
           x={startX}
           y={0}
           width={Math.max(0, endX - startX)}
@@ -225,6 +225,7 @@ export function EphemerisTimeline({
         height={height}
         className="absolute inset-0 pointer-events-none"
       >
+        <title>{`Local Time: ${currentDisplayDate.toLocaleString()}`}</title>
         {/* Layer 0: Backdrop */}
         {drawTwilightRects()}
 
