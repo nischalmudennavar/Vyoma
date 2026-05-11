@@ -90,6 +90,9 @@ export function MapView() {
         }}
         onViewportChange={handleViewportChangeWrapper}
         onViewportChangeEnd={handleViewportChangeEnd}
+        scrollZoom={{ center: true }}
+        doubleClickZoom={{ center: true }}
+        touchZoomRotate={{ center: true }}
       >
         <MapControls
           position="bottom-right"

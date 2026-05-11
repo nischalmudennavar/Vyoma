@@ -26,6 +26,7 @@ interface VyomaState {
   mapVisibility: number;
   baseFontSize: number;
   weather: WeatherData | null;
+  isWeatherLoading: boolean;
   panelPositions: Record<string, PanelPosition>;
   panelsLocked: boolean;
   showSettings: boolean;
@@ -38,6 +39,7 @@ interface VyomaState {
   setMapVisibility: (visibility: number) => void;
   setBaseFontSize: (size: number) => void;
   setWeather: (weather: WeatherData | null) => void;
+  setWeatherLoading: (loading: boolean) => void;
   updatePanelPosition: (id: string, position: PanelPosition) => void;
   setPanelsLocked: (locked: boolean) => void;
   toggleSettings: () => void;
@@ -52,6 +54,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   mapVisibility: 100,
   baseFontSize: 14,
   weather: null,
+  isWeatherLoading: false,
   panelPositions: {},
   panelsLocked: false,
   showSettings: false,
@@ -75,6 +78,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
   setBaseFontSize: (size) => set({ baseFontSize: size }),
   setWeather: (weather) => set({ weather }),
+  setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),
   updatePanelPosition: (id, position) =>
     set((state) => ({
       panelPositions: { ...state.panelPositions, [id]: position },

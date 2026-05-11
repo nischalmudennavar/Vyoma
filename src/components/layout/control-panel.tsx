@@ -90,7 +90,7 @@ export function ControlPanel() {
           </div>
         </div>
       </div>
-
+{/* 
       <div className="space-y-4">
         <h2 className="text-sm font-black tracking-widest uppercase text-foreground/90 border-b border-border/40 pb-2">
           Visibility
@@ -114,7 +114,7 @@ export function ControlPanel() {
             />
           </button>
         </div>
-      </div>
+      </div> */}
 
       <div className="space-y-4">
         <h2 className="text-sm font-black tracking-widest uppercase text-foreground/90 border-b border-border/40 pb-2">

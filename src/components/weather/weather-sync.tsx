@@ -4,27 +4,40 @@ import { useEffect } from "react";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 import { fetchWeather } from "@/lib/weather";
 
-/**
- * Headless component that syncs weather data with the current location.
- * Listens to location changes in the store and updates weather state.
+/** 
+ * Headless component that syncs weather data with the current location. 
+ * Listens to location changes in the store and updates weather state. 
+ * Debounced by 5000ms to prevent excessive API calls during interaction.
  */
 export function WeatherSync() {
-  const { location, setWeather } = useVyomaStore();
+  const { location, setWeather, setWeatherLoading } = useVyomaStore();
 
   useEffect(() => {
     let active = true;
+    
+    // Immediately indicate loading when location starts changing
+    setWeatherLoading(true);
+    
     const timeout = setTimeout(async () => {
-      const weather = await fetchWeather(location.lat, location.lng);
-      if (active) {
-        setWeather(weather);
+      try {
+        const weather = await fetchWeather(location.lat, location.lng);
+        if (active) {
+          setWeather(weather);
+        }
+      } catch (error) {
+        console.error("Failed to fetch weather:", error);
+      } finally {
+        if (active) {
+          setWeatherLoading(false);
+        }
       }
-    }, 1000); // Debounce weather fetching to avoid hitting API too frequently on map drag
+    }, 5000);
 
     return () => {
       active = false;
       clearTimeout(timeout);
     };
-  }, [location.lat, location.lng, setWeather]);
+  }, [location.lat, location.lng, setWeather, setWeatherLoading]);
 
   return null;
 }
