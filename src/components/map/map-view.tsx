@@ -6,7 +6,7 @@ import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 const MapCelestialOverlay = dynamic(
   () =>
-    import("@/components/control-panel/map-celestial-overlay").then((mod) => ({
+    import("@/components/celestial/map-celestial-overlay").then((mod) => ({
       default: mod.MapCelestialOverlay,
     })),
   { ssr: false },

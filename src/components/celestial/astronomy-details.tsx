@@ -24,7 +24,7 @@ import {
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 /**
  * Returns the appropriate moon emoji for a given phase angle (0-360).
@@ -144,7 +144,7 @@ export function AstronomyDetails() {
   return (
     <Container
       applyUiOpacity
-      className="w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 max-h-[80vh] overflow-y-auto pointer-events-auto transition-all duration-300"
+      className="w-full md:w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 max-h-[80vh] overflow-y-auto pointer-events-auto transition-all duration-300"
       style={{ 
         backgroundColor: "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))" 
       } as React.CSSProperties}

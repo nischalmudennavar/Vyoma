@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 function getCardinalDirection(azimuth: number): string {
   const directions = [
@@ -29,7 +29,7 @@ export function WeatherPanel() {
   return (
     <Container
       applyUiOpacity
-      className="w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-6 pointer-events-auto transition-all duration-300"
+      className="w-full md:w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-6 pointer-events-auto transition-all duration-300"
       style={{ backgroundColor: "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))" } as React.CSSProperties}
     >
       <div className="space-y-5">

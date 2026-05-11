@@ -1,10 +1,10 @@
 "use client";
 
-import { LocationAutocomplete } from "./location-autocomplete";
+import { LocationAutocomplete } from "@/components/location/location-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 export function LocationControls() {
   const { location, updateLocation } = useVyomaStore();
@@ -12,7 +12,7 @@ export function LocationControls() {
   return (
     <Container
       applyUiOpacity
-      className="w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
+      className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Location</h2>
@@ -64,7 +64,7 @@ export function VisibilityControls() {
   return (
     <Container
       applyUiOpacity
-      className="w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
+      className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Visibility</h2>
@@ -121,7 +121,7 @@ export function TimeDateControls() {
   return (
     <Container
       applyUiOpacity
-      className="w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
+      className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Time & Date</h2>

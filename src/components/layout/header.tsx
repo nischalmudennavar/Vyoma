@@ -1,5 +1,6 @@
 "use client";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
+import { MobileDrawer } from "./mobile-drawer";
 
 /**
  * Global application header.
@@ -12,6 +13,10 @@ export function Header() {
       as="header"
       className="flex w-full items-center justify-between px-6 py-6 shrink-0 z-10 bg-background/80 backdrop-blur-xl relative h-16"
     >
+      <div className="md:hidden">
+        <MobileDrawer />
+      </div>
+
       <div className="logo-container py-3 px-10 w-fit h-fit absolute border bg-background/80 border-t-0 backdrop-blur-xl top-0 left-1/2 -translate-x-1/2">
         <h1 className="text-xl font-bold tracking-tight uppercase">Vyoma</h1>
       </div>

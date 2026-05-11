@@ -11,7 +11,7 @@ import {
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 import { EphemerisTimeline } from "./ephemeris-timeline";
 
 export function EphemerisOverlay() {
@@ -74,7 +74,7 @@ export function EphemerisOverlay() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[80%] min-w-[600px] max-w-[1000px] h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group"
+      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[80%] md:min-w-[600px] max-w-[1000px] h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group"
     >
       <EphemerisTimeline
         activeDate={viewDate}

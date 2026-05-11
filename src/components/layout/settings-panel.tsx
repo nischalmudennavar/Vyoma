@@ -6,7 +6,7 @@ import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 /**
  * SettingsPanel component that provides global UI customization controls.
@@ -44,7 +44,7 @@ export function SettingsPanel() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-6 left-6 z-30 w-72 border border-border/50 bg-background/90 backdrop-blur-2xl shadow-2xl flex flex-col p-5 gap-6 animate-in slide-in-from-bottom-4 duration-200"
+      className="absolute bottom-6 left-6 z-30 w-full md:w-72 border border-border/50 bg-background/90 backdrop-blur-2xl shadow-2xl flex flex-col p-5 gap-6 animate-in slide-in-from-bottom-4 duration-200"
     >
       <div className="flex items-center justify-between border-b border-border/40 pb-3">
         <div className="flex items-center gap-2">

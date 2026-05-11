@@ -1,17 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Header } from "@/components/header";
+import { Header } from "@/components/layout/header";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 
 // Import modular components
-import { AstronomyDetails } from "@/components/control-panel/astronomy-details";
-import { WeatherPanel } from "@/components/control-panel/weather-panel";
-import { ControlPanel } from "@/components/control-panel/control-panel";
+import { AstronomyDetails } from "@/components/celestial/astronomy-details";
+import { WeatherPanel } from "@/components/weather/weather-panel";
+import { ControlPanel } from "@/components/layout/control-panel";
 
 const MapView = dynamic(
   () =>
-    import("@/components/map-view").then((mod) => ({ default: mod.MapView })),
+    import("@/components/map/map-view").then((mod) => ({ default: mod.MapView })),
   {
     ssr: false,
     loading: () => (
@@ -26,22 +26,22 @@ const MapView = dynamic(
 
 const EphemerisOverlay = dynamic(
   () =>
-    import("@/components/control-panel/ephemeris-overlay").then((mod) => ({
+    import("@/components/celestial/ephemeris-overlay").then((mod) => ({
       default: mod.EphemerisOverlay,
     })),
   { ssr: false },
 );
 const SettingsPanel = dynamic(
   () =>
-    import("@/components/control-panel/settings-panel").then((mod) => ({
+    import("@/components/layout/settings-panel").then((mod) => ({
       default: mod.SettingsPanel,
     })),
   { ssr: false },
 );
 
 import { useHotkeys } from "@/hooks/use-hotkeys";
-import { CommandPalette } from "@/components/command-palette";
-import { MobileDrawer } from "@/components/mobile-drawer";
+import { CommandPalette } from "@/components/navigation/command-palette";
+import { MobileDrawer } from "@/components/layout/mobile-drawer";
 
 export function Dashboard() {
   useHotkeys();
@@ -71,7 +71,6 @@ export function Dashboard() {
         </div>
 
         {/* Mobile Management */}
-        <MobileDrawer />
 
         <EphemerisOverlay />
         <SettingsPanel />

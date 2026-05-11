@@ -25,7 +25,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ### 1. State & Data Sync
 - **Zustand Store:** Located in `src/store/use-vyoma-store.ts`. Houses all global UI and celestial state.
-- **WeatherSync:** A headless component (`src/components/weather-sync.tsx`) that automatically fetches and updates weather data in the store whenever location changes.
+- **WeatherSync:** A headless component (`src/components/weather/weather-sync.tsx`) that automatically fetches and updates weather data in the store whenever location changes.
 
 ### 2. UI Modularization
 - **Panels:** UI is split into modular, standalone panels (`AstronomyDetails`, `WeatherPanel`, `ControlPanel`).
