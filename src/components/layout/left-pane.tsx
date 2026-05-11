@@ -1,10 +1,10 @@
 "use client";
 
-import { LocationAutocomplete } from "./location-autocomplete";
+import { LocationAutocomplete } from "@/components/location/location-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/container";
+import { Container } from "@/components/layout/container";
 
 export function LeftPane() {
   const {
@@ -13,8 +13,6 @@ export function LeftPane() {
     updateDate,
     updateTime,
     updateLocation,
-    showMoon,
-    toggleMoon,
   } = useVyomaStore();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +41,7 @@ export function LeftPane() {
   return (
     <Container
       applyUiOpacity
-      className="absolute top-6 left-6 z-20 w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto"
+      className="absolute top-6 left-6 z-20 w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto"
     >
       <div className="space-y-4">
         <h2 className="text-lg font-bold tracking-tight">Controls</h2>
@@ -83,29 +81,6 @@ export function LeftPane() {
               className="bg-muted"
             />
           </div>
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-lg font-bold tracking-tight">Visibility</h2>
-        <div className="flex items-center justify-between">
-          <Label htmlFor="moon-toggle">Show Moon</Label>
-          <button
-            type="button"
-            id="moon-toggle"
-            role="switch"
-            aria-checked={showMoon}
-            onClick={toggleMoon}
-            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 ${
-              showMoon ? "bg-primary" : "bg-muted"
-            }`}
-          >
-            <span
-              className={`pointer-events-none block h-4 w-4 rounded-none bg-white shadow-lg ring-0 transition-transform ${
-                showMoon ? "translate-x-4" : "translate-x-0"
-              }`}
-            />
-          </button>
         </div>
       </div>
 

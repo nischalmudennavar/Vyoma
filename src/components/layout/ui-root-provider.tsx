@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
+import { WeatherSync } from "@/components/weather/weather-sync";
 
 /**
  * Client-side component that synchronizes global UI settings from the Zustand store
@@ -19,5 +20,10 @@ export function UIRootProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty("--base-font-size", `${baseFontSize}px`);
   }, [uiOpacity, baseFontSize]);
 
-  return <>{children}</>;
+  return (
+    <>
+      <WeatherSync />
+      {children}
+    </>
+  );
 }

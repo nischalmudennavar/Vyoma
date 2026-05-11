@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/theme-provider";
-import { UIRootProvider } from "@/components/ui-root-provider";
+import { UIRootProvider } from "@/components/layout/ui-root-provider";
 import { cn } from "@/lib/utils";
 
 const jetbrainsMono = JetBrains_Mono({

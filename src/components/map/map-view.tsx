@@ -6,7 +6,7 @@ import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 const MapCelestialOverlay = dynamic(
   () =>
-    import("@/components/control-panel/map-celestial-overlay").then((mod) => ({
+    import("@/components/celestial/map-celestial-overlay").then((mod) => ({
       default: mod.MapCelestialOverlay,
     })),
   { ssr: false },
@@ -90,14 +90,17 @@ export function MapView() {
         }}
         onViewportChange={handleViewportChangeWrapper}
         onViewportChangeEnd={handleViewportChangeEnd}
+        scrollZoom={{ around: "center" }}
+        doubleClickZoom={true}
+        touchZoomRotate={{ around: "center" }}
       >
-        <MapControls
+        {/* <MapControls
           position="bottom-right"
           showZoom
           showCompass
           showLocate
           showFullscreen
-        />
+        /> */}
 
         {/* Geographically-synced Celestial Overlay */}
         <MapCelestialOverlay />

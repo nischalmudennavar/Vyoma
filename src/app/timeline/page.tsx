@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import {
   CelestialTimeline,
   type CelestialEvent as TimelineEvent,
-} from "@/components/celestial-timeline";
+} from "@/components/celestial/celestial-timeline";
 import { Button } from "@/components/ui/button";
 import {
   getGalacticCoreVisibility,
