@@ -143,6 +143,34 @@ export function ControlPanel() {
           </div>
         </div>
       </div>
+
+      <div className="space-y-4">
+        <h2 className="text-sm font-black tracking-widest uppercase text-foreground/90 border-b border-border/40 pb-2">
+          Keyboard Controls
+        </h2>
+        <div className="bg-muted/20 p-4 space-y-3 border-l-2 border-muted-foreground/30 text-xs text-muted-foreground">
+          <div className="flex justify-between items-center">
+            <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">W A S D</span>
+            <span>Pan Map</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">Q / E</span>
+            <span>Zoom Out / In</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">↑ / ↓</span>
+            <span>Time (± Day)</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">← / →</span>
+            <span>Time (± Hour)</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">R</span>
+            <span>Reset View</span>
+          </div>
+        </div>
+      </div>
     </Container>
   );
 }

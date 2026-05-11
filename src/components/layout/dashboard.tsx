@@ -31,6 +31,7 @@ const EphemerisOverlay = dynamic(
     })),
   { ssr: false },
 );
+
 const SettingsPanel = dynamic(
   () =>
     import("@/components/layout/settings-panel").then((mod) => ({
@@ -71,11 +72,12 @@ export function Dashboard() {
         </div>
 
         {/* Mobile Management */}
-
+        
         <EphemerisOverlay />
         <SettingsPanel />
       </main>
     </div>
   );
 }
+
 

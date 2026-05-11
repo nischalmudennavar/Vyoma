@@ -90,17 +90,17 @@ export function MapView() {
         }}
         onViewportChange={handleViewportChangeWrapper}
         onViewportChangeEnd={handleViewportChangeEnd}
-        scrollZoom={{ center: true }}
-        doubleClickZoom={{ center: true }}
-        touchZoomRotate={{ center: true }}
+        scrollZoom={{ around: "center" }}
+        doubleClickZoom={true}
+        touchZoomRotate={{ around: "center" }}
       >
-        <MapControls
+        {/* <MapControls
           position="bottom-right"
           showZoom
           showCompass
           showLocate
           showFullscreen
-        />
+        /> */}
 
         {/* Geographically-synced Celestial Overlay */}
         <MapCelestialOverlay />
