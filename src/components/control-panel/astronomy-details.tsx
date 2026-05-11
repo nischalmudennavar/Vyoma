@@ -1,6 +1,17 @@
 "use client";
 
-import { Binoculars, Clock, MapPin, Moon, Star, Sun } from "lucide-react";
+import {
+  Binoculars,
+  Clock,
+  Cloud,
+  Droplets,
+  MapPin,
+  Moon,
+  Star,
+  Sun,
+  Thermometer,
+  Wind,
+} from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   getGalacticCorePosition,
@@ -35,10 +46,22 @@ function getMoonIcon(phaseAngle: number): string {
  */
 function getCardinalDirection(azimuth: number): string {
   const directions = [
-    "N", "NNE", "NE", "ENE",
-    "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW",
-    "W", "WNW", "NW", "NNW",
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
   ];
   // 360 / 16 = 22.5 degrees per sector
   const index = Math.floor((azimuth + 11.25) / 22.5) % 16;
@@ -59,26 +82,72 @@ function formatTime(date: Date | null): string {
   }).format(date);
 }
 
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import {
+  CelestialCoordinates,
+  TwilightPhases,
+} from "@/lib/astrometry";
+
+interface CelestialData {
+  gcPos: CelestialCoordinates;
+  gcVis: { rise: Date | null; set: Date | null };
+  sunPhases: TwilightPhases;
+  moonRiseSet: { rise: Date | null; set: Date | null };
+  goldenHour: {
+    morning: { start: Date | null; end: Date | null };
+    evening: { start: Date | null; end: Date | null };
+  };
+  sunDetails: { distanceKm: number; angularDiameter: number };
+  moonDetails: { distanceKm: number; angularDiameter: number };
+  moonPhase: { phase: number; name: string; illumination: number };
+}
+
 /**
- * A detail panel that displays astronomical data on the right side of the viewport.
- * Occupies 15% of the viewport width with a minimum width for readability.
+ * A detail panel that displays astronomical data.
  */
 export function AstronomyDetails() {
   const { viewDate, location } = useVyomaStore();
 
-  const gcPos = getGalacticCorePosition(viewDate, location.lat, location.lng);
-  const gcVis = getGalacticCoreVisibility(viewDate, location.lat, location.lng);
-  const sunPhases = getTwilightPhases(viewDate, location.lat, location.lng);
-  const moonRiseSet = getMoonRiseSet(viewDate, location.lat, location.lng);
-  const goldenHour = getGoldenHour(viewDate, location.lat, location.lng);
-  const sunDetails = getSunDetails(viewDate, location.lat, location.lng);
-  const moonDetails = getMoonDetails(viewDate);
-  const moonPhase = getMoonPhase(viewDate);
+  const { data, isLoading } = useCelestialWorker<CelestialData>("CALCULATE_ALL", {
+    date: viewDate.toISOString(),
+    lat: location.lat,
+    lng: location.lng,
+  });
+
+  if (!data || isLoading) {
+    return (
+      <Container
+        applyUiOpacity
+        className="w-[320px] border border-border/40 bg-background/60 backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 min-h-[400px] animate-pulse items-center justify-center pointer-events-none"
+      >
+        <div className="flex flex-col items-center gap-4 opacity-50">
+          <Star className="w-8 h-8 text-primary animate-spin-slow" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">
+            Computing Ephemeris...
+          </span>
+        </div>
+      </Container>
+    );
+  }
+
+  const {
+    gcPos,
+    gcVis,
+    sunPhases,
+    moonRiseSet,
+    goldenHour,
+    sunDetails,
+    moonDetails,
+    moonPhase,
+  } = data;
 
   return (
     <Container
       applyUiOpacity
-      className="absolute top-6 right-6 z-20 w-[15vw] min-w-[300px] border border-border/40 bg-background/60 backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto transition-all duration-300"
+      className="w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-8 max-h-[80vh] overflow-y-auto pointer-events-auto transition-all duration-300"
+      style={{ 
+        backgroundColor: "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))" 
+      } as React.CSSProperties}
     >
       <div className="space-y-5">
         <div className="flex items-center gap-2.5 border-b border-border/40 pb-3">
@@ -87,7 +156,7 @@ export function AstronomyDetails() {
             Galactic Core
           </h2>
         </div>
-        <div className="grid gap-4 text-xs">
+        <div className="grid gap-4 text-xs bg-muted/20 p-4 border-l-2 border-primary/30">
           <div className="flex justify-between items-center group">
             <Label className="text-muted-foreground group-hover:text-foreground/70 transition-colors">
               Elevation
@@ -123,7 +192,7 @@ export function AstronomyDetails() {
             Sun & Golden
           </h2>
         </div>
-        <div className="grid gap-4 text-xs">
+        <div className="grid gap-4 text-xs bg-muted/20 p-4 border-l-2 border-orange-400/30">
           <div className="flex justify-between items-center">
             <Label className="text-muted-foreground">Rise / Set</Label>
             <span className="font-mono text-foreground font-semibold tabular-nums">
@@ -131,7 +200,7 @@ export function AstronomyDetails() {
             </span>
           </div>
 
-          <div className="space-y-2.5 bg-orange-400/5 p-3 rounded-none border border-orange-400/10">
+          <div className="space-y-2.5 bg-orange-400/10 p-3 rounded-none border border-orange-400/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-orange-400/80" />
@@ -139,7 +208,7 @@ export function AstronomyDetails() {
                   Morning
                 </Label>
               </div>
-              <span className="font-mono text-orange-400 font-bold tabular-nums">
+              <span className="font-mono text-orange-400 font-bold tabular-nums text-sm">
                 {formatTime(goldenHour.morning.start)} -{" "}
                 {formatTime(goldenHour.morning.end)}
               </span>
@@ -151,7 +220,7 @@ export function AstronomyDetails() {
                   Evening
                 </Label>
               </div>
-              <span className="font-mono text-orange-400 font-bold tabular-nums">
+              <span className="font-mono text-orange-400 font-bold tabular-nums text-sm">
                 {formatTime(goldenHour.evening.start)} -{" "}
                 {formatTime(goldenHour.evening.end)}
               </span>
@@ -177,7 +246,7 @@ export function AstronomyDetails() {
             Moon
           </h2>
         </div>
-        <div className="grid gap-4 text-xs">
+        <div className="grid gap-4 text-xs bg-muted/20 p-4 border-l-2 border-blue-300/30">
           <div className="flex justify-between items-center">
             <Label className="text-muted-foreground">Rise / Set</Label>
             <span className="font-mono text-foreground font-semibold tabular-nums">

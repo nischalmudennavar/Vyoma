@@ -28,7 +28,9 @@ export function Container({
       className={cn(className)}
       style={{
         ...style,
-        ...(applyUiOpacity ? { opacity: uiOpacity / 100 } : {}),
+        ...(applyUiOpacity
+          ? ({ "--container-opacity": uiOpacity / 100 } as React.CSSProperties)
+          : {}),
       }}
       {...props}
     >
