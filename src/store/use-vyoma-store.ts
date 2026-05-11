@@ -28,6 +28,7 @@ interface VyomaState {
   weather: WeatherData | null;
   panelPositions: Record<string, PanelPosition>;
   panelsLocked: boolean;
+  showSettings: boolean;
   updateTime: (hours: number, minutes: number) => void;
   updateDate: (date: Date) => void;
   updateLocation: (lat: number, lng: number, label?: string) => void;
@@ -39,6 +40,7 @@ interface VyomaState {
   setWeather: (weather: WeatherData | null) => void;
   updatePanelPosition: (id: string, position: PanelPosition) => void;
   setPanelsLocked: (locked: boolean) => void;
+  toggleSettings: () => void;
 }
 
 export const useVyomaStore = create<VyomaState>((set) => ({
@@ -52,6 +54,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   weather: null,
   panelPositions: {},
   panelsLocked: false,
+  showSettings: false,
   updateTime: (hours, minutes) =>
     set((state) => {
       const newDate = new Date(state.viewDate);
@@ -77,6 +80,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
       panelPositions: { ...state.panelPositions, [id]: position },
     })),
   setPanelsLocked: (locked) => set({ panelsLocked: locked }),
+  toggleSettings: () => set((state) => ({ showSettings: !state.showSettings })),
 }));
 
 /** Selector hook - only subscribes to the fields specified via key array. */
