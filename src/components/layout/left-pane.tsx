@@ -7,13 +7,8 @@ import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Container } from "@/components/layout/container";
 
 export function LeftPane() {
-  const {
-    location,
-    viewDate,
-    updateDate,
-    updateTime,
-    updateLocation,
-  } = useVyomaStore();
+  const { location, viewDate, updateDate, updateTime, updateLocation } =
+    useVyomaStore();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -43,7 +38,7 @@ export function LeftPane() {
       applyUiOpacity
       className="absolute top-6 left-6 z-20 w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-auto"
     >
-      <div className="space-y-4">
+      <div className="space-y-1">
         <h2 className="text-lg font-bold tracking-tight">Controls</h2>
         <LocationAutocomplete />
         <div className="grid grid-cols-2 gap-2">
@@ -84,7 +79,7 @@ export function LeftPane() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-1">
         <h2 className="text-lg font-bold tracking-tight">Time & Date</h2>
         <div className="space-y-2">
           <Label htmlFor="date">Date</Label>

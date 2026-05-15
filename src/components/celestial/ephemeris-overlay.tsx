@@ -205,7 +205,7 @@ export function EphemerisOverlay() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[80%] md:min-w-[600px] max-w-[1000px] h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group overflow-hidden flex items-stretch"
+      className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[80%] md:min-w-150 max-w-250 h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group overflow-hidden flex items-stretch"
     >
       {/* 
       <div className="flex items-center justify-center px-4 md:px-8 border-r border-border/40 bg-background/20 z-10 shrink-0 pointer-events-auto">

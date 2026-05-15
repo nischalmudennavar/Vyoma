@@ -14,7 +14,7 @@ export function LocationControls() {
       applyUiOpacity
       className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
-      <div className="space-y-4">
+      <div className="space-y-1">
         <h2 className="text-lg font-bold tracking-tight">Location</h2>
         <LocationAutocomplete />
         <div className="grid grid-cols-2 gap-2">
@@ -66,7 +66,7 @@ export function VisibilityControls() {
       applyUiOpacity
       className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
-      <div className="space-y-4">
+      <div className="space-y-1">
         <h2 className="text-lg font-bold tracking-tight">Visibility</h2>
         <div className="flex items-center justify-between">
           <Label htmlFor="moon-toggle">Show Moon</Label>
@@ -123,7 +123,7 @@ export function TimeDateControls() {
       applyUiOpacity
       className="w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-5 gap-6 pointer-events-auto"
     >
-      <div className="space-y-4">
+      <div className="space-y-1">
         <h2 className="text-lg font-bold tracking-tight">Time & Date</h2>
         <div className="space-y-2">
           <Label htmlFor="date">Date</Label>

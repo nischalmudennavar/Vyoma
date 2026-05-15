@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { Header } from "@/components/layout/header";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 
 // Import modular components
 import { AstronomyDetails } from "@/components/celestial/astronomy-details";
 import { WeatherPanel } from "@/components/weather/weather-panel";
 import { ControlPanel } from "@/components/layout/control-panel";
+import { UtilsPane } from "@/components/layout/utils-pane";
 
 const MapView = dynamic(
   () =>
@@ -42,27 +42,30 @@ const SettingsPanel = dynamic(
 
 import { useHotkeys } from "@/hooks/use-hotkeys";
 import { CommandPalette } from "@/components/navigation/command-palette";
-import { MobileDrawer } from "@/components/layout/mobile-drawer";
 
 export function Dashboard() {
   useHotkeys();
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-background text-foreground relative">
+    <div className="h-screen w-full overflow-hidden bg-background text-foreground relative">
       <Header />
-      <CommandPalette />
-      <main className="flex flex-1 overflow-hidden relative">
+      {/* <CommandPalette /> */}
+      
+      <main className="w-full h-full relative">
         <MapView />
 
         {/* Desktop Left Control Panel */}
-        <div className="hidden md:flex absolute top-6 left-6 z-20 flex-col gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-none">
+        <div className="hidden md:flex absolute top-28 left-8 z-20 flex-col gap-6 max-h-[calc(100%-6rem)] overflow-y-auto pointer-events-none">
+          <div className="pointer-events-auto">
+            <UtilsPane />
+          </div>
           <div className="pointer-events-auto">
             <ControlPanel />
           </div>
         </div>
 
         {/* Desktop Right Info Panels */}
-        <div className="hidden md:flex absolute top-6 right-6 z-20 flex-col gap-6 max-h-[calc(100%-3rem)] overflow-y-auto pointer-events-none">
+        <div className="hidden md:flex absolute top-28 right-8 z-20 flex-col gap-6 max-h-[calc(100%-4rem)] overflow-y-auto pointer-events-none">
           <div className="pointer-events-auto">
             <AstronomyDetails />
           </div>
