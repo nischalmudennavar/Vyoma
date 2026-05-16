@@ -1,6 +1,14 @@
 "use client";
 
-import { Minus, Plus, Settings2, Monitor, Map as MapIcon, Compass, Eye } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  Settings2,
+  Monitor,
+  Map as MapIcon,
+  Compass,
+  Eye,
+} from "lucide-react";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -53,19 +61,23 @@ export function SettingsPanel() {
         <div className="grid md:grid-cols-2 gap-8 py-4">
           {/* Interface Column */}
           <div className="space-y-8">
-            <div className="space-y-4">
+            <div className="space-y-1">
               <div className="flex items-center gap-2 text-primary">
                 <Monitor className="w-4 h-4" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Interface</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  Interface
+                </h3>
               </div>
-              
-              <div className="space-y-4 bg-muted/20 p-4 border border-border/20">
+
+              <div className="space-y-1 bg-muted/20 p-4 border border-border/20">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                       Base Font Size
                     </Label>
-                    <span className="font-mono text-xs tabular-nums text-primary">{baseFontSize}px</span>
+                    <span className="font-mono text-xs tabular-nums text-primary">
+                      {baseFontSize}px
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -78,9 +90,11 @@ export function SettingsPanel() {
                       <Minus className="w-3 h-3" />
                     </Button>
                     <div className="flex-1 h-1 bg-muted relative overflow-hidden">
-                      <div 
+                      <div
                         className="absolute inset-y-0 left-0 bg-primary transition-all duration-300"
-                        style={{ width: `${((baseFontSize - 10) / 14) * 100}%` }}
+                        style={{
+                          width: `${((baseFontSize - 10) / 14) * 100}%`,
+                        }}
                       />
                     </div>
                     <Button
@@ -97,12 +111,14 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-1">
               <div className="flex items-center gap-2 text-primary">
                 <Eye className="w-4 h-4" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Visibility</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  Visibility
+                </h3>
               </div>
-              <div className="space-y-4 bg-muted/20 p-4 border border-border/20">
+              <div className="space-y-1 bg-muted/20 p-4 border border-border/20">
                 <div className="flex items-center justify-between">
                   <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                     Lunar Elements
@@ -129,19 +145,23 @@ export function SettingsPanel() {
 
           {/* Map & Engine Column */}
           <div className="space-y-8">
-            <div className="space-y-4">
+            <div className="space-y-1">
               <div className="flex items-center gap-2 text-primary">
                 <MapIcon className="w-4 h-4" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Map View</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  Map View
+                </h3>
               </div>
-              
+
               <div className="space-y-6 bg-muted/20 p-4 border border-border/20">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
                       Background Opacity
                     </Label>
-                    <span className="font-mono text-xs tabular-nums text-primary">{mapVisibility}%</span>
+                    <span className="font-mono text-xs tabular-nums text-primary">
+                      {mapVisibility}%
+                    </span>
                   </div>
                   <Slider
                     value={[mapVisibility]}
@@ -154,15 +174,19 @@ export function SettingsPanel() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-1">
               <div className="flex items-center gap-2 text-primary">
                 <Compass className="w-4 h-4" />
-                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Celestial Engine</h3>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">
+                  Celestial Engine
+                </h3>
               </div>
               <div className="p-4 bg-muted/10 border border-border/10">
                 <p className="text-[10px] text-muted-foreground leading-relaxed font-mono">
-                  Engine Version: 1.0.4-LADAKH<br/>
-                  Calculation: Topocentric<br/>
+                  Engine Version: 1.0.4-LADAKH
+                  <br />
+                  Calculation: Topocentric
+                  <br />
                   Atmospheric Refraction: Active
                 </p>
                 <div className="mt-4 pt-4 border-t border-border/5">
@@ -179,7 +203,12 @@ export function SettingsPanel() {
           <div className="text-[9px] uppercase font-mono text-muted-foreground/60 tracking-tighter">
             Architectural Standard: Technical Brutalism / Swiss
           </div>
-          <Button variant="outline" size="sm" onClick={toggleSettings} className="h-7 px-4 text-[10px] uppercase font-black tracking-widest">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSettings}
+            className="h-7 px-4 text-[10px] uppercase font-black tracking-widest"
+          >
             Close
           </Button>
         </div>
