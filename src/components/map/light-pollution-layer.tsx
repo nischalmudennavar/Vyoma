@@ -120,20 +120,20 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
       ctx.putImageData(imageData, 0, 0);
     };
 
-    // Debounced draw
+    // Debounced draw for high performance during movement
     const handleMove = () => {
-      cancelAnimationFrame(rafId);
+      if (rafId) cancelAnimationFrame(rafId);
       rafId = requestAnimationFrame(renderHeatmap);
     };
 
     renderHeatmap();
-    map.on("moveend", handleMove);
-    map.on("zoomend", handleMove);
+    map.on("move", handleMove); // Real-time sync
+    map.on("zoom", handleMove); // Real-time sync
 
     return () => {
-      cancelAnimationFrame(rafId);
-      map.off("moveend", handleMove);
-      map.off("zoomend", handleMove);
+      if (rafId) cancelAnimationFrame(rafId);
+      map.off("move", handleMove);
+      map.off("zoom", handleMove);
     };
   }, [isVisible, isLoaded, map, engineReady]);
 

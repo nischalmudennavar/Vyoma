@@ -55,17 +55,21 @@ async function getReverseGeocode(lat: number, lng: number): Promise<string> {
  * Updates the global observer location automatically as the user drags the map.
  */
 export function MapView() {
-  const { location, updateLocation, zoom, updateZoom, mapVisibility } =
-    useVyomaSelector([
-      "location",
-      "updateLocation",
-      "zoom",
-      "updateZoom",
-      "mapVisibility",
-    ]);
-
-  // State to control light pollution layer visibility
-  const [showLightPollution, setShowLightPollution] = useState(false);
+  const {
+    location,
+    updateLocation,
+    zoom,
+    updateZoom,
+    mapVisibility,
+    showLightPollution,
+  } = useVyomaSelector([
+    "location",
+    "updateLocation",
+    "zoom",
+    "updateZoom",
+    "mapVisibility",
+    "showLightPollution",
+  ]);
 
   const handleViewportChangeWrapper = useCallback(
     (vp: { center: [number, number]; zoom: number }) => {
@@ -87,23 +91,6 @@ export function MapView() {
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-muted">
-      {/* Floating Toggle Switch for Light Pollution */}
-      <div className="absolute top-4 left-4 z-50 bg-background/80 backdrop-blur-md px-3 py-2 rounded-md border border-border flex items-center gap-3 shadow-lg">
-        <label
-          htmlFor="lp-toggle"
-          className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em] cursor-pointer"
-        >
-          Light Pollution
-        </label>
-        <input
-          id="lp-toggle"
-          type="checkbox"
-          className="w-4 h-4 cursor-pointer accent-primary"
-          checked={showLightPollution}
-          onChange={(e) => setShowLightPollution(e.target.checked)}
-        />
-      </div>
-
       <MapComponent
         viewport={{
           center: [location.lng, location.lat],

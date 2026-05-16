@@ -30,11 +30,13 @@ interface VyomaState {
   panelPositions: Record<string, PanelPosition>;
   panelsLocked: boolean;
   showSettings: boolean;
+  showLightPollution: boolean;
   updateTime: (hours: number, minutes: number) => void;
   updateDate: (date: Date) => void;
   updateLocation: (lat: number, lng: number, label?: string) => void;
   updateZoom: (zoom: number) => void;
   toggleMoon: () => void;
+  toggleLightPollution: () => void;
   setUiOpacity: (opacity: number) => void;
   setMapVisibility: (visibility: number) => void;
   setBaseFontSize: (size: number) => void;
@@ -58,6 +60,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   panelPositions: {},
   panelsLocked: false,
   showSettings: false,
+  showLightPollution: false,
   updateTime: (hours, minutes) =>
     set((state) => {
       const newDate = new Date(state.viewDate);
@@ -74,6 +77,8 @@ export const useVyomaStore = create<VyomaState>((set) => ({
     set({ location: { lat, lng, label } }),
   updateZoom: (zoom) => set({ zoom }),
   toggleMoon: () => set((state) => ({ showMoon: !state.showMoon })),
+  toggleLightPollution: () =>
+    set((state) => ({ showLightPollution: !state.showLightPollution })),
   setUiOpacity: (opacity) => set({ uiOpacity: opacity }),
   setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
   setBaseFontSize: (size) => set({ baseFontSize: size }),
