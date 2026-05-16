@@ -41,3 +41,7 @@ Write clean, maintainable, and scalable components with:
 - Comprehensive JSDoc documentation.
 - Strict TypeScript types for all props and state.
 - Semantic HTML and ARIA accessibility where applicable.
+
+
+
+

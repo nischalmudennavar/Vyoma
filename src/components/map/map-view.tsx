@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
+import { LightPollutionLayer } from "./light-pollution-layer";
 
 const MapCelestialOverlay = dynamic(
   () =>
@@ -63,6 +64,9 @@ export function MapView() {
       "mapVisibility",
     ]);
 
+  // State to control light pollution layer visibility
+  const [showLightPollution, setShowLightPollution] = useState(false);
+
   const handleViewportChangeWrapper = useCallback(
     (vp: { center: [number, number]; zoom: number }) => {
       // Continuous update for visuals (preserving label to avoid search field jitter)
@@ -83,6 +87,23 @@ export function MapView() {
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-muted">
+      {/* Floating Toggle Switch for Light Pollution */}
+      <div className="absolute top-4 left-4 z-50 bg-background/80 backdrop-blur-md px-3 py-2 rounded-md border border-border flex items-center gap-3 shadow-lg">
+        <label
+          htmlFor="lp-toggle"
+          className="text-[10px] font-bold text-foreground uppercase tracking-[0.2em] cursor-pointer"
+        >
+          Light Pollution
+        </label>
+        <input
+          id="lp-toggle"
+          type="checkbox"
+          className="w-4 h-4 cursor-pointer accent-primary"
+          checked={showLightPollution}
+          onChange={(e) => setShowLightPollution(e.target.checked)}
+        />
+      </div>
+
       <MapComponent
         viewport={{
           center: [location.lng, location.lat],
@@ -94,6 +115,9 @@ export function MapView() {
         doubleClickZoom={true}
         touchZoomRotate={{ around: "center" }}
       >
+        {/* The WASM Canvas Engine Layer */}
+        <LightPollutionLayer isVisible={showLightPollution} />
+
         {/* <MapControls
           position="bottom-right"
           showZoom
