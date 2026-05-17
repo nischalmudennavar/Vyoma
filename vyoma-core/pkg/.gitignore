@@ -1,0 +1,2 @@
+# Allow committing WASM build artifacts
+!*

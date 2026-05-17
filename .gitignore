@@ -42,4 +42,4 @@ next-env.d.ts
 
 # rust / wasm-core
 /vyoma-core/target/
-/vyoma-core/pkg/
+!/vyoma-core/pkg/

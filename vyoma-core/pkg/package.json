@@ -1,0 +1,15 @@
+{
+  "name": "vyoma-core",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "vyoma_core_bg.wasm",
+    "vyoma_core.js",
+    "vyoma_core.d.ts"
+  ],
+  "main": "vyoma_core.js",
+  "types": "vyoma_core.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
