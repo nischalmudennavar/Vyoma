@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from "zustand/middleware";
 import { useShallow } from "zustand/shallow";
 
 export interface WeatherData {
@@ -49,52 +50,59 @@ interface VyomaState {
   toggleSettings: () => void;
 }
 
-export const useVyomaStore = create<VyomaState>((set) => ({
-  viewDate: new Date(),
-  location: { lat: 34.1526, lng: 77.5771, label: "Ladakh, India" }, // Default location: Ladakh
-  zoom: 4,
-  showMoon: true,
-  uiOpacity: 80,
-  mapVisibility: 100,
-  lpOpacity: 70,
-  baseFontSize: 14,
-  weather: null,
-  isWeatherLoading: false,
-  panelPositions: {},
-  panelsLocked: false,
-  showSettings: false,
-  showLightPollution: false,
-  updateTime: (hours, minutes) =>
-    set((state) => {
-      const newDate = new Date(state.viewDate);
-      newDate.setHours(hours, minutes, 0, 0);
-      return { viewDate: newDate };
-    }),
-  updateDate: (date) =>
-    set((state) => {
-      const newDate = new Date(state.viewDate);
-      newDate.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-      return { viewDate: newDate };
-    }),
-  updateLocation: (lat, lng, label = "") =>
-    set({ location: { lat, lng, label } }),
-  updateZoom: (zoom) => set({ zoom }),
-  toggleMoon: () => set((state) => ({ showMoon: !state.showMoon })),
-  toggleLightPollution: () =>
-    set((state) => ({ showLightPollution: !state.showLightPollution })),
-  setUiOpacity: (opacity) => set({ uiOpacity: opacity }),
-  setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
-  setLpOpacity: (opacity) => set({ lpOpacity: opacity }),
-  setBaseFontSize: (size) => set({ baseFontSize: size }),
-  setWeather: (weather) => set({ weather }),
-  setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),
-  updatePanelPosition: (id, position) =>
-    set((state) => ({
-      panelPositions: { ...state.panelPositions, [id]: position },
-    })),
-  setPanelsLocked: (locked) => set({ panelsLocked: locked }),
-  toggleSettings: () => set((state) => ({ showSettings: !state.showSettings })),
-}));
+export const useVyomaStore = create<VyomaState>()(
+  subscribeWithSelector((set) => ({
+    viewDate: new Date(),
+    location: { lat: 34.1526, lng: 77.5771, label: "Ladakh, India" }, // Default location: Ladakh
+    zoom: 4,
+    showMoon: true,
+    uiOpacity: 80,
+    mapVisibility: 100,
+    lpOpacity: 70,
+    baseFontSize: 14,
+    weather: null,
+    isWeatherLoading: false,
+    panelPositions: {},
+    panelsLocked: false,
+    showSettings: false,
+    showLightPollution: false,
+    updateTime: (hours, minutes) =>
+      set((state) => {
+        const newDate = new Date(state.viewDate);
+        newDate.setHours(hours, minutes, 0, 0);
+        return { viewDate: newDate };
+      }),
+    updateDate: (date) =>
+      set((state) => {
+        const newDate = new Date(state.viewDate);
+        newDate.setFullYear(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+        );
+        return { viewDate: newDate };
+      }),
+    updateLocation: (lat, lng, label = "") =>
+      set({ location: { lat, lng, label } }),
+    updateZoom: (zoom) => set({ zoom }),
+    toggleMoon: () => set((state) => ({ showMoon: !state.showMoon })),
+    toggleLightPollution: () =>
+      set((state) => ({ showLightPollution: !state.showLightPollution })),
+    setUiOpacity: (opacity) => set({ uiOpacity: opacity }),
+    setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
+    setLpOpacity: (opacity) => set({ lpOpacity: opacity }),
+    setBaseFontSize: (size) => set({ baseFontSize: size }),
+    setWeather: (weather) => set({ weather }),
+    setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),
+    updatePanelPosition: (id, position) =>
+      set((state) => ({
+        panelPositions: { ...state.panelPositions, [id]: position },
+      })),
+    setPanelsLocked: (locked) => set({ panelsLocked: locked }),
+    toggleSettings: () =>
+      set((state) => ({ showSettings: !state.showSettings })),
+  })),
+);
 
 /** Selector hook - only subscribes to the fields specified via key array. */
 export function useVyomaSelector<K extends keyof VyomaState>(

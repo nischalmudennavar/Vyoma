@@ -8,7 +8,7 @@ import {
   getMoonPosition,
   getSunPosition,
 } from "@/lib/astrometry";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
  * MapCelestialOverlay
@@ -17,7 +17,7 @@ import { useVyomaStore } from "@/store/use-vyoma-store";
  * Uses MapMarker for absolute precision and zero drift.
  */
 export function MapCelestialOverlay() {
-  const { location, viewDate } = useVyomaStore();
+  const { location, viewDate } = useVyomaSelector(["location", "viewDate"]);
 
   const data = useMemo(() => {
     const sunPos = getSunPosition(viewDate, location.lat, location.lng);
