@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useMap } from "@/components/ui/map";
 // Import your custom WASM engine!
-// @ts-ignore - this will be available once we build the WASM package
+// @ts-expect-error - this will be available once we build the WASM package
 import init, { PollutionEngine } from "vyoma-core";
+import { useMap } from "@/components/ui/map";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 // Standard Bortle Scale Colors (RGBA)
 const BORTLE_COLORS: Record<number, [number, number, number, number]> = {
@@ -21,6 +22,7 @@ const BORTLE_COLORS: Record<number, [number, number, number, number]> = {
 
 export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
   const { map, isLoaded } = useMap();
+  const { lpOpacity } = useVyomaSelector(["lpOpacity"]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [engineReady, setEngineReady] = useState(false);
@@ -142,11 +144,11 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full pointer-events-none z-[4]"
+      className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
       style={{
         imageRendering: "auto", // Smooths the low-res pixels into a heatmap
         mixBlendMode: "screen", // Makes it overlay nicely on a dark map
-        opacity: 0.7
+        opacity: lpOpacity / 100,
       }}
     />
   );

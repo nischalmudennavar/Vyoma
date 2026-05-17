@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
 import { LightPollutionLayer } from "./light-pollution-layer";
 
@@ -21,7 +21,7 @@ const MapComponent = dynamic(
   { ssr: false },
 );
 
-const MapControls = dynamic(
+const _MapControls = dynamic(
   () =>
     import("@/components/ui/map").then((mod) => ({
       default: mod.MapControls,

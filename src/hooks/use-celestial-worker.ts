@@ -2,11 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 
+interface WorkerPayload {
+  date: string | Date | number;
+  lat: number;
+  lng: number;
+  [key: string]: unknown;
+}
+
 /**
  * Custom hook to interact with the Celestial Web Worker.
  * Offloads heavy astronomy calculations from the main thread.
  */
-export function useCelestialWorker<T>(type: string, payload: any) {
+export function useCelestialWorker<T>(type: string, payload: WorkerPayload) {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +43,8 @@ export function useCelestialWorker<T>(type: string, payload: any) {
   }, [type]);
 
   useEffect(() => {
-    if (!workerRef.current || !payload.date || !payload.lat || !payload.lng) return;
+    if (!workerRef.current || !payload.date || !payload.lat || !payload.lng)
+      return;
 
     setIsLoading(true);
     workerRef.current.postMessage({ type, payload });

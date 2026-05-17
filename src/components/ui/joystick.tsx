@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import type React from "react";
+import { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface JoystickProps {
@@ -29,11 +30,14 @@ export function Joystick({
   // Math constants
   const maxRadius = size / 2 - knobSize / 2 - 10; // 10px padding from the edge of the well
 
-  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
-  }, []);
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setIsDragging(true);
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    [],
+  );
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
@@ -85,7 +89,10 @@ export function Joystick({
   );
 
   return (
-    <div className={cn("flex flex-col items-center select-none", className)} style={{ width: size }}>
+    <div
+      className={cn("flex flex-col items-center select-none", className)}
+      style={{ width: size }}
+    >
       {/* Outer Housing / Base Ring */}
       <div
         ref={containerRef}

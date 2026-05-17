@@ -1,4 +1,4 @@
-import { WeatherData } from "@/store/use-vyoma-store";
+import type { WeatherData } from "@/store/use-vyoma-store";
 
 /**
  * Maps WMO Weather interpretation codes to human-readable strings.

@@ -1,17 +1,15 @@
 import {
   getGalacticCorePosition,
   getGalacticCoreTrajectory,
-  getSunPosition,
-  getSunTrajectory,
-  getMoonPosition,
-  getMoonTrajectory,
-  getTwilightPhases,
-  getMoonRiseSet,
-  getMoonPhase,
-  getGoldenHour,
-  getSunDetails,
-  getMoonDetails,
   getGalacticCoreVisibility,
+  getGoldenHour,
+  getMoonDetails,
+  getMoonPhase,
+  getMoonRiseSet,
+  getMoonTrajectory,
+  getSunDetails,
+  getSunTrajectory,
+  getTwilightPhases,
 } from "./astrometry";
 
 /**
@@ -25,7 +23,7 @@ self.onmessage = (event: MessageEvent) => {
   const viewDate = new Date(date);
 
   try {
-    let result;
+    let result: Record<string, unknown> | null = null;
 
     switch (type) {
       case "CALCULATE_ALL":
@@ -40,7 +38,7 @@ self.onmessage = (event: MessageEvent) => {
           moonPhase: getMoonPhase(viewDate),
         };
         break;
-      
+
       case "CALCULATE_TRAJECTORIES":
         result = {
           gcTrajectory: getGalacticCoreTrajectory(viewDate, lat, lng),
@@ -55,9 +53,9 @@ self.onmessage = (event: MessageEvent) => {
 
     self.postMessage({ type: `${type}_SUCCESS`, payload: result });
   } catch (error) {
-    self.postMessage({ 
-      type: "ERROR", 
-      payload: error instanceof Error ? error.message : "Unknown error" 
+    self.postMessage({
+      type: "ERROR",
+      payload: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

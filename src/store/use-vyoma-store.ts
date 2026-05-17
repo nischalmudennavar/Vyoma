@@ -24,6 +24,7 @@ interface VyomaState {
   showMoon: boolean;
   uiOpacity: number;
   mapVisibility: number;
+  lpOpacity: number;
   baseFontSize: number;
   weather: WeatherData | null;
   isWeatherLoading: boolean;
@@ -39,6 +40,7 @@ interface VyomaState {
   toggleLightPollution: () => void;
   setUiOpacity: (opacity: number) => void;
   setMapVisibility: (visibility: number) => void;
+  setLpOpacity: (opacity: number) => void;
   setBaseFontSize: (size: number) => void;
   setWeather: (weather: WeatherData | null) => void;
   setWeatherLoading: (loading: boolean) => void;
@@ -54,6 +56,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
   showMoon: true,
   uiOpacity: 80,
   mapVisibility: 100,
+  lpOpacity: 70,
   baseFontSize: 14,
   weather: null,
   isWeatherLoading: false,
@@ -81,6 +84,7 @@ export const useVyomaStore = create<VyomaState>((set) => ({
     set((state) => ({ showLightPollution: !state.showLightPollution })),
   setUiOpacity: (opacity) => set({ uiOpacity: opacity }),
   setMapVisibility: (visibility) => set({ mapVisibility: visibility }),
+  setLpOpacity: (opacity) => set({ lpOpacity: opacity }),
   setBaseFontSize: (size) => set({ baseFontSize: size }),
   setWeather: (weather) => set({ weather }),
   setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),

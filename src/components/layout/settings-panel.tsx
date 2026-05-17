@@ -1,18 +1,15 @@
 "use client";
 
 import {
-  Minus,
-  Plus,
-  Settings2,
-  Monitor,
-  Map as MapIcon,
   Compass,
   Eye,
+  Map as MapIcon,
+  Minus,
+  Monitor,
+  Plus,
+  Settings2,
 } from "lucide-react";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 /**
  * SettingsPanel component refactored into a detailed dialog.

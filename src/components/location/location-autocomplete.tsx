@@ -117,7 +117,6 @@ export function LocationAutocomplete() {
                   setIsOpen(false);
                 }
               }}
-              tabIndex={0}
             >
               <span className="truncate">{result.display_name}</span>
             </li>

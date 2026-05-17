@@ -1,18 +1,11 @@
 "use client";
 
-import {
-  Binoculars,
-  Clock,
-  MapPin,
-  Moon,
-  Star,
-  Sun,
-} from "lucide-react";
+import { Binoculars, Clock, MapPin, Moon, Star, Sun } from "lucide-react";
+import { Container } from "@/components/layout/container";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/lib/utils";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/layout/container";
 
 /**
  * Returns the appropriate moon emoji for a given phase angle (0-360).
@@ -70,12 +63,9 @@ function formatTime(date: Date | null): string {
   }).format(date);
 }
 
-import { useCelestialWorker } from "@/hooks/use-celestial-worker";
-import {
-  CelestialCoordinates,
-  TwilightPhases,
-} from "@/lib/astrometry";
 import { PaneItemContainer } from "@/components/layout/pane-item-container";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
 
 interface CelestialData {
   gcPos: CelestialCoordinates;
@@ -97,11 +87,14 @@ interface CelestialData {
 export function AstronomyDetails() {
   const { viewDate, location } = useVyomaStore();
 
-  const { data, isLoading } = useCelestialWorker<CelestialData>("CALCULATE_ALL", {
-    date: viewDate.toISOString(),
-    lat: location.lat,
-    lng: location.lng,
-  });
+  const { data, isLoading } = useCelestialWorker<CelestialData>(
+    "CALCULATE_ALL",
+    {
+      date: viewDate.toISOString(),
+      lat: location.lat,
+      lng: location.lng,
+    },
+  );
 
   const loading = !data || isLoading;
 
@@ -109,9 +102,12 @@ export function AstronomyDetails() {
     <Container
       applyUiOpacity
       className="w-full md:w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-6 max-h-[80vh] overflow-y-auto pointer-events-auto transition-all duration-300"
-      style={{ 
-        backgroundColor: "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))" 
-      } as React.CSSProperties}
+      style={
+        {
+          backgroundColor:
+            "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))",
+        } as React.CSSProperties
+      }
     >
       {/* Galactic Core Section */}
       <PaneItemContainer
@@ -170,7 +166,8 @@ export function AstronomyDetails() {
             <Skeleton className="h-4 w-24" />
           ) : (
             <span className="font-mono text-foreground font-semibold tabular-nums">
-              {formatTime(data.sunPhases.sunrise)} / {formatTime(data.sunPhases.sunset)}
+              {formatTime(data.sunPhases.sunrise)} /{" "}
+              {formatTime(data.sunPhases.sunset)}
             </span>
           )}
         </div>
@@ -238,7 +235,8 @@ export function AstronomyDetails() {
             <Skeleton className="h-4 w-24" />
           ) : (
             <span className="font-mono text-foreground font-semibold tabular-nums">
-              {formatTime(data.moonRiseSet.rise)} / {formatTime(data.moonRiseSet.set)}
+              {formatTime(data.moonRiseSet.rise)} /{" "}
+              {formatTime(data.moonRiseSet.set)}
             </span>
           )}
         </div>
