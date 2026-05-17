@@ -50,7 +50,7 @@ JSON
   // ... your other dependencies
   "vyoma-core": "file:../vyoma-core/pkg"
 }
-Run your package manager install command (e.g., npm install or pnpm install) to link the package.
+Run your package manager install command (e.g., bun install) to link the package.
 
 Step 3: Create the Probe Component
 We will build an invisible listener component that handles the heavy lifting: downloading the memory buffer, listening for map clicks, and executing the WASM function.
@@ -207,7 +207,7 @@ export function MapView() {
   );
 }
 How to test it
-Run your Next.js development server (npm run dev).
+Run your Next.js development server (bun dev).
 
 Open the app and click anywhere on the map.
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 // Import your custom WASM engine!
-// @ts-expect-error - this will be available once we build the WASM package
 import init, { PollutionEngine } from "vyoma-core";
 import { useMap } from "@/components/ui/map";
 import { useVyomaSelector } from "@/store/use-vyoma-store";

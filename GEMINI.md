@@ -18,6 +18,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (React 19)
+- **Package Manager:** Bun
 - **Styling:** Tailwind CSS v4
 - **State:** Zustand (with Selector Pattern for performance)
 - **Celestial Logic:** `astronomy-engine`

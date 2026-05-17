@@ -54,10 +54,18 @@ Implemented a fully offline, microsecond-fast light pollution lookup engine by c
 
 ---
 
-## **Current Project State (May 16, 2026)**
+### **2026-05-17: Runtime Migration & Performance Optimization**
+- **Bun Adoption:** Migrated the entire development and build pipeline to **Bun (v1.3.9)**. This transition significantly reduced install times and improved the responsiveness of the development environment.
+- **Workflow Streamlining:** Replaced `npm`/`yarn` scripts with Bun's native runner, ensuring a more cohesive and faster development experience across the team.
+- **Tooling Consolidation:** Aligned with the project's performance-first philosophy by leveraging Bun's unified toolkit for package management and script execution.
+
+---
+
+## **Current Project State (May 17, 2026)**
 The project has evolved into a sophisticated celestial navigation tool. Key strengths include:
 - **Offline Intelligence:** High-performance light pollution and celestial data available without connectivity.
 - **High-Precision Astrometry:** Worker-based calculations for smooth performance.
+- **Modern Infrastructure:** Powered by Next.js 16, React 19, and Bun for a cutting-edge development experience.
 - **Rigorous Design System:** Strict adherence to the Swiss Aesthetic and semantic tokens.
 - **Real-time Synchronization:** Seamless integration of time, location, and weather data.
 
