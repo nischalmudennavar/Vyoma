@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PaneItemContainerProps {
@@ -38,7 +38,12 @@ export function PaneItemContainer({
           {title}
         </h2>
       </div>
-      <div className={cn("grid gap-4 text-xs bg-muted/20 p-4 border-l-2", borderThemeClass)}>
+      <div
+        className={cn(
+          "grid gap-4 text-xs bg-muted/20 p-4 border-l-2",
+          borderThemeClass,
+        )}
+      >
         {children}
       </div>
     </div>

@@ -2,29 +2,38 @@
 
 import { useMemo } from "react";
 import { MapMarker, MarkerContent } from "@/components/ui/map";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 import {
-  getGalacticCoreTrajectory,
   getGalacticCorePosition,
-  getSunPosition,
+  getGalacticCoreTrajectory,
   getMoonPosition,
+  getSunPosition,
 } from "@/lib/astrometry";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
  * MapCelestialOverlay
- * A geographically-synced SVG layer that renders celestial trajectories, 
+ * A geographically-synced SVG layer that renders celestial trajectories,
  * current azimuths, and a precision reticle centered on the observer.
  * Uses MapMarker for absolute precision and zero drift.
  */
 export function MapCelestialOverlay() {
-  const { location, viewDate } = useVyomaStore();
+  const { location, viewDate } = useVyomaSelector(["location", "viewDate"]);
 
   const data = useMemo(() => {
     const sunPos = getSunPosition(viewDate, location.lat, location.lng);
     const moonPos = getMoonPosition(viewDate, location.lat, location.lng);
-    const corePos = getGalacticCorePosition(viewDate, location.lat, location.lng);
-    const coreTrajectory = getGalacticCoreTrajectory(viewDate, location.lat, location.lng, 24);
-    
+    const corePos = getGalacticCorePosition(
+      viewDate,
+      location.lat,
+      location.lng,
+    );
+    const coreTrajectory = getGalacticCoreTrajectory(
+      viewDate,
+      location.lat,
+      location.lng,
+      24,
+    );
+
     return { sunPos, moonPos, corePos, coreTrajectory };
   }, [viewDate, location.lat, location.lng]);
 
@@ -59,7 +68,13 @@ export function MapCelestialOverlay() {
           style={{ overflow: "visible" }}
         >
           <defs>
-            <radialGradient id="fov-gradient" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="400">
+            <radialGradient
+              id="fov-gradient"
+              gradientUnits="userSpaceOnUse"
+              cx="0"
+              cy="0"
+              r="400"
+            >
               <stop offset="0%" stopColor="white" stopOpacity="0.15" />
               <stop offset="100%" stopColor="white" stopOpacity="0" />
             </radialGradient>
@@ -108,7 +123,7 @@ export function MapCelestialOverlay() {
               const endAz = data.corePos.az + 30;
               const p1 = azToCoords(startAz, 400);
               const p2 = azToCoords(endAz, 400);
-              
+
               return (
                 <path
                   d={`M 0 0 L ${p1.x} ${p1.y} A 400 400 0 0 1 ${p2.x} ${p2.y} Z`}

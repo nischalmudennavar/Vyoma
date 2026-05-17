@@ -2,7 +2,8 @@
 
 import { ListTree } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import {
   getGalacticCoreTrajectory,
@@ -11,12 +12,11 @@ import {
   getTwilightPhases,
 } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/layout/container";
 import { EphemerisTimeline } from "./ephemeris-timeline";
 // import { Joystick } from "@/components/ui/joystick";
 
 export function EphemerisOverlay() {
-  const { viewDate, location, updateTime, updateDate, zoom, updateLocation } = useVyomaStore();
+  const { viewDate, location, updateTime, updateDate } = useVyomaStore();
 
   // const [spatialData, setSpatialData] = useState({ x: 0, y: 0 });
   // const [temporalData, setTemporalData] = useState({ x: 0, y: 0 });
@@ -31,7 +31,7 @@ export function EphemerisOverlay() {
       ) {
         return;
       }
-      
+
       // Ignore if modifiers are pressed to prevent conflicting with discrete hotkeys
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
@@ -94,7 +94,7 @@ export function EphemerisOverlay() {
       // Update Spatial via WASD
       if (spatialX !== 0 || spatialY !== 0) {
         const currentZoom = store.zoom;
-        const speedMultiplier = 0.2 / Math.pow(1.5, currentZoom);
+        const speedMultiplier = 0.2 / 1.5 ** currentZoom;
 
         const deltaLat = spatialY * speedMultiplier * (deltaTime / 16.6);
         const deltaLng = spatialX * speedMultiplier * (deltaTime / 16.6);
@@ -113,7 +113,7 @@ export function EphemerisOverlay() {
       if (zoomDelta !== 0) {
         const zoomSpeed = 0.05 * (deltaTime / 16.6); // Adjust zoom speed
         let newZoom = store.zoom + zoomDelta * zoomSpeed;
-        
+
         // Clamp for zoom (MapLibre typical bounds: 0 to 22)
         newZoom = Math.max(0, Math.min(22, newZoom));
         store.updateZoom(newZoom);
@@ -257,4 +257,3 @@ export function EphemerisOverlay() {
     </Container>
   );
 }
-

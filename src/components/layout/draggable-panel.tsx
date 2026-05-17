@@ -2,9 +2,9 @@
 
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
-import { useVyomaStore } from "@/store/use-vyoma-store";
-import { GripHorizontal, Lock, Unlock } from "lucide-react";
+import { GripHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 interface DraggablePanelProps {
   id: string;

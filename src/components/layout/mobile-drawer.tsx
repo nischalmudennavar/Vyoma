@@ -1,12 +1,12 @@
 "use client";
 
-import { Drawer } from "vaul";
-import { Button } from "@/components/ui/button";
-import { Info, Cloud, Star, X } from "lucide-react";
-import { AstronomyDetails } from "@/components/celestial/astronomy-details";
-import { WeatherPanel } from "@/components/weather/weather-panel";
-import { ControlPanel } from "@/components/layout/control-panel";
+import { Cloud, Info, Star, X } from "lucide-react";
 import { useState } from "react";
+import { Drawer } from "vaul";
+import { AstronomyDetails } from "@/components/celestial/astronomy-details";
+import { ControlPanel } from "@/components/layout/control-panel";
+import { Button } from "@/components/ui/button";
+import { WeatherPanel } from "@/components/weather/weather-panel";
 
 export function MobileDrawer() {
   const [open, setOpen] = useState(false);
@@ -33,7 +33,9 @@ export function MobileDrawer() {
                 <section className="space-y-0">
                   <div className="flex items-center gap-2 border-b border-border/40 p-4 bg-muted/5">
                     <Star className="w-4 h-4 text-primary" />
-                    <h2 className="text-xs font-black uppercase tracking-widest">Celestial Data</h2>
+                    <h2 className="text-xs font-black uppercase tracking-widest">
+                      Celestial Data
+                    </h2>
                   </div>
                   <div className="w-full">
                     <AstronomyDetails />
@@ -43,7 +45,9 @@ export function MobileDrawer() {
                 <section className="space-y-0">
                   <div className="flex items-center gap-2 border-y border-border/40 p-4 bg-muted/5">
                     <Cloud className="w-4 h-4 text-sky-400" />
-                    <h2 className="text-xs font-black uppercase tracking-widest">Meteorology</h2>
+                    <h2 className="text-xs font-black uppercase tracking-widest">
+                      Meteorology
+                    </h2>
                   </div>
                   <div className="w-full">
                     <WeatherPanel />
@@ -53,7 +57,9 @@ export function MobileDrawer() {
                 <section className="space-y-0">
                   <div className="flex items-center gap-2 border-y border-border/40 p-4 bg-muted/5">
                     <Info className="w-4 h-4 text-muted-foreground" />
-                    <h2 className="text-xs font-black uppercase tracking-widest">Controls</h2>
+                    <h2 className="text-xs font-black uppercase tracking-widest">
+                      Controls
+                    </h2>
                   </div>
                   <div className="w-full">
                     <ControlPanel />
@@ -61,10 +67,10 @@ export function MobileDrawer() {
                 </section>
               </div>
             </div>
-...
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            ...
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setOpen(false)}
               className="absolute top-4 right-4"
             >

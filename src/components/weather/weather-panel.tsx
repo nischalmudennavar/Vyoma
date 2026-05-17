@@ -1,24 +1,31 @@
 "use client";
 
-import {
-  Cloud,
-  Droplets,
-  Thermometer,
-  Wind,
-} from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Cloud, Droplets, Thermometer, Wind } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { PaneItemContainer } from "@/components/layout/pane-item-container";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { cn } from "@/lib/utils";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 function getCardinalDirection(azimuth: number): string {
   const directions = [
-    "N", "NNE", "NE", "ENE",
-    "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW",
-    "W", "WNW", "NW", "NNW",
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW",
   ];
   const index = Math.floor((azimuth + 11.25) / 22.5) % 16;
   return directions[index];
@@ -32,7 +39,12 @@ export function WeatherPanel() {
     <Container
       applyUiOpacity
       className="w-full md:w-[320px] border border-border/80 bg-background/(--container-opacity) backdrop-blur-2xl shadow-2xl flex flex-col p-6 gap-6 pointer-events-auto transition-all duration-300"
-      style={{ backgroundColor: "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))" } as React.CSSProperties}
+      style={
+        {
+          backgroundColor:
+            "color-mix(in oklch, color-mix(in oklch, var(--color-background), var(--color-primary) 5%), transparent calc(100% * (1 - var(--container-opacity, 0.8))))",
+        } as React.CSSProperties
+      }
     >
       <PaneItemContainer
         title="Meteorology"
@@ -122,7 +134,8 @@ export function WeatherPanel() {
             <Skeleton className="h-4 w-24" />
           ) : (
             <span className="font-mono text-foreground font-semibold tabular-nums">
-              {weather.windSpeed.toFixed(1)} km/h {getCardinalDirection(weather.windDirection)}
+              {weather.windSpeed.toFixed(1)} km/h{" "}
+              {getCardinalDirection(weather.windDirection)}
             </span>
           )}
         </div>

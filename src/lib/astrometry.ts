@@ -170,7 +170,14 @@ export function getTwilightPhases(
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
+    const res = SearchAltitude(
+      Body.Sun,
+      observer,
+      direction,
+      time,
+      1,
+      altitude,
+    );
     return res ? res.date : null;
   };
 
@@ -290,7 +297,14 @@ export function getGoldenHour(
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude(Body.Sun, observer, direction, time, 1, altitude);
+    const res = SearchAltitude(
+      Body.Sun,
+      observer,
+      direction,
+      time,
+      1,
+      altitude,
+    );
     return res ? res.date : null;
   };
 

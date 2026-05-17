@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Command } from "cmdk";
-import { Search, MapPin, Sun, Moon, Star, Calendar, Clock } from "lucide-react";
+import { Clock, MapPin, Search, Star } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { cn } from "@/lib/utils";
+
+interface SearchResult {
+  place_id: number;
+  lat: string;
+  lon: string;
+  display_name: string;
+}
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const { updateLocation, updateDate, updateTime } = useVyomaStore();
 
   // Toggle open on Cmd/Ctrl + K
@@ -66,7 +72,9 @@ export function CommandPalette() {
             className="flex-1 bg-transparent border-none outline-none text-sm font-mono placeholder:text-muted-foreground/50 h-full"
           />
           <div className="flex items-center gap-1.5 px-2 py-1 bg-background border border-border/50">
-            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">Esc</span>
+            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-tighter">
+              Esc
+            </span>
           </div>
         </div>
 
@@ -76,12 +84,19 @@ export function CommandPalette() {
           </Command.Empty>
 
           {results.length > 0 && (
-            <Command.Group heading="Locations" className="px-2 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70">
+            <Command.Group
+              heading="Locations"
+              className="px-2 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70"
+            >
               {results.map((res) => (
                 <Command.Item
                   key={res.place_id}
                   onSelect={() => {
-                    updateLocation(parseFloat(res.lat), parseFloat(res.lon), res.display_name);
+                    updateLocation(
+                      parseFloat(res.lat),
+                      parseFloat(res.lon),
+                      res.display_name,
+                    );
                     setOpen(false);
                     setQuery("");
                   }}
@@ -94,7 +109,10 @@ export function CommandPalette() {
             </Command.Group>
           )}
 
-          <Command.Group heading="Quick Actions" className="px-2 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mt-2">
+          <Command.Group
+            heading="Quick Actions"
+            className="px-2 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/70 mt-2"
+          >
             <Command.Item
               onSelect={() => {
                 updateDate(new Date());
@@ -106,9 +124,7 @@ export function CommandPalette() {
               <Clock className="w-3.5 h-3.5 opacity-70" />
               <span>Reset to Current Time</span>
             </Command.Item>
-            <Command.Item
-              className="flex items-center gap-3 px-3 py-2.5 text-xs cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground hover:bg-muted transition-colors rounded-none outline-none mt-1"
-            >
+            <Command.Item className="flex items-center gap-3 px-3 py-2.5 text-xs cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground hover:bg-muted transition-colors rounded-none outline-none mt-1">
               <Star className="w-3.5 h-3.5 opacity-70" />
               <span>Jump to Galactic Core</span>
             </Command.Item>

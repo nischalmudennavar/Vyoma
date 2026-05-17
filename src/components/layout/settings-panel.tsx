@@ -1,18 +1,15 @@
 "use client";
 
 import {
-  Minus,
-  Plus,
-  Settings2,
-  Monitor,
-  Map as MapIcon,
   Compass,
   Eye,
+  Map as MapIcon,
+  Minus,
+  Monitor,
+  Plus,
+  Settings2,
 } from "lucide-react";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +17,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 /**
  * SettingsPanel component refactored into a detailed dialog.
@@ -35,6 +35,8 @@ export function SettingsPanel() {
     setBaseFontSize,
     showMoon,
     toggleMoon,
+    showLightPollution,
+    toggleLightPollution,
   } = useVyomaStore();
 
   const handleFontSizeChange = (delta: number) => {
@@ -135,6 +137,27 @@ export function SettingsPanel() {
                     <span
                       className={`pointer-events-none block h-4 w-4 rounded-none bg-white shadow-lg ring-0 transition-transform ${
                         showMoon ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 mt-4 border-t border-border/10">
+                  <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+                    Light Pollution
+                  </Label>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={showLightPollution}
+                    onClick={toggleLightPollution}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-none border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
+                      showLightPollution ? "bg-primary" : "bg-muted"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none block h-4 w-4 rounded-none bg-white shadow-lg ring-0 transition-transform ${
+                        showLightPollution ? "translate-x-4" : "translate-x-0"
                       }`}
                     />
                   </button>

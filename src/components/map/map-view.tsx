@@ -1,8 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
-import { useVyomaSelector } from "@/store/use-vyoma-store";
+import { useCallback, useEffect, useRef } from "react";
+import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
+import { LightPollutionLayer } from "./light-pollution-layer";
+import type { MapRef } from "@/components/ui/map";
 
 const MapCelestialOverlay = dynamic(
   () =>
@@ -20,13 +22,40 @@ const MapComponent = dynamic(
   { ssr: false },
 );
 
-const MapControls = dynamic(
+const _MapControls = dynamic(
   () =>
     import("@/components/ui/map").then((mod) => ({
       default: mod.MapControls,
     })),
   { ssr: false },
 );
+
+/**
+ * CoordinateTooltip is a transient UI element that displays current coordinates.
+ * Subscribes directly to specific Zustand selectors so only the tiny text updates,
+ * leaving the heavier MapView React tree alone during 60fps panning.
+ */
+function CoordinateTooltip() {
+  const { location } = useVyomaSelector(["location"]);
+  return (
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+      <div className="bg-background/80 backdrop-blur-md border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-wider flex gap-4 shadow-2xl">
+        <div className="flex gap-1.5">
+          <span className="text-muted-foreground font-bold">LAT</span>
+          <span className="text-primary tabular-nums">
+            {location.lat.toFixed(4)}°
+          </span>
+        </div>
+        <div className="flex gap-1.5">
+          <span className="text-muted-foreground font-bold">LNG</span>
+          <span className="text-primary tabular-nums">
+            {location.lng.toFixed(4)}°
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /**
  * Performs reverse geocoding to get a human-readable address from coordinates.
@@ -51,30 +80,77 @@ async function getReverseGeocode(lat: number, lng: number): Promise<string> {
 
 /**
  * MapView component that integrates the interactive map with celestial data.
- * Updates the global observer location automatically as the user drags the map.
+ * Optimized to avoid full re-renders during high-frequency panning.
  */
 export function MapView() {
-  const { location, updateLocation, zoom, updateZoom, mapVisibility } =
+  const mapRef = useRef<MapRef>(null);
+  const isInternalUpdate = useRef(false);
+
+  // 1. Subscribe ONLY to non-transient UI state.
+  // We exclude 'location' and 'zoom' to prevent 60fps re-renders of the Map tree.
+  const { updateLocation, updateZoom, mapVisibility, showLightPollution } =
     useVyomaSelector([
-      "location",
       "updateLocation",
-      "zoom",
       "updateZoom",
       "mapVisibility",
+      "showLightPollution",
     ]);
+
+  // 2. Initial values for the map (uncontrolled mode startup).
+  const initialViewport = useRef({
+    center: [
+      useVyomaStore.getState().location.lng,
+      useVyomaStore.getState().location.lat,
+    ] as [number, number],
+    zoom: useVyomaStore.getState().zoom,
+  });
+
+  // 3. Sync external store changes (like jump-to-location from search) to map.
+  // We use manual subscription to avoid React render cycles.
+  useEffect(() => {
+    const unsubscribe = useVyomaStore.subscribe(
+      (state) => [state.location, state.zoom] as const,
+      ([location, zoom]) => {
+        if (!mapRef.current) return;
+
+        // If the update came from the map itself, ignore it.
+        if (isInternalUpdate.current) return;
+
+        // If the map is already being panned by the user, don't interrupt with store sync.
+        if (mapRef.current.isMoving()) return;
+
+        // Flag that we are performing an update from the store to the map.
+        isInternalUpdate.current = true;
+        mapRef.current.jumpTo({
+          center: [location.lng, location.lat],
+          zoom: zoom,
+        });
+        isInternalUpdate.current = false;
+      },
+    );
+    return unsubscribe;
+  }, []);
 
   const handleViewportChangeWrapper = useCallback(
     (vp: { center: [number, number]; zoom: number }) => {
-      // Continuous update for visuals (preserving label to avoid search field jitter)
-      updateLocation(vp.center[1], vp.center[0], location.label);
+      // If the map is moving because of a store update, don't sync back to the store.
+      if (isInternalUpdate.current) return;
+
+      // Continuous update for store (used by Tooltip and Astronomy calculations).
+      // We pull current label directly from store to avoid a React dependency on 'location'.
+      const currentLabel = useVyomaStore.getState().location.label;
+      updateLocation(vp.center[1], vp.center[0], currentLabel);
       updateZoom(vp.zoom);
     },
-    [updateLocation, updateZoom, location.label],
+    [updateLocation, updateZoom],
   );
 
   const handleViewportChangeEnd = useCallback(
     async (vp: { center: [number, number]; zoom: number }) => {
-      // Once movement stops, update with reverse geocoded label
+      // If movement ended because of a store update, ignore.
+      if (isInternalUpdate.current) return;
+
+      // Once movement stops, perform the heavy reverse geocode.
       const label = await getReverseGeocode(vp.center[1], vp.center[0]);
       updateLocation(vp.center[1], vp.center[0], label);
     },
@@ -84,27 +160,23 @@ export function MapView() {
   return (
     <div className="w-full h-full relative overflow-hidden bg-muted">
       <MapComponent
-        viewport={{
-          center: [location.lng, location.lat],
-          zoom: zoom,
-        }}
+        ref={mapRef}
+        viewport={initialViewport.current}
         onViewportChange={handleViewportChangeWrapper}
         onViewportChangeEnd={handleViewportChangeEnd}
         scrollZoom={{ around: "center" }}
         doubleClickZoom={true}
         touchZoomRotate={{ around: "center" }}
       >
-        {/* <MapControls
-          position="bottom-right"
-          showZoom
-          showCompass
-          showLocate
-          showFullscreen
-        /> */}
+        {/* The WASM Canvas Engine Layer */}
+        <LightPollutionLayer isVisible={showLightPollution} />
 
         {/* Geographically-synced Celestial Overlay */}
         <MapCelestialOverlay />
       </MapComponent>
+
+      {/* Transient coordinate tooltip - subscribes directly to location */}
+      <CoordinateTooltip />
 
       {/* Map Visibility Overlay */}
       <div

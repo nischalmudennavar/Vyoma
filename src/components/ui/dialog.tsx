@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import { Dialog as DialogPrimitive } from "radix-ui";
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -72,10 +72,7 @@ function DialogContent({
   );
 }
 
-function DialogHeader({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
@@ -88,10 +85,7 @@ function DialogHeader({
   );
 }
 
-function DialogFooter({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-footer"

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useVyomaSelector } from "@/store/use-vyoma-store";
 import { WeatherSync } from "@/components/weather/weather-sync";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
  * Client-side component that synchronizes global UI settings from the Zustand store

@@ -283,7 +283,13 @@ const MapContainer = forwardRef<MapRef, MapProps>(function MapContainer(
       setMapInstance(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clearStyleTimeout, mapStyles.dark, mapStyles.light, projection, resolvedTheme]);
+  }, [
+    clearStyleTimeout,
+    mapStyles.dark,
+    mapStyles.light,
+    projection,
+    resolvedTheme,
+  ]);
 
   // Sync controlled viewport to map
   useEffect(() => {
@@ -1754,7 +1760,8 @@ function MapClusterLayer<
       if (!features.length) return;
 
       const feature = features[0];
-      const clusterId = feature.properties?.cluster_id as number;      const pointCount = feature.properties?.point_count as number;
+      const clusterId = feature.properties?.cluster_id as number;
+      const pointCount = feature.properties?.point_count as number;
       const coordinates = (feature.geometry as GeoJSON.Point).coordinates as [
         number,
         number,

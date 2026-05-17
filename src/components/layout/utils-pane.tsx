@@ -1,13 +1,12 @@
 "use client";
 
-import { Search, Settings2, Eye, Lock, Unlock } from "lucide-react";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Eye, Lock, Settings2, Unlock } from "lucide-react";
 import { Container } from "@/components/layout/container";
-import { Input } from "@/components/ui/input";
+import { PaneItemContainer } from "@/components/layout/pane-item-container";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { PaneItemContainer } from "@/components/layout/pane-item-container";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 /**
  * UtilsPane provides centralized access to search and system settings.
@@ -19,12 +18,16 @@ export function UtilsPane() {
     setUiOpacity,
     mapVisibility,
     setMapVisibility,
+    lpOpacity,
+    setLpOpacity,
     baseFontSize,
     setBaseFontSize,
     panelsLocked,
     setPanelsLocked,
     showMoon,
     toggleMoon,
+    showLightPollution,
+    toggleLightPollution,
   } = useVyomaStore();
 
   return (
@@ -75,6 +78,25 @@ export function UtilsPane() {
           <Slider
             value={[mapVisibility]}
             onValueChange={([val]) => setMapVisibility(val)}
+            min={0}
+            max={100}
+            step={1}
+          />
+        </div>
+
+        {/* Light Pollution Opacity */}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <Label className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+              LP Layer Opacity
+            </Label>
+            <span className="font-mono text-[10px] tabular-nums text-primary">
+              {lpOpacity}%
+            </span>
+          </div>
+          <Slider
+            value={[lpOpacity]}
+            onValueChange={([val]) => setLpOpacity(val)}
             min={0}
             max={100}
             step={1}
@@ -168,6 +190,30 @@ export function UtilsPane() {
               <span
                 className={`pointer-events-none block h-3 w-3 rounded-none bg-white shadow-lg ring-0 transition-transform ${
                   panelsLocked ? "translate-x-4" : "translate-x-0.5"
+                } mt-[0.5px]`}
+              />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Eye className="w-3.5 h-3.5 text-muted-foreground" />
+              <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                Light Pollution
+              </Label>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showLightPollution}
+              onClick={toggleLightPollution}
+              className={`relative inline-flex h-4 w-8 shrink-0 cursor-pointer rounded-none border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                showLightPollution ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`pointer-events-none block h-3 w-3 rounded-none bg-white shadow-lg ring-0 transition-transform ${
+                  showLightPollution ? "translate-x-4" : "translate-x-0.5"
                 } mt-[0.5px]`}
               />
             </button>

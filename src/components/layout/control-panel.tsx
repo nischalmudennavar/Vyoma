@@ -1,21 +1,16 @@
 "use client";
 
-import { MapPin, Clock, Keyboard } from "lucide-react";
+import { Clock, Keyboard, MapPin } from "lucide-react";
+import { Container } from "@/components/layout/container";
+import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { LocationAutocomplete } from "@/components/location/location-autocomplete";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Container } from "@/components/layout/container";
-import { PaneItemContainer } from "@/components/layout/pane-item-container";
 
 export function ControlPanel() {
-  const {
-    location,
-    viewDate,
-    updateDate,
-    updateTime,
-    updateLocation,
-  } = useVyomaStore();
+  const { location, viewDate, updateDate, updateTime, updateLocation } =
+    useVyomaStore();
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -101,7 +96,10 @@ export function ControlPanel() {
         </div>
       </PaneItemContainer>
 
-      <PaneItemContainer title="Time & Date" icon={<Clock className="w-4 h-4" />}>
+      <PaneItemContainer
+        title="Time & Date"
+        icon={<Clock className="w-4 h-4" />}
+      >
         <div className="space-y-4">
           <div className="space-y-2">
             <Label
@@ -136,7 +134,10 @@ export function ControlPanel() {
         </div>
       </PaneItemContainer>
 
-      <PaneItemContainer title="Keyboard Controls" icon={<Keyboard className="w-4 h-4" />}>
+      <PaneItemContainer
+        title="Keyboard Controls"
+        icon={<Keyboard className="w-4 h-4" />}
+      >
         <div className="space-y-3 text-muted-foreground">
           <div className="flex justify-between items-center">
             <span className="font-mono bg-background/50 border border-border/40 px-1.5 py-0.5 rounded-sm shadow-sm text-[10px] font-bold text-foreground">

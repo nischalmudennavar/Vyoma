@@ -1,17 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Header } from "@/components/layout/header";
-
 // Import modular components
 import { AstronomyDetails } from "@/components/celestial/astronomy-details";
-import { WeatherPanel } from "@/components/weather/weather-panel";
 import { ControlPanel } from "@/components/layout/control-panel";
+import { Header } from "@/components/layout/header";
 import { UtilsPane } from "@/components/layout/utils-pane";
+import { WeatherPanel } from "@/components/weather/weather-panel";
 
 const MapView = dynamic(
   () =>
-    import("@/components/map/map-view").then((mod) => ({ default: mod.MapView })),
+    import("@/components/map/map-view").then((mod) => ({
+      default: mod.MapView,
+    })),
   {
     ssr: false,
     loading: () => (
@@ -41,7 +42,6 @@ const SettingsPanel = dynamic(
 );
 
 import { useHotkeys } from "@/hooks/use-hotkeys";
-import { CommandPalette } from "@/components/navigation/command-palette";
 
 export function Dashboard() {
   useHotkeys();
@@ -50,7 +50,7 @@ export function Dashboard() {
     <div className="h-screen w-full overflow-hidden bg-background text-foreground relative">
       <Header />
       {/* <CommandPalette /> */}
-      
+
       <main className="w-full h-full relative">
         <MapView />
 
@@ -75,12 +75,10 @@ export function Dashboard() {
         </div>
 
         {/* Mobile Management */}
-        
+
         <EphemerisOverlay />
         <SettingsPanel />
       </main>
     </div>
   );
 }
-
-
