@@ -105,6 +105,26 @@
     0px 3px 4px 0.5px hsl(0 0% 0% / 0.2), 0px 8px 10px -0.5px hsl(0 0% 0% / 0.2);
   --shadow-2xl: 0px 3px 4px 0.5px hsl(0 0% 0% / 0.5);
 
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
   /* Dynamic UI Settings */
   --ui-opacity: 0.8;
   --base-font-size: 14px;
@@ -177,4 +197,14 @@
   border-top-left-radius: none;
   border-top-right-radius: none;
   padding: 8px 46px;
+}
+
+.ephermis-container {
+  /* biome-ignore lint/correctness/noUnknownProperty: future update */
+  corner-shape: bevel;
+  border-radius: 128px 128px 0px 0px;
+  border-top-left-radius: none;
+  border-top-right-radius: none;
+
+  background: var(--background);
 }

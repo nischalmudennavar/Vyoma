@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
+import type { MapRef } from "@/components/ui/map";
 import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
 import { LightPollutionLayer } from "./light-pollution-layer";
-import type { MapRef } from "@/components/ui/map";
 
 const MapCelestialOverlay = dynamic(
   () =>

@@ -51,7 +51,7 @@ self.onmessage = async (event: MessageEvent) => {
       // Update canvas size if needed (avoid frequent resizing)
       const targetWidth = Math.floor(width * resolution);
       const targetHeight = Math.floor(height * resolution);
-      
+
       if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
         canvas.width = targetWidth;
         canvas.height = targetHeight;

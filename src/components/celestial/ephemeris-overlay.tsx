@@ -191,6 +191,33 @@ export function EphemerisOverlay() {
     };
   }, [viewDate, location.lat, location.lng]);
 
+  const currentAltitudes = useMemo(() => {
+    return trajectories.map((traj) => {
+      let alt = 0;
+      const tCurrent = viewDate.getTime();
+      const pts = traj.points;
+
+      if (pts.length > 0) {
+        let found = false;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const t1 = pts[i].time.getTime();
+          const t2 = pts[i + 1].time.getTime();
+          if (tCurrent >= t1 && tCurrent <= t2) {
+            const progress = (tCurrent - t1) / (t2 - t1);
+            alt = pts[i].alt + (pts[i + 1].alt - pts[i].alt) * progress;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          if (tCurrent < pts[0].time.getTime()) alt = pts[0].alt;
+          else alt = pts[pts.length - 1].alt;
+        }
+      }
+      return { id: traj.id, color: traj.color, alt };
+    });
+  }, [trajectories, viewDate]);
+
   const handleTimeChange = (newTime: Date) => {
     if (
       newTime.getDate() !== viewDate.getDate() ||
@@ -205,23 +232,46 @@ export function EphemerisOverlay() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[80%] md:min-w-150 max-w-250 h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group overflow-hidden flex items-stretch"
+      className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[96%] md:min-w-250 max-w-250 h-32 rounded-none  group overflow-hidden flex flex-col"
     >
-      {/* 
-      <div className="flex items-center justify-center px-4 md:px-8 border-r border-border/40 bg-background/20 z-10 shrink-0 pointer-events-auto">
-        <Joystick
-          size={56}
-          knobSize={24}
-          title=""
-          labels={{ top: "N", bottom: "S", left: "W", right: "E" }}
-          onDrag={setSpatialData}
-        />
+      <div className="flex items-center w-[84%] left-20 relative justify-between px-4 py-2  pointer-events-auto">
+        <div className="flex gap-6">
+          {currentAltitudes.map((h) => (
+            <div key={`stat-${h.id}`} className="flex flex-col">
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">
+                {h.id}
+              </span>
+              <span
+                className="text-xs font-mono font-bold"
+                style={{ color: h.color }}
+              >
+                {h.alt.toFixed(1)}°
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] font-bold tracking-tighter text-foreground leading-none">
+              {viewDate.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            <span className="text-[8px] uppercase font-mono text-muted-foreground tracking-widest">
+              {viewDate.toLocaleDateString([], {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
       </div>
-      */}
 
       <div className="flex-1 relative pointer-events-auto">
         <EphemerisTimeline
-          activeDate={viewDate}
           currentTime={viewDate}
           trajectories={trajectories}
           twilightPhases={twilightPhases}

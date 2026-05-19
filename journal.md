@@ -61,7 +61,15 @@ Implemented a fully offline, microsecond-fast light pollution lookup engine by c
 
 ---
 
-## **Current Project State (May 17, 2026)**
+### **2026-05-19: UI Consolidation & Ergonomics**
+- **Panel Consolidation:** Resolved vertical UI bloat by refactoring four dense floating panels (`UtilsPane`, `ControlPanel`, `AstronomyDetails`, `WeatherPanel`) into a single, comprehensive `LeftPane`.
+- **Accordion Integration:** Implemented a robust accordion system (via Radix UI) within the `LeftPane` to allow users to toggle sections (Geospatial & Time, System Parameters, Celestial Metrics, Meteorological), significantly reducing control fatigue.
+- **Keyboard Ergonomics:** Extracted keyboard shortcuts from the persistent control panel into a dedicated, accessible `KeyboardShortcutsModal`, further cleaning up the primary interface while maintaining discoverability.
+- **Aesthetic Enforcement:** Ensured all new components strictly adhere to the project's "Technical Brutalism" standard (zero-radii, high contrast, semantic tokens).
+
+---
+
+## **Current Project State (May 19, 2026)**
 The project has evolved into a sophisticated celestial navigation tool. Key strengths include:
 - **Offline Intelligence:** High-performance light pollution and celestial data available without connectivity.
 - **High-Precision Astrometry:** Worker-based calculations for smooth performance.
