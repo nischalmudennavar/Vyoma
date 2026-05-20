@@ -1,4 +1,12 @@
+"use client";
+
+import { useVyomaStore } from "@/store/use-vyoma-store";
+import { BortleSection } from "@/components/weather/weather-panel";
+import { DocLivePreview } from "@/components/layout/doc-live-preview";
+
 export default function BortleDocs() {
+  const { weather, isWeatherLoading } = useVyomaStore();
+
   return (
     <div className="space-y-12">
       <section className="space-y-4">
@@ -9,6 +17,13 @@ export default function BortleDocs() {
           The Bortle Dark-Sky Scale is a nine-level numeric scale that measures the night sky&apos;s brightness of a particular location. It quantifies the astronomical observability of celestial objects and the interference caused by light pollution.
         </p>
       </section>
+
+      <DocLivePreview 
+        title="Live Sky Quality"
+        description="The Bortle class for your current location. This determines your signal-to-noise ratio and exposure limits."
+      >
+        <BortleSection bortle={weather?.bortle} loading={isWeatherLoading} />
+      </DocLivePreview>
 
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight text-primary">Favourable Zones</h2>

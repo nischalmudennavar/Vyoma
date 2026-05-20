@@ -184,9 +184,9 @@ export function LeftPane() {
               <AccordionContent className="space-y-4">
                 <div className="space-y-3">
                   <LocationAutocomplete />
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                      <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                         Lat
                       </Label>
                       <Input
@@ -200,11 +200,11 @@ export function LeftPane() {
                             location.label,
                           )
                         }
-                        className="h-8 text-xs bg-muted/30"
+                        className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                      <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                         Lng
                       </Label>
                       <Input
@@ -218,31 +218,31 @@ export function LeftPane() {
                             location.label,
                           )
                         }
-                        className="h-8 text-xs bg-muted/30"
+                        className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/10">
+                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border/10">
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Date
                     </Label>
                     <DatePicker
                       date={viewDate}
                       setDate={(date) => date && updateDate(date)}
-                      className="h-8 text-xs bg-muted/30"
+                      className="h-10 text-sm font-black bg-muted/30 rounded-none"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Time
                     </Label>
                     <Input
                       type="time"
                       value={timeString}
                       onChange={handleTimeChange}
-                      className="h-8 text-xs bg-muted/30"
+                      className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
                     />
                   </div>
                 </div>
@@ -257,13 +257,15 @@ export function LeftPane() {
                   <span>System Parameters</span>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="space-y-4">
+              <AccordionContent className="space-y-6">
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       UI Opacity
                     </Label>
-                    <span className="font-mono text-[10px]">{uiOpacity}%</span>
+                    <span className="font-mono text-base font-black text-primary leading-none">
+                      {uiOpacity}%
+                    </span>
                   </div>
                   <Slider
                     value={[uiOpacity]}
@@ -274,11 +276,11 @@ export function LeftPane() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Map Visibility
                     </Label>
-                    <span className="font-mono text-[10px]">
+                    <span className="font-mono text-base font-black text-primary leading-none">
                       {mapVisibility}%
                     </span>
                   </div>
@@ -291,11 +293,13 @@ export function LeftPane() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       LP Opacity
                     </Label>
-                    <span className="font-mono text-[10px]">{lpOpacity}%</span>
+                    <span className="font-mono text-base font-black text-primary leading-none">
+                      {lpOpacity}%
+                    </span>
                   </div>
                   <Slider
                     value={[lpOpacity]}
@@ -306,11 +310,11 @@ export function LeftPane() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Font Size
                     </Label>
-                    <span className="font-mono text-[10px]">
+                    <span className="font-mono text-base font-black text-primary leading-none">
                       {baseFontSize}px
                     </span>
                   </div>
@@ -398,67 +402,71 @@ export function LeftPane() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
-                <div className="bg-muted/20 p-3 border-l-2 border-primary/30 space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                <div className="bg-muted/20 p-4 border-l-2 border-primary/30 space-y-4">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       GC Elevation
                     </span>
                     {celestialLoading ? (
-                      <Skeleton className="h-3 w-8" />
+                      <Skeleton className="h-4 w-8" />
                     ) : (
-                      <span className="font-mono text-xs">
+                      <span className="font-mono text-base font-black leading-none">
                         {data.gcPos.alt.toFixed(2)}°
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       GC Azimuth
                     </span>
                     {celestialLoading ? (
-                      <Skeleton className="h-3 w-12" />
+                      <Skeleton className="h-4 w-12" />
                     ) : (
-                      <span className="font-mono text-xs">
+                      <span className="font-mono text-base font-black leading-none">
                         {data.gcPos.az.toFixed(2)}°{" "}
-                        {getCardinalDirection(data.gcPos.az)}
+                        <span className="text-[10px] font-bold text-muted-foreground/60 ml-1">
+                          {getCardinalDirection(data.gcPos.az)}
+                        </span>
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Sun Rise/Set
                     </span>
                     {celestialLoading ? (
-                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-4 w-16" />
                     ) : (
-                      <span className="font-mono text-xs text-orange-400">
+                      <span className="font-mono text-base font-black text-orange-400 leading-none">
                         {formatTime(data.sunPhases.sunrise)} /{" "}
                         {formatTime(data.sunPhases.sunset)}
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                      Golden Hour (M/E)
+                  <div className="flex justify-between items-end">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">
+                      Golden Hour
                     </span>
                     {celestialLoading ? (
-                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-4 w-20" />
                     ) : (
-                      <span className="font-mono text-[10px] text-orange-400/80">
+                      <span className="font-mono text-sm font-black text-orange-400/80 leading-none">
                         {formatTime(data.goldenHour.morning.start)} |{" "}
                         {formatTime(data.goldenHour.evening.start)}
                       </span>
                     )}
                   </div>
-                  <div className="flex justify-between items-center pt-1 border-t border-border/10">
-                    <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                  <div className="flex justify-between items-end pt-2 border-t border-border/10">
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground/70">
                       Moon Phase
                     </span>
                     {celestialLoading ? (
-                      <Skeleton className="h-3 w-12" />
+                      <Skeleton className="h-4 w-12" />
                     ) : (
-                      <div className="flex items-center gap-1 font-mono text-xs text-blue-300">
-                        <span>{getMoonIcon(data.moonPhase.phase)}</span>
+                      <div className="flex items-center gap-2 font-mono text-base font-black text-blue-300 leading-none">
+                        <span className="text-xl leading-none">
+                          {getMoonIcon(data.moonPhase.phase)}
+                        </span>
                         <span>{data.moonPhase.illumination.toFixed(1)}%</span>
                       </div>
                     )}
@@ -476,65 +484,70 @@ export function LeftPane() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 bg-sky-400/5 p-3 border border-sky-400/10">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-2 gap-4 bg-sky-400/5 p-4 border border-sky-400/10">
+                  <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Temp
                     </span>
                     {weatherLoading ? (
-                      <Skeleton className="h-3 w-8" />
+                      <Skeleton className="h-4 w-8" />
                     ) : (
-                      <div className="font-mono text-sm">
+                      <div className="font-mono text-base font-black leading-none">
                         {weather.temperature.toFixed(1)}°C
                       </div>
                     )}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Clouds
                     </span>
                     {weatherLoading ? (
-                      <Skeleton className="h-3 w-8" />
+                      <Skeleton className="h-4 w-8" />
                     ) : (
-                      <div className="font-mono text-sm">
+                      <div className="font-mono text-base font-black leading-none">
                         {weather.cloudCover}%
                       </div>
                     )}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Bortle
                     </span>
                     {weatherLoading ? (
-                      <Skeleton className="h-3 w-8" />
+                      <Skeleton className="h-4 w-8" />
                     ) : (
-                      <div className="font-mono text-sm">
+                      <div className="font-mono text-base font-black leading-none">
                         {weather.bortle}
                       </div>
                     )}
                   </div>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Seeing
                     </span>
                     {weatherLoading ? (
-                      <Skeleton className="h-3 w-8" />
+                      <Skeleton className="h-4 w-8" />
                     ) : (
-                      <div className="font-mono text-sm">
+                      <div className="font-mono text-base font-black leading-none text-emerald-400">
                         {weather.seeing}/5
                       </div>
                     )}
                   </div>
-                  <div className="col-span-2 pt-2 border-t border-sky-400/10 flex justify-between items-center">
+                  <div className="col-span-2 pt-3 border-t border-sky-400/10 flex justify-between items-end">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Wind Vector
                     </span>
                     {weatherLoading ? (
-                      <Skeleton className="h-3 w-24" />
+                      <Skeleton className="h-4 w-24" />
                     ) : (
-                      <span className="font-mono text-[10px]">
-                        {weather.windSpeed.toFixed(1)} km/h{" "}
-                        {getCardinalDirection(weather.windDirection)}
+                      <span className="font-mono text-base font-black leading-none">
+                        {weather.windSpeed.toFixed(1)}{" "}
+                        <span className="text-[10px] font-bold text-muted-foreground/60">
+                          km/h
+                        </span>{" "}
+                        <span className="text-primary/80">
+                          {getCardinalDirection(weather.windDirection)}
+                        </span>
                       </span>
                     )}
                   </div>
@@ -545,9 +558,15 @@ export function LeftPane() {
         </div>
 
         {/* Footer info */}
-        <div className="p-4 bg-background/50 border-t border-border/40 text-[9px] text-muted-foreground/60 flex justify-between font-mono">
-          <span>{location.lat.toFixed(4)}°N</span>
-          <span>{location.lng.toFixed(4)}°E</span>
+        <div className="px-5 py-3 bg-background/50 border-t border-border/40 text-[10px] font-black flex justify-between font-mono tracking-tighter">
+          <span className="text-muted-foreground/80">
+            LAT:{" "}
+            <span className="text-foreground">{location.lat.toFixed(4)}°N</span>
+          </span>
+          <span className="text-muted-foreground/80">
+            LNG:{" "}
+            <span className="text-foreground">{location.lng.toFixed(4)}°E</span>
+          </span>
         </div>
       </div>
 

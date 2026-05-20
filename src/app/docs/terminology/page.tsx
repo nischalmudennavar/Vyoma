@@ -1,3 +1,8 @@
+"use client";
+
+import { LocationStatus } from "@/components/layout/location-status";
+import { DocLivePreview } from "@/components/layout/doc-live-preview";
+
 export default function TerminologyDocs() {
   return (
     <div className="space-y-12">
@@ -9,6 +14,13 @@ export default function TerminologyDocs() {
           A quick reference guide for astronomical and technical terms used within the Vyoma interface.
         </p>
       </section>
+
+      <DocLivePreview 
+        title="Active Session Parameters"
+        description="Current technical metadata for your active planning session."
+      >
+        <LocationStatus />
+      </DocLivePreview>
 
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight text-primary">Quick Reference</h2>

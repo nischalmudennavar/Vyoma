@@ -1,4 +1,28 @@
+"use client";
+
+import { useMemo } from "react";
+import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import { GalacticCoreSection, type CelestialData } from "@/components/celestial/astronomy-details";
+import { DocLivePreview } from "@/components/layout/doc-live-preview";
+
 export default function GalacticCoreDocs() {
+  const { viewDate, location } = useVyomaStore();
+
+  const celestialPayload = useMemo(
+    () => ({
+      date: viewDate.toISOString(),
+      lat: location.lat,
+      lng: location.lng,
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data, isLoading } = useCelestialWorker<CelestialData>(
+    "CALCULATE_ALL",
+    celestialPayload,
+  );
+
   return (
     <div className="space-y-12">
       <section className="space-y-4">
@@ -10,6 +34,13 @@ export default function GalacticCoreDocs() {
           it represents the most visually dense and impressive part of our night sky.
         </p>
       </section>
+
+      <DocLivePreview 
+        title="Live Galactic Core Status"
+        description="Real-time coordinates and visibility for the Galactic Center based on your current Vyoma session parameters."
+      >
+        <GalacticCoreSection data={data} loading={isLoading} />
+      </DocLivePreview>
 
       <section className="space-y-6">
         <h2 className="text-2xl font-bold tracking-tight">Technical definition</h2>

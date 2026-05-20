@@ -1,92 +1,93 @@
+"use client";
+
+import { useMemo } from "react";
+import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import { MoonImagingSection, type CelestialData } from "@/components/celestial/astronomy-details";
+import { DocLivePreview } from "@/components/layout/doc-live-preview";
+
 export default function MoonPhasesDocs() {
+  const { viewDate, location } = useVyomaStore();
+
+  const celestialPayload = useMemo(
+    () => ({
+      date: viewDate.toISOString(),
+      lat: location.lat,
+      lng: location.lng,
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data, isLoading } = useCelestialWorker<CelestialData>(
+    "CALCULATE_ALL",
+    celestialPayload,
+  );
+
   return (
     <div className="space-y-12">
       <section className="space-y-4">
-        <h1 className="text-4xl font-black uppercase tracking-tighter border-l-8 border-primary pl-6">
+        <h1 className="text-4xl font-black uppercase tracking-tighter border-l-8 border-blue-300 pl-6">
           Moon Phases
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          The Moon is the single most significant natural source of light pollution. Understanding its phases and cycle is critical for scheduling deep-sky imaging sessions.
+          The Moon is the single most significant factor in light pollution for deep-sky 
+          photographers. Its phase and position determine when the sky is truly "dark."
+        </p>
+      </section>
+
+      <DocLivePreview 
+        title="Live Lunar Tracking"
+        description="Current lunar phase, illumination percentage, and imaging windows for your active session."
+      >
+        <MoonImagingSection data={data} loading={isLoading} />
+      </DocLivePreview>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold tracking-tight">Understanding Illumination</h2>
+        <div className="grid gap-4">
+          <div className="bg-muted/30 p-6 space-y-4 border-l-2 border-blue-300/40 font-mono">
+            <p className="text-sm">
+              Illumination refers to the percentage of the Moon&apos;s disk that reflects 
+              sunlight toward Earth. A <span className="text-blue-300 font-bold">New Moon (0%)</span> 
+              is ideal for deep-sky imaging, while a <span className="text-blue-300 font-bold">Full Moon (100%)</span> 
+              can wash out all but the brightest stars.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold tracking-tight">Moon-Free Windows</h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Vyoma calculates the exact window when the Moon is below the horizon AND the Sun 
+          is in Astronomical Twilight or deeper. This is your "Golden Window" for high-contrast 
+          nebula and galaxy photography.
         </p>
       </section>
 
       <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight text-primary">Optimal Conditions</h2>
-        <div className="grid gap-4">
-          <div className="border-l-4 border-primary bg-primary/5 p-6 space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black uppercase tracking-widest">Favourable Phase</span>
-              <span className="text-primary font-mono font-bold">&lt; 10% Illumination</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-black uppercase tracking-widest">Target Separation</span>
-              <span className="text-primary font-mono font-bold">&gt; 90°</span>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Plan your deepest imaging for the New Moon window. If the Moon is present, 
-              maintain at least 90° of angular separation from your target to minimize 
-              atmospheric scatter and glare.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">The Lunar Cycle</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="border border-border/40 p-4 space-y-2 bg-primary/5">
-            <h3 className="font-bold text-[10px] uppercase text-primary">New Moon</h3>
-            <p className="text-[10px] text-muted-foreground leading-tight">0% illumination. The gold standard for deep-sky photography.</p>
-          </div>
-          <div className="border border-border/40 p-4 space-y-2">
-            <h3 className="font-bold text-[10px] uppercase">First Quarter</h3>
-            <p className="text-[10px] text-muted-foreground leading-tight">50% illumination. Best for evening landscape shots.</p>
-          </div>
-          <div className="border border-border/40 p-4 space-y-2 bg-muted/20">
-            <h3 className="font-bold text-[10px] uppercase">Full Moon</h3>
-            <p className="text-[10px] text-muted-foreground leading-tight">100% illumination. Limits imaging to narrowband or bright clusters.</p>
-          </div>
-          <div className="border border-border/40 p-4 space-y-2">
-            <h3 className="font-bold text-[10px] uppercase">Last Quarter</h3>
-            <p className="text-[10px] text-muted-foreground leading-tight">50% illumination. Best for early morning sessions.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <h2 className="text-2xl font-bold tracking-tight">Imaging Strategy</h2>
-        <div className="space-y-4">
-          <div className="p-6 border-l-4 border-primary bg-primary/5 space-y-2">
-            <h3 className="font-bold text-sm uppercase">The "Moon-Free" Window</h3>
+        <h2 className="text-2xl font-bold tracking-tight">The 50% Rule</h2>
+        <div className="grid gap-6">
+          <div className="border border-border/40 p-5 space-y-2 bg-blue-300/5">
+            <h3 className="font-bold text-sm uppercase text-blue-300">Waxing/Waning Crescent</h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Even during a 50% moon, you can find windows of total darkness between Moonset and Sunrise, or Sunset and Moonrise. Vyoma calculates these windows automatically in the Astronomy Details panel.
+              Under 25% illumination. Generally safe for broadband imaging (galaxies, 
+              reflection nebulae) if the Moon is far from the target.
             </p>
           </div>
-          <div className="p-6 border-l-4 border-border bg-muted/20 space-y-2">
-            <h3 className="font-bold text-sm uppercase">Angular Separation</h3>
+          <div className="border border-border/40 p-5 space-y-2">
+            <h3 className="font-bold text-sm uppercase">First/Last Quarter</h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              If the Moon is up, try to image targets at least 90° away from it to minimize gradients and glare, especially in wide-field shots.
+              Approx 50% illumination. Significant light pollution. Narrowband filters 
+              (H-alpha, OIII) are highly recommended.
             </p>
           </div>
-        </div>
-      </section>
-
-      <section className="space-y-6 border border-border/40 p-8 font-mono">
-        <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
-          Recommended Filters
-        </h2>
-        <div className="grid gap-4 mt-4">
-          <div className="flex justify-between items-center text-[10px] border-b border-border/40 pb-2">
-            <span className="font-bold">Broadband (LRGB)</span>
-            <span className="text-red-500 font-black">Avoid if Moon &gt; 25%</span>
-          </div>
-          <div className="flex justify-between items-center text-[10px] border-b border-border/40 pb-2">
-            <span className="font-bold">Dual-Narrowband</span>
-            <span className="text-yellow-500 font-black">Usable up to 75%</span>
-          </div>
-          <div className="flex justify-between items-center text-[10px]">
-            <span className="font-bold">Hydrogen-Alpha (Ha)</span>
-            <span className="text-green-500 font-black">Usable even at 100%</span>
+          <div className="border border-border/40 p-5 space-y-2">
+            <h3 className="font-bold text-sm uppercase">Gibbous/Full</h3>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Over 75% illumination. Sky background is very bright. Focus on planetary 
+              imaging, lunar photography, or equipment testing.
+            </p>
           </div>
         </div>
       </section>
