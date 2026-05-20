@@ -330,6 +330,37 @@ function calculateAngularDiameter(
   return 2 * Math.atan(radiusKm / distanceKm) * (180 / Math.PI);
 }
 
+export function getMoonFreeWindow(
+  date: Date,
+  lat: number,
+  lng: number,
+): { start: Date | null; end: Date | null } {
+  const sunTraj = getSunTrajectory(date, lat, lng, 24);
+  const moonTraj = getMoonTrajectory(date, lat, lng, 24);
+  const moonPhase = getMoonPhase(date);
+
+  let start: Date | null = null;
+  let end: Date | null = null;
+
+  for (let i = 0; i < sunTraj.length; i++) {
+    const isDark = sunTraj[i].alt <= -18;
+    const isMoonless = moonTraj[i].alt <= 0 || moonPhase.illumination < 5;
+
+    if (isDark && isMoonless) {
+      if (!start) start = sunTraj[i].time;
+      end = sunTraj[i].time;
+    } else if (start && end) {
+      // If we already found a window and it just ended, we stop (simple implementation)
+      // In reality there could be multiple windows, but we return the primary one.
+      if (end.getTime() - start.getTime() > 30 * 60 * 1000) break;
+      start = null;
+      end = null;
+    }
+  }
+
+  return { start, end };
+}
+
 export function getSunDetails(date: Date, lat: number, lng: number) {
   const time = MakeTime(date);
   const observer = new Observer(lat, lng, 0);

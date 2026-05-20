@@ -208,3 +208,39 @@
 
   background: var(--background);
 }
+
+@utility shadow-tactical {
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 1);
+}
+
+@utility bg-tactical {
+  background-color: rgba(26, 26, 26, 0.85);
+}
+
+.tactical-glass {
+  background-color: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 1);
+}
+
+.tactical-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  font-family:
+    var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.tactical-value {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-family:
+    var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}

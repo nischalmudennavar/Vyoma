@@ -1,5 +1,4 @@
 "use client";
-
 import { Binoculars, Clock, MapPin, Moon, Star, Sun } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { Label } from "@/components/ui/label";
@@ -55,7 +54,7 @@ function getCardinalDirection(azimuth: number): string {
  * @returns Formatted time string or --:-- if null.
  */
 function formatTime(date: Date | null): string {
-  if (!date) return "--:--";
+  if (!date || Number.isNaN(date.getTime())) return "--:--";
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -66,12 +65,14 @@ function formatTime(date: Date | null): string {
 import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { useCelestialWorker } from "@/hooks/use-celestial-worker";
 import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
+import { useMemo } from "react";
 
 interface CelestialData {
   gcPos: CelestialCoordinates;
   gcVis: { rise: Date | null; set: Date | null };
   sunPhases: TwilightPhases;
   moonRiseSet: { rise: Date | null; set: Date | null };
+  moonFreeWindow: { start: Date | null; end: Date | null };
   goldenHour: {
     morning: { start: Date | null; end: Date | null };
     evening: { start: Date | null; end: Date | null };
@@ -87,13 +88,18 @@ interface CelestialData {
 export function AstronomyDetails() {
   const { viewDate, location } = useVyomaStore();
 
-  const { data, isLoading } = useCelestialWorker<CelestialData>(
-    "CALCULATE_ALL",
-    {
+  const celestialPayload = useMemo(
+    () => ({
       date: viewDate.toISOString(),
       lat: location.lat,
       lng: location.lng,
-    },
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data, isLoading } = useCelestialWorker<CelestialData>(
+    "CALCULATE_ALL",
+    celestialPayload,
   );
 
   const loading = !data || isLoading;
@@ -153,9 +159,9 @@ export function AstronomyDetails() {
         </div>
       </PaneItemContainer>
 
-      {/* Sun & Golden Section */}
+      {/* Sun & Twilight Section */}
       <PaneItemContainer
-        title="Sun & Golden"
+        title="Sun & Twilight"
         icon={<Sun className={cn("w-4 h-4", loading && "animate-pulse")} />}
         iconThemeClass="text-orange-400"
         borderThemeClass="border-orange-400/30"
@@ -168,6 +174,23 @@ export function AstronomyDetails() {
             <span className="font-mono text-foreground font-semibold tabular-nums">
               {formatTime(data.sunPhases.sunrise)} /{" "}
               {formatTime(data.sunPhases.sunset)}
+            </span>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center bg-indigo-500/10 p-2 border border-indigo-500/20">
+          <div className="flex items-center gap-1.5">
+            <Star className="w-3 h-3 text-indigo-400" />
+            <Label className="text-[10px] uppercase font-bold text-indigo-400">
+              True Night
+            </Label>
+          </div>
+          {loading ? (
+            <Skeleton className="h-4 w-24" />
+          ) : (
+            <span className="font-mono text-indigo-400 font-bold tabular-nums text-xs">
+              {formatTime(data.sunPhases.astronomicalDusk)} -{" "}
+              {formatTime(data.sunPhases.astronomicalDawn)}
             </span>
           )}
         </div>
@@ -222,9 +245,9 @@ export function AstronomyDetails() {
         </div>
       </PaneItemContainer>
 
-      {/* Moon Section */}
+      {/* Moon & Imaging Section */}
       <PaneItemContainer
-        title="Moon"
+        title="Moon & Imaging"
         icon={<Moon className={cn("w-4 h-4", loading && "animate-pulse")} />}
         iconThemeClass="text-blue-300"
         borderThemeClass="border-blue-300/30"
@@ -237,6 +260,24 @@ export function AstronomyDetails() {
             <span className="font-mono text-foreground font-semibold tabular-nums">
               {formatTime(data.moonRiseSet.rise)} /{" "}
               {formatTime(data.moonRiseSet.set)}
+            </span>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center bg-emerald-500/10 p-2 border border-emerald-500/20">
+          <div className="flex items-center gap-1.5">
+            <Binoculars className="w-3 h-3 text-emerald-400" />
+            <Label className="text-[10px] uppercase font-bold text-emerald-400">
+              Moon-Free
+            </Label>
+          </div>
+          {loading ? (
+            <Skeleton className="h-4 w-24" />
+          ) : (
+            <span className="font-mono text-emerald-400 font-bold tabular-nums text-xs">
+              {data.moonFreeWindow.start
+                ? `${formatTime(data.moonFreeWindow.start)} - ${formatTime(data.moonFreeWindow.end)}`
+                : "None"}
             </span>
           )}
         </div>

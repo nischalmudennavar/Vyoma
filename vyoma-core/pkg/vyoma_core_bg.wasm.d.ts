@@ -2,46 +2,9 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const __wbg_pollutionengine_free: (a: number, b: number) => void;
-export const get_viewport_dark_sites: (
-  a: number,
-  b: number,
-  c: number,
-  d: number,
-  e: number,
-  f: number,
-  g: number,
-  h: number,
-  i: number,
-  j: number,
-  k: number,
-  l: number,
-  m: number,
-  n: number,
-) => [number, number];
-export const pollutionengine_get_bortle_class: (
-  a: number,
-  b: number,
-  c: number,
-) => number;
-export const pollutionengine_get_viewport_dark_sites: (
-  a: number,
-  b: number,
-  c: number,
-  d: number,
-  e: number,
-  f: number,
-  g: number,
-) => [number, number];
-export const pollutionengine_new: (
-  a: number,
-  b: number,
-  c: number,
-  d: number,
-  e: number,
-  f: number,
-  g: number,
-  h: number,
-) => number;
+export const pollutionengine_get_bortle_class: (a: number, b: number, c: number) => number;
+export const pollutionengine_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
+export const pollutionengine_render_image: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => [number, number];
 export const __wbindgen_externrefs: WebAssembly.Table;
 export const __wbindgen_malloc: (a: number, b: number) => number;
 export const __wbindgen_free: (a: number, b: number, c: number) => void;

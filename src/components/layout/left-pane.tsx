@@ -8,7 +8,7 @@ import {
   Settings2,
   Star,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Container } from "@/components/layout/container";
 import { KeyboardShortcutsModal } from "@/components/layout/keyboard-shortcuts-modal";
@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Slider } from "@/components/ui/slider";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useCelestialWorker } from "@/hooks/use-celestial-worker";
 import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
 import { cn } from "@/lib/utils";
@@ -66,7 +67,7 @@ function getCardinalDirection(azimuth: number): string {
 }
 
 function formatTime(date: Date | null): string {
-  if (!date) return "--:--";
+  if (!date || Number.isNaN(date.getTime())) return "--:--";
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
     minute: "2-digit",
@@ -115,22 +116,20 @@ export function LeftPane() {
     isWeatherLoading,
   } = useVyomaStore();
 
-  const { data, isLoading: isCelestialLoading } =
-    useCelestialWorker<CelestialData>("CALCULATE_ALL", {
+  const celestialPayload = useMemo(
+    () => ({
       date: viewDate.toISOString(),
       lat: location.lat,
       lng: location.lng,
-    });
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data, isLoading: isCelestialLoading } =
+    useCelestialWorker<CelestialData>("CALCULATE_ALL", celestialPayload);
 
   const celestialLoading = !data || isCelestialLoading;
   const weatherLoading = isWeatherLoading || !weather;
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      const [year, month, day] = e.target.value.split("-").map(Number);
-      updateDate(new Date(year, month - 1, day));
-    }
-  };
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -138,11 +137,6 @@ export function LeftPane() {
       updateTime(hours, minutes);
     }
   };
-
-  const year = viewDate.getFullYear();
-  const month = (viewDate.getMonth() + 1).toString().padStart(2, "0");
-  const day = viewDate.getDate().toString().padStart(2, "0");
-  const dateString = `${year}-${month}-${day}`;
 
   const hours = viewDate.getHours().toString().padStart(2, "0");
   const minutes = viewDate.getMinutes().toString().padStart(2, "0");
@@ -234,10 +228,9 @@ export function LeftPane() {
                     <Label className="text-[10px] uppercase font-bold text-muted-foreground">
                       Date
                     </Label>
-                    <Input
-                      type="date"
-                      value={dateString}
-                      onChange={handleDateChange}
+                    <DatePicker
+                      date={viewDate}
+                      setDate={(date) => date && updateDate(date)}
                       className="h-8 text-xs bg-muted/30"
                     />
                   </div>
@@ -505,6 +498,30 @@ export function LeftPane() {
                     ) : (
                       <div className="font-mono text-sm">
                         {weather.cloudCover}%
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-sky-400/70">
+                      Bortle
+                    </span>
+                    {weatherLoading ? (
+                      <Skeleton className="h-3 w-8" />
+                    ) : (
+                      <div className="font-mono text-sm">
+                        {weather.bortle}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[9px] uppercase font-bold text-sky-400/70">
+                      Seeing
+                    </span>
+                    {weatherLoading ? (
+                      <Skeleton className="h-3 w-8" />
+                    ) : (
+                      <div className="font-mono text-sm">
+                        {weather.seeing}/5
                       </div>
                     )}
                   </div>

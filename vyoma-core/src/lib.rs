@@ -66,4 +66,47 @@ impl PollutionEngine {
             1
         }
     }
+
+    pub fn render_image(
+        &self,
+        nw_lat: f64,
+        nw_lng: f64,
+        se_lat: f64,
+        se_lng: f64,
+        width: usize,
+        height: usize,
+    ) -> Vec<u8> {
+        let mut pixels = Vec::with_capacity(width * height * 4);
+
+        let lat_step = (se_lat - nw_lat) / (height as f64);
+        let lng_step = (se_lng - nw_lng) / (width as f64);
+
+        for y in 0..height {
+            let current_lat = nw_lat + (y as f64) * lat_step;
+            for x in 0..width {
+                let current_lng = nw_lng + (x as f64) * lng_step;
+                let bortle = self.get_bortle_class(current_lat, current_lng);
+
+                // Map Bortle class to RGBA
+                // Matches the palette in pollution.worker.ts
+                let color = match bortle {
+                    3 => (0, 0, 255, 60),
+                    4 => (0, 255, 0, 60),
+                    5 => (255, 255, 0, 60),
+                    6 => (255, 128, 0, 60),
+                    7 => (255, 0, 0, 70),
+                    8 => (255, 255, 255, 100),
+                    9 => (255, 200, 255, 120),
+                    _ => (0, 0, 0, 0),
+                };
+
+                pixels.push(color.0);
+                pixels.push(color.1);
+                pixels.push(color.2);
+                pixels.push(color.3);
+            }
+        }
+
+        pixels
+    }
 }

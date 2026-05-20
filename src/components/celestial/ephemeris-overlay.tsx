@@ -5,23 +5,62 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import {
-  getGalacticCoreTrajectory,
-  getMoonTrajectory,
-  getSunTrajectory,
-  getTwilightPhases,
-} from "@/lib/astrometry";
+import { DatePicker } from "@/components/ui/date-picker";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import type { TrajectoryPoint, TwilightPhases } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 import { EphemerisTimeline } from "./ephemeris-timeline";
-// import { Joystick } from "@/components/ui/joystick";
+
+interface EphemerisResult {
+  trajectories: {
+    sun: TrajectoryPoint[];
+    moon: TrajectoryPoint[];
+    gc: TrajectoryPoint[];
+  };
+  twilightPhases: TwilightPhases;
+}
 
 export function EphemerisOverlay() {
   const { viewDate, location, updateTime, updateDate } = useVyomaStore();
 
-  // const [spatialData, setSpatialData] = useState({ x: 0, y: 0 });
-  // const [temporalData, setTemporalData] = useState({ x: 0, y: 0 });
-
   const activeKeys = useRef<Set<string>>(new window.Set());
+
+  const ephemerisPayload = useMemo(
+    () => ({
+      date: viewDate,
+      lat: location.lat,
+      lng: location.lng,
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data: ephemerisData } = useCelestialWorker<EphemerisResult>(
+    "CALCULATE_EPHEMERIS",
+    ephemerisPayload,
+  );
+
+  const trajectories = useMemo(() => {
+    if (!ephemerisData) return [];
+    return [
+      {
+        id: "sun" as const,
+        color: "var(--chart-4)",
+        points: ephemerisData.trajectories.sun,
+      },
+      {
+        id: "moon" as const,
+        color: "var(--muted-foreground)",
+        points: ephemerisData.trajectories.moon,
+      },
+      {
+        id: "core" as const,
+        color: "var(--primary)",
+        points: ephemerisData.trajectories.gc,
+      },
+    ];
+  }, [ephemerisData]);
+
+  const twilightPhases = ephemerisData?.twilightPhases || null;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -148,49 +187,6 @@ export function EphemerisOverlay() {
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
-  const { trajectories, twilightPhases } = useMemo(() => {
-    // Create a buffer starting 24 hours before the current viewDate
-    const bufferStartDate = new Date(viewDate);
-    bufferStartDate.setHours(0, 0, 0, 0);
-    bufferStartDate.setDate(bufferStartDate.getDate() - 1);
-
-    return {
-      trajectories: [
-        {
-          id: "sun" as const,
-          color: "var(--chart-4)",
-          points: getSunTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-        {
-          id: "moon" as const,
-          color: "var(--muted-foreground)",
-          points: getMoonTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-        {
-          id: "core" as const,
-          color: "var(--primary)",
-          points: getGalacticCoreTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-      ],
-      twilightPhases: getTwilightPhases(viewDate, location.lat, location.lng),
-    };
-  }, [viewDate, location.lat, location.lng]);
-
   const currentAltitudes = useMemo(() => {
     return trajectories.map((traj) => {
       let alt = 0;
@@ -259,24 +255,31 @@ export function EphemerisOverlay() {
                 minute: "2-digit",
               })}
             </span>
-            <span className="text-[8px] uppercase font-mono text-muted-foreground tracking-widest">
-              {viewDate.toLocaleDateString([], {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </span>
+            <DatePicker
+              date={viewDate}
+              setDate={(date) => date && updateDate(date)}
+            >
+              <span className="text-[8px] uppercase font-mono text-muted-foreground tracking-widest cursor-pointer hover:text-primary transition-colors">
+                {viewDate.toLocaleDateString([], {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            </DatePicker>
           </div>
         </div>
       </div>
 
       <div className="flex-1 relative pointer-events-auto">
-        <EphemerisTimeline
-          currentTime={viewDate}
-          trajectories={trajectories}
-          twilightPhases={twilightPhases}
-          onTimeChange={handleTimeChange}
-        />
+        {twilightPhases && (
+          <EphemerisTimeline
+            currentTime={viewDate}
+            trajectories={trajectories}
+            twilightPhases={twilightPhases}
+            onTimeChange={handleTimeChange}
+          />
+        )}
       </div>
 
       {/*

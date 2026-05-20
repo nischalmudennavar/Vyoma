@@ -10,7 +10,14 @@ export interface WeatherData {
   weatherCode: number;
   condition: string;
   cloudCover: number;
+  cloudCoverHigh: number;
+  cloudCoverMid: number;
+  cloudCoverLow: number;
   pressure: number;
+  dewPoint: number;
+  seeing: number; // 1-5
+  transparency: number; // 1-5
+  bortle: number; // 1-9
 }
 
 export interface PanelPosition {
