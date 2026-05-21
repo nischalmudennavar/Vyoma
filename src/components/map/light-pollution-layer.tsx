@@ -24,10 +24,7 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
         setWorkerReady(true);
       } else if (e.data.type === "BORTLE_RESULT") {
         const { bortle } = e.data.payload;
-        const currentWeather = useVyomaStore.getState().weather;
-        if (currentWeather && currentWeather.bortle !== bortle) {
-          useVyomaStore.getState().setWeather({ ...currentWeather, bortle });
-        }
+        useVyomaStore.getState().setBortle(bortle);
       }
     };
 

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 // Import modular components
 import { Header } from "@/components/layout/header";
 import { LeftPane } from "@/components/layout/left-pane";
+import { FloatingSearchBar } from "@/components/layout/floating-search-bar";
 
 const MapView = dynamic(
   () =>
@@ -46,6 +47,7 @@ export function Dashboard() {
   return (
     <div className="h-screen w-full overflow-hidden bg-background text-foreground relative">
       <Header />
+      <FloatingSearchBar />
       {/* <CommandPalette /> */}
 
       <main className="w-full h-full relative">

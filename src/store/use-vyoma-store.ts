@@ -36,6 +36,7 @@ interface VyomaState {
   baseFontSize: number;
   weather: WeatherData | null;
   isWeatherLoading: boolean;
+  bortle: number; // Single source of truth for Bortle class
   panelPositions: Record<string, PanelPosition>;
   panelsLocked: boolean;
   showSettings: boolean;
@@ -52,6 +53,7 @@ interface VyomaState {
   setBaseFontSize: (size: number) => void;
   setWeather: (weather: WeatherData | null) => void;
   setWeatherLoading: (loading: boolean) => void;
+  setBortle: (bortle: number) => void;
   updatePanelPosition: (id: string, position: PanelPosition) => void;
   setPanelsLocked: (locked: boolean) => void;
   toggleSettings: () => void;
@@ -69,6 +71,7 @@ export const useVyomaStore = create<VyomaState>()(
     baseFontSize: 14,
     weather: null,
     isWeatherLoading: false,
+    bortle: 1, // Default Bortle
     panelPositions: {},
     panelsLocked: false,
     showSettings: false,
@@ -101,6 +104,7 @@ export const useVyomaStore = create<VyomaState>()(
     setBaseFontSize: (size) => set({ baseFontSize: size }),
     setWeather: (weather) => set({ weather }),
     setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),
+    setBortle: (bortle) => set({ bortle }),
     updatePanelPosition: (id, position) =>
       set((state) => ({
         panelPositions: { ...state.panelPositions, [id]: position },

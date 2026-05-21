@@ -80,6 +80,10 @@ Implemented a fully offline, microsecond-fast light pollution lookup engine by c
     - Increased data font size to `text-base` (16px) and weight to `font-black`.
     - Expanded vertical spacing and alignment between data rows to reduce cognitive load.
     - Standardized inputs and display metrics for a high-contrast, "instrument-cluster" feel.
+- **Floating Control Island:** Extracted Geospatial and Chronological controls into a new `FloatingSearchBar` component:
+    - Positioned at top-center for prominence and ease of access (Airbnb-style search).
+    - Maintained **Swiss Aesthetic** with sharp corners and high-contrast tactile elements.
+    - Streamlined the `LeftPane` by removing redundant control groups.
 - **Layout Cleanup:** Streamlined `src/app/docs/layout.tsx` by removing redundant code and improving the mobile menu integration.
 
 ---

@@ -257,7 +257,7 @@ export function EphemerisTimeline({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full select-none touch-none rounded-none  border-background overflow-hidden cursor-ew-resize bg-transparent ephermis-container"
+      className="relative w-full h-full select-none touch-none rounded-none  border-background overflow-hidden cursor-ew-resize bg-transparent ephermis-container shadow-tactical"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}

@@ -228,7 +228,7 @@ export function EphemerisOverlay() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[96%] md:min-w-250 max-w-250 h-32 rounded-none  group overflow-hidden flex flex-col"
+      className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[96%] md:min-w-250 max-w-250 h-32 rounded-none group overflow-hidden flex flex-col "
     >
       <div className="flex items-center w-[84%] left-20 relative justify-between px-4 py-2  pointer-events-auto">
         <div className="flex gap-6">

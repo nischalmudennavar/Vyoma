@@ -4,15 +4,15 @@ import {
   Cloud,
   Compass,
   Keyboard as KeyboardIcon,
-  MapPin,
+  Maximize2,
+  Minimize2,
   Settings2,
   Star,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Container } from "@/components/layout/container";
 import { KeyboardShortcutsModal } from "@/components/layout/keyboard-shortcuts-modal";
-import { LocationAutocomplete } from "@/components/location/location-autocomplete";
 import {
   Accordion,
   AccordionContent,
@@ -20,11 +20,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Slider } from "@/components/ui/slider";
-import { DatePicker } from "@/components/ui/date-picker";
 import { useCelestialWorker } from "@/hooks/use-celestial-worker";
 import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
 import { cn } from "@/lib/utils";
@@ -91,6 +89,7 @@ interface CelestialData {
 
 export function LeftPane() {
   const [isKeyboardModalOpen, setIsKeyboardModalOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const {
     location,
@@ -114,7 +113,30 @@ export function LeftPane() {
     toggleLightPollution,
     weather,
     isWeatherLoading,
+    bortle,
   } = useVyomaStore();
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () =>
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (err) {
+      console.error("Fullscreen toggle failed:", err);
+    }
+  };
 
   const celestialPayload = useMemo(
     () => ({
@@ -131,21 +153,10 @@ export function LeftPane() {
   const celestialLoading = !data || isCelestialLoading;
   const weatherLoading = isWeatherLoading || !weather;
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      const [hours, minutes] = e.target.value.split(":").map(Number);
-      updateTime(hours, minutes);
-    }
-  };
-
-  const hours = viewDate.getHours().toString().padStart(2, "0");
-  const minutes = viewDate.getMinutes().toString().padStart(2, "0");
-  const timeString = `${hours}:${minutes}`;
-
   return (
     <Container
       applyUiOpacity
-      className="absolute top-28 left-8 z-20 w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-2xl flex flex-col p-0 max-h-[calc(100%-8rem)] overflow-hidden pointer-events-auto"
+      className="absolute top-28 left-8 z-20 w-full md:w-[320px] border border-border/50 bg-background/80 backdrop-blur-xl shadow-tactical flex flex-col p-0 max-h-[calc(100%-8rem)] overflow-hidden pointer-events-auto"
     >
       <div className="flex flex-col h-full">
         {/* Header */}
@@ -170,85 +181,9 @@ export function LeftPane() {
         <div className="flex-1 overflow-y-auto p-5 pt-0 custom-scrollbar">
           <Accordion
             type="multiple"
-            defaultValue={["location-time"]}
+            defaultValue={["celestial"]}
             className="w-full"
           >
-            {/* 1. Location & Chronology */}
-            <AccordionItem value="location-time">
-              <AccordionTrigger>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  <span>Geospatial & Time</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="space-y-4">
-                <div className="space-y-3">
-                  <LocationAutocomplete />
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
-                        Lat
-                      </Label>
-                      <Input
-                        type="number"
-                        step="any"
-                        value={location.lat}
-                        onChange={(e) =>
-                          updateLocation(
-                            parseFloat(e.target.value) || 0,
-                            location.lng,
-                            location.label,
-                          )
-                        }
-                        className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
-                        Lng
-                      </Label>
-                      <Input
-                        type="number"
-                        step="any"
-                        value={location.lng}
-                        onChange={(e) =>
-                          updateLocation(
-                            location.lat,
-                            parseFloat(e.target.value) || 0,
-                            location.label,
-                          )
-                        }
-                        className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border/10">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
-                      Date
-                    </Label>
-                    <DatePicker
-                      date={viewDate}
-                      setDate={(date) => date && updateDate(date)}
-                      className="h-10 text-sm font-black bg-muted/30 rounded-none"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground/70">
-                      Time
-                    </Label>
-                    <Input
-                      type="time"
-                      value={timeString}
-                      onChange={handleTimeChange}
-                      className="h-10 text-base font-black bg-muted/30 rounded-none border-border/40 focus:border-primary/50 transition-colors"
-                    />
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
             {/* 2. System Settings */}
             <AccordionItem value="settings">
               <AccordionTrigger>
@@ -389,6 +324,26 @@ export function LeftPane() {
                       />
                     </button>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                      Full Screen
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={toggleFullscreen}
+                      className={cn(
+                        "h-4 w-8 border transition-colors",
+                        isFullscreen ? "bg-primary" : "bg-muted",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-3 w-3 bg-white transition-transform",
+                          isFullscreen ? "translate-x-4" : "translate-x-0.5",
+                        )}
+                      />
+                    </button>
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -513,13 +468,9 @@ export function LeftPane() {
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Bortle
                     </span>
-                    {weatherLoading ? (
-                      <Skeleton className="h-4 w-8" />
-                    ) : (
-                      <div className="font-mono text-base font-black leading-none">
-                        {weather.bortle}
-                      </div>
-                    )}
+                    <div className="font-mono text-base font-black leading-none">
+                      {bortle}
+                    </div>
                   </div>
                   <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">

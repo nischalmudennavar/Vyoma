@@ -9,8 +9,15 @@ import { cn } from "@/lib/utils";
 import { useVyomaStore, type WeatherData } from "@/store/use-vyoma-store";
 import { getCardinalDirection } from "@/lib/astrometry-utils";
 
-export function MeteorologySection({ weather, loading }: { weather: WeatherData | null; loading: boolean }) {
+export function MeteorologySection({
+  weather,
+  loading,
+}: {
+  weather: WeatherData | null;
+  loading: boolean;
+}) {
   const isLoading = loading || !weather;
+  const bortle = useVyomaStore((state) => state.bortle);
   return (
     <PaneItemContainer
       title="Meteorology"
@@ -126,13 +133,7 @@ export function MeteorologySection({ weather, loading }: { weather: WeatherData 
             <Star className="w-3 h-3" />
             Bortle
           </div>
-          {isLoading ? (
-            <Skeleton className="h-4 w-10" />
-          ) : (
-            <div className="tactical-value tabular-nums">
-              {weather.bortle}
-            </div>
-          )}
+          <div className="tactical-value tabular-nums">{bortle}</div>
         </div>
       </div>
 
@@ -196,8 +197,15 @@ export function MeteorologySection({ weather, loading }: { weather: WeatherData 
   );
 }
 
-export function BortleSection({ bortle, loading }: { bortle: number | undefined; loading: boolean }) {
-  const isLoading = loading || bortle === undefined;
+export function BortleSection({
+  bortle: _ignored,
+  loading,
+}: {
+  bortle: number | undefined;
+  loading: boolean;
+}) {
+  const bortle = useVyomaStore((state) => state.bortle);
+  const isLoading = loading;
   return (
     <PaneItemContainer
       title="Light Pollution"
@@ -216,7 +224,13 @@ export function BortleSection({ bortle, loading }: { bortle: number | undefined;
         )}
       </div>
       <p className="text-[10px] text-muted-foreground leading-tight">
-        Class {bortle} indicates {bortle && bortle <= 3 ? "Excellent Dark Skies" : bortle && bortle <= 6 ? "Suburban Light Pollution" : "Heavy Urban Glow"}.
+        Class {bortle} indicates{" "}
+        {bortle <= 3
+          ? "Excellent Dark Skies"
+          : bortle <= 6
+            ? "Suburban Light Pollution"
+            : "Heavy Urban Glow"}
+        .
       </p>
     </PaneItemContainer>
   );
