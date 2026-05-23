@@ -4,15 +4,15 @@ import {
   Cloud,
   Compass,
   Keyboard as KeyboardIcon,
-  Maximize2,
-  Minimize2,
   Settings2,
   Star,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Container } from "@/components/layout/container";
 import { KeyboardShortcutsModal } from "@/components/layout/keyboard-shortcuts-modal";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
 import {
   Accordion,
   AccordionContent,
@@ -23,8 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Slider } from "@/components/ui/slider";
-import { useCelestialWorker } from "@/hooks/use-celestial-worker";
-import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
+import { useCelestialContext } from "@/context/celestial-context";
 import { cn } from "@/lib/utils";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 
@@ -64,7 +63,7 @@ function getCardinalDirection(azimuth: number): string {
   return directions[index];
 }
 
-function formatTime(date: Date | null): string {
+function formatTime(date: Date | null | undefined): string {
   if (!date || Number.isNaN(date.getTime())) return "--:--";
   return new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
@@ -138,19 +137,15 @@ export function LeftPane() {
     }
   };
 
-  const celestialPayload = useMemo(
-    () => ({
-      date: viewDate.toISOString(),
-      lat: location.lat,
-      lng: location.lng,
-    }),
-    [viewDate, location.lat, location.lng],
-  );
+  const {
+    gcPos,
+    sunPhases,
+    goldenHour,
+    moonPhase,
+    isLoading: isCelestialLoading,
+  } = useCelestialContext();
 
-  const { data, isLoading: isCelestialLoading } =
-    useCelestialWorker<CelestialData>("CALCULATE_ALL", celestialPayload);
-
-  const celestialLoading = !data || isCelestialLoading;
+  const celestialLoading = isCelestialLoading || !gcPos;
   const weatherLoading = isWeatherLoading || !weather;
 
   return (
@@ -366,7 +361,7 @@ export function LeftPane() {
                       <Skeleton className="h-4 w-8" />
                     ) : (
                       <span className="font-mono text-base font-black leading-none">
-                        {data.gcPos.alt.toFixed(2)}°
+                        {gcPos.alt.toFixed(2)}°
                       </span>
                     )}
                   </div>
@@ -378,9 +373,9 @@ export function LeftPane() {
                       <Skeleton className="h-4 w-12" />
                     ) : (
                       <span className="font-mono text-base font-black leading-none">
-                        {data.gcPos.az.toFixed(2)}°{" "}
+                        {gcPos.az.toFixed(2)}°{" "}
                         <span className="text-[10px] font-bold text-muted-foreground/60 ml-1">
-                          {getCardinalDirection(data.gcPos.az)}
+                          {getCardinalDirection(gcPos.az)}
                         </span>
                       </span>
                     )}
@@ -393,8 +388,8 @@ export function LeftPane() {
                       <Skeleton className="h-4 w-16" />
                     ) : (
                       <span className="font-mono text-base font-black text-orange-400 leading-none">
-                        {formatTime(data.sunPhases.sunrise)} /{" "}
-                        {formatTime(data.sunPhases.sunset)}
+                        {formatTime(sunPhases?.sunrise)} /{" "}
+                        {formatTime(sunPhases?.sunset)}
                       </span>
                     )}
                   </div>
@@ -406,8 +401,8 @@ export function LeftPane() {
                       <Skeleton className="h-4 w-20" />
                     ) : (
                       <span className="font-mono text-sm font-black text-orange-400/80 leading-none">
-                        {formatTime(data.goldenHour.morning.start)} |{" "}
-                        {formatTime(data.goldenHour.evening.start)}
+                        {formatTime(goldenHour?.morning.start)} |{" "}
+                        {formatTime(goldenHour?.evening.start)}
                       </span>
                     )}
                   </div>
@@ -420,9 +415,9 @@ export function LeftPane() {
                     ) : (
                       <div className="flex items-center gap-2 font-mono text-base font-black text-blue-300 leading-none">
                         <span className="text-xl leading-none">
-                          {getMoonIcon(data.moonPhase.phase)}
+                          {getMoonIcon(moonPhase?.phase ?? 0)}
                         </span>
-                        <span>{data.moonPhase.illumination.toFixed(1)}%</span>
+                        <span>{moonPhase?.illumination.toFixed(1)}%</span>
                       </div>
                     )}
                   </div>

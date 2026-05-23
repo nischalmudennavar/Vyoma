@@ -6,9 +6,11 @@ import {
   getMoonDetails,
   getMoonFreeWindow,
   getMoonPhase,
+  getMoonPosition,
   getMoonRiseSet,
   getMoonTrajectory,
   getSunDetails,
+  getSunPosition,
   getSunTrajectory,
   getTwilightPhases,
 } from "./astrometry";
@@ -31,6 +33,8 @@ self.onmessage = (event: MessageEvent) => {
       case "CALCULATE_ALL":
         result = {
           gcPos: getGalacticCorePosition(viewDate, lat, lng),
+          sunPos: getSunPosition(viewDate, lat, lng),
+          moonPos: getMoonPosition(viewDate, lat, lng),
           gcVis: getGalacticCoreVisibility(viewDate, lat, lng),
           sunPhases: getTwilightPhases(viewDate, lat, lng),
           moonRiseSet: getMoonRiseSet(viewDate, lat, lng),
