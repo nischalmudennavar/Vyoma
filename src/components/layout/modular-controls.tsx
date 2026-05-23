@@ -2,9 +2,9 @@
 
 import { Container } from "@/components/layout/container";
 import { LocationAutocomplete } from "@/components/location/location-autocomplete";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DatePicker } from "@/components/ui/date-picker";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 
 export function LocationControls() {

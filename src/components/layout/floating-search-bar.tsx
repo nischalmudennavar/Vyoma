@@ -1,11 +1,11 @@
 "use client";
 
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { Calendar, Clock, MapPin } from "lucide-react";
+import { Container } from "@/components/layout/container";
 import { LocationAutocomplete } from "@/components/location/location-autocomplete";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Container } from "@/components/layout/container";
-import { MapPin, Calendar, Clock } from "lucide-react";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 /**
  * A floating search bar (Airbnb-style) positioned at the top-center.

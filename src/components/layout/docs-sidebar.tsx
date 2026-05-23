@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { sidebarNavItems } from "@/lib/docs-config";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { sidebarNavItems } from "@/lib/docs-config";
+import { cn } from "@/lib/utils";
 
 interface DocsSidebarProps {
   /**

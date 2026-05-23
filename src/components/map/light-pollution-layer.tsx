@@ -76,7 +76,7 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
     } catch (err) {
       console.error("Failed to transfer canvas to worker:", err);
     }
-  }, [workerReady, isVisible]); // Re-bind if visibility changes and canvas is remounted
+  }, [workerReady]); // Re-bind if visibility changes and canvas is remounted
 
   // 4. The Render Loop (Triggered by map movement)
   useEffect(() => {

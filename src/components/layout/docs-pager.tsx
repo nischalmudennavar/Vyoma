@@ -1,10 +1,9 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { sidebarNavItems } from "@/lib/docs-config";
-import { cn } from "@/lib/utils";
 
 export function DocsPager() {
   const pathname = usePathname();
@@ -13,7 +12,8 @@ export function DocsPager() {
   const activeIndex = allItems.findIndex((item) => item.href === pathname);
 
   const prev = activeIndex > 0 ? allItems[activeIndex - 1] : null;
-  const next = activeIndex < allItems.length - 1 ? allItems[activeIndex + 1] : null;
+  const next =
+    activeIndex < allItems.length - 1 ? allItems[activeIndex + 1] : null;
 
   if (activeIndex === -1) return null;
 

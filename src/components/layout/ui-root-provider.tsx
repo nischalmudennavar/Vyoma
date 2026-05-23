@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { WeatherSync } from "@/components/weather/weather-sync";
+import { CelestialProvider } from "@/context/celestial-context";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
@@ -21,9 +22,9 @@ export function UIRootProvider({ children }: { children: React.ReactNode }) {
   }, [uiOpacity, baseFontSize]);
 
   return (
-    <>
+    <CelestialProvider>
       <WeatherSync />
       {children}
-    </>
+    </CelestialProvider>
   );
 }

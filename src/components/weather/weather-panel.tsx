@@ -5,9 +5,9 @@ import { Container } from "@/components/layout/container";
 import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { getCardinalDirection } from "@/lib/astrometry-utils";
 import { cn } from "@/lib/utils";
 import { useVyomaStore, type WeatherData } from "@/store/use-vyoma-store";
-import { getCardinalDirection } from "@/lib/astrometry-utils";
 
 export function MeteorologySection({
   weather,

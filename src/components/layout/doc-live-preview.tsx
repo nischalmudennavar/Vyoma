@@ -1,8 +1,8 @@
 "use client";
 
+import { Activity } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Activity } from "lucide-react";
 
 interface DocLivePreviewProps {
   children: ReactNode;
@@ -42,11 +42,9 @@ export function DocLivePreview({
       <div className="relative group">
         {/* Background glow for the live component */}
         <div className="absolute -inset-1 bg-linear-to-r from-primary/20 via-transparent to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none" />
-        
+
         <div className="relative bg-background/40 border border-border/40 p-1 md:p-8 backdrop-blur-xs overflow-hidden flex justify-center items-center">
-             <div className="w-full max-w-[320px]">
-                 {children}
-             </div>
+          <div className="w-full max-w-[320px]">{children}</div>
         </div>
       </div>
 

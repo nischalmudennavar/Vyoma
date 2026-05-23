@@ -1,15 +1,19 @@
 "use client";
 import { Binoculars, Clock, MapPin, Moon, Star, Sun } from "lucide-react";
+import { useMemo } from "react";
 import { Container } from "@/components/layout/container";
+import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
-import { cn } from "@/lib/utils";
-import { useVyomaStore } from "@/store/use-vyoma-store";
-import { formatTime, getCardinalDirection, getMoonIcon } from "@/lib/astrometry-utils";
-import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { useCelestialWorker } from "@/hooks/use-celestial-worker";
 import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
-import { useMemo } from "react";
+import {
+  formatTime,
+  getCardinalDirection,
+  getMoonIcon,
+} from "@/lib/astrometry-utils";
+import { cn } from "@/lib/utils";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 export interface CelestialData {
   gcPos: CelestialCoordinates;
@@ -26,7 +30,13 @@ export interface CelestialData {
   moonPhase: { phase: number; name: string; illumination: number };
 }
 
-export function GalacticCoreSection({ data, loading }: { data: CelestialData | null; loading: boolean }) {
+export function GalacticCoreSection({
+  data,
+  loading,
+}: {
+  data: CelestialData | null;
+  loading: boolean;
+}) {
   return (
     <PaneItemContainer
       title="Galactic Core"
@@ -73,7 +83,13 @@ export function GalacticCoreSection({ data, loading }: { data: CelestialData | n
   );
 }
 
-export function SunTwilightSection({ data, loading }: { data: CelestialData | null; loading: boolean }) {
+export function SunTwilightSection({
+  data,
+  loading,
+}: {
+  data: CelestialData | null;
+  loading: boolean;
+}) {
   return (
     <PaneItemContainer
       title="Sun & Twilight"
@@ -162,7 +178,13 @@ export function SunTwilightSection({ data, loading }: { data: CelestialData | nu
   );
 }
 
-export function MoonImagingSection({ data, loading }: { data: CelestialData | null; loading: boolean }) {
+export function MoonImagingSection({
+  data,
+  loading,
+}: {
+  data: CelestialData | null;
+  loading: boolean;
+}) {
   return (
     <PaneItemContainer
       title="Moon & Imaging"

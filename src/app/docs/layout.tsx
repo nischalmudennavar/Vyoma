@@ -1,11 +1,11 @@
 "use client";
 
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 import { DocsPager } from "@/components/layout/docs-pager";
-import { Button } from "@/components/ui/button";
 import { DocsSidebar } from "@/components/layout/docs-sidebar";
+import { Button } from "@/components/ui/button";
 
 /**
  * Documentation layout component.

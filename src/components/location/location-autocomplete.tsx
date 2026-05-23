@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 import { cn } from "@/lib/utils";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 interface SearchResult {
   place_id: number;
@@ -19,10 +19,10 @@ interface LocationAutocompleteProps {
   placeholder?: string;
 }
 
-export function LocationAutocomplete({ 
-  className, 
+export function LocationAutocomplete({
+  className,
   hideLabel = false,
-  placeholder = "e.g., Ladakh, India"
+  placeholder = "e.g., Ladakh, India",
 }: LocationAutocompleteProps) {
   const { location, updateLocation } = useVyomaStore();
   const [query, setQuery] = useState(location.label);

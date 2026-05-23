@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { FloatingSearchBar } from "@/components/layout/floating-search-bar";
 // Import modular components
 import { Header } from "@/components/layout/header";
 import { LeftPane } from "@/components/layout/left-pane";
-import { FloatingSearchBar } from "@/components/layout/floating-search-bar";
 
 const MapView = dynamic(
   () =>
