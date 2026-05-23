@@ -1,8 +1,9 @@
 "use client";
 
 import { memo, useEffect, useState } from "react";
-import { useMap } from "@/components/ui/map";
+import { MapMarker, MarkerContent, useMap } from "@/components/ui/map";
 import { useCelestialContext } from "@/context/celestial-context";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
  * Throttled SVG content that only re-renders when celestial data actually changes.
@@ -220,6 +221,7 @@ CelestialSVG.displayName = "CelestialSVG";
  */
 export function MapCelestialOverlay() {
   const { map } = useMap();
+  const { location } = useVyomaSelector(["location"]);
   const [bearing, setBearing] = useState(0);
 
   const {
@@ -245,17 +247,27 @@ export function MapCelestialOverlay() {
   const trajectory = ephemeris?.trajectories.gc || [];
 
   return (
-    <div className="relative w-[400px] h-[400px] flex items-center justify-center">
-      <CelestialSVG
-        sun={sun}
-        moon={moon}
-        core={core}
-        trajectory={trajectory}
-        bearing={bearing}
-      />
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 font-mono text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
-        Celestial Radar
-      </div>
-    </div>
+    <MapMarker
+      longitude={location.lng}
+      latitude={location.lat}
+      rotationAlignment="map"
+      pitchAlignment="map"
+      anchor="center"
+    >
+      <MarkerContent>
+        <div className="relative w-[400px] h-[400px] flex items-center justify-center">
+          <CelestialSVG
+            sun={sun}
+            moon={moon}
+            core={core}
+            trajectory={trajectory}
+            bearing={bearing}
+          />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 font-mono text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+            Celestial Radar
+          </div>
+        </div>
+      </MarkerContent>
+    </MapMarker>
   );
 }
