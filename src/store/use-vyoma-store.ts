@@ -25,6 +25,16 @@ export interface PanelPosition {
   y: number;
 }
 
+export interface CuratedSpot {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  bortle: number;
+  description: string;
+  distance?: number;
+}
+
 interface VyomaState {
   viewDate: Date;
   location: { lat: number; lng: number; label: string };
@@ -41,6 +51,7 @@ interface VyomaState {
   panelsLocked: boolean;
   showSettings: boolean;
   showLightPollution: boolean;
+  handpickedSpots: CuratedSpot[];
   updateTime: (hours: number, minutes: number) => void;
   updateDate: (date: Date) => void;
   updateLocation: (lat: number, lng: number, label?: string) => void;
@@ -57,6 +68,7 @@ interface VyomaState {
   updatePanelPosition: (id: string, position: PanelPosition) => void;
   setPanelsLocked: (locked: boolean) => void;
   toggleSettings: () => void;
+  setHandpickedSpots: (spots: CuratedSpot[]) => void;
 }
 
 export const useVyomaStore = create<VyomaState>()(
@@ -76,6 +88,7 @@ export const useVyomaStore = create<VyomaState>()(
     panelsLocked: false,
     showSettings: false,
     showLightPollution: false,
+    handpickedSpots: [],
     updateTime: (hours, minutes) =>
       set((state) => {
         const newDate = new Date(state.viewDate);
@@ -112,6 +125,7 @@ export const useVyomaStore = create<VyomaState>()(
     setPanelsLocked: (locked) => set({ panelsLocked: locked }),
     toggleSettings: () =>
       set((state) => ({ showSettings: !state.showSettings })),
+    setHandpickedSpots: (handpickedSpots) => set({ handpickedSpots }),
   })),
 );
 

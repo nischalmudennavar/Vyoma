@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef } from "react";
 import type { MapRef } from "@/components/ui/map";
 import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
 import { LightPollutionLayer } from "./light-pollution-layer";
+import { CuratedSpotsLayer } from "./curated-spots-layer";
+import { HandpickedSpotsLayer } from "./handpicked-spots-layer";
 
 const MapCelestialOverlay = dynamic(
   () =>
@@ -168,6 +170,12 @@ export function MapView() {
         doubleClickZoom={true}
         touchZoomRotate={{ around: "center" }}
       >
+        {/* Curated Dark Sky Spots */}
+        <CuratedSpotsLayer />
+
+        {/* Handpicked Dark Sky Spots (Filtered by proximity) */}
+        <HandpickedSpotsLayer />
+
         {/* The WASM Canvas Engine Layer */}
         <LightPollutionLayer isVisible={showLightPollution} />
 

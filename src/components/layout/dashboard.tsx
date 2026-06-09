@@ -5,6 +5,7 @@ import { FloatingSearchBar } from "@/components/layout/floating-search-bar";
 // Import modular components
 import { Header } from "@/components/layout/header";
 import { LeftPane } from "@/components/layout/left-pane";
+import { RightPane } from "@/components/layout/right-pane";
 
 const MapView = dynamic(
   () =>
@@ -56,6 +57,9 @@ export function Dashboard() {
         {/* Desktop Controls */}
         <div className="hidden md:block pointer-events-none">
           <LeftPane />
+          <div className="hidden xl:block">
+            <RightPane />
+          </div>
         </div>
 
         {/* Mobile Management */}

@@ -23,6 +23,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Slider } from "@/components/ui/slider";
+import { ScoutModePanel } from "./scout-mode-panel";
+import { SkyQualityBadge } from "./sky-quality-badge";
 import { useCelestialContext } from "@/context/celestial-context";
 import { cn } from "@/lib/utils";
 import { useVyomaStore } from "@/store/use-vyoma-store";
@@ -174,6 +176,11 @@ export function LeftPane() {
 
         {/* Scrollable Accordion Content */}
         <div className="flex-1 overflow-y-auto p-5 pt-0 custom-scrollbar">
+          <div className="py-5 space-y-4">
+            <SkyQualityBadge />
+            <ScoutModePanel />
+          </div>
+
           <Accordion
             type="multiple"
             defaultValue={["celestial"]}
@@ -461,14 +468,6 @@ export function LeftPane() {
                   </div>
                   <div className="space-y-1.5">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">
-                      Bortle
-                    </span>
-                    <div className="font-mono text-base font-black leading-none">
-                      {bortle}
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <span className="text-[9px] uppercase font-bold text-sky-400/70">
                       Seeing
                     </span>
                     {weatherLoading ? (
@@ -478,6 +477,9 @@ export function LeftPane() {
                         {weather.seeing}/5
                       </div>
                     )}
+                  </div>
+                  <div className="space-y-1.5 opacity-0 pointer-events-none">
+                    {/* Spacer for 2-column grid balance */}
                   </div>
                   <div className="col-span-2 pt-3 border-t border-sky-400/10 flex justify-between items-end">
                     <span className="text-[9px] uppercase font-bold text-sky-400/70">

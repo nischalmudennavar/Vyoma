@@ -386,3 +386,57 @@ export function getMoonDetails(date: Date) {
     angularDiameter: lib.diam_deg,
   };
 }
+
+export interface ObservationWindow {
+  start: Date | null;
+  end: Date | null;
+  isOptimal: boolean;
+}
+
+/**
+ * Finds the next optimal window for Galactic Core photography.
+ * Intersection of: Sun < -18deg, Moon < 0deg (or <5% illum), GC > 0deg.
+ */
+export function getNextGCObservationWindow(
+  date: Date,
+  lat: number,
+  lng: number,
+): ObservationWindow {
+  // We search over the next 48 hours to ensure we find a window
+  const sunTraj = getSunTrajectory(date, lat, lng, 48);
+  const moonTraj = getMoonTrajectory(date, lat, lng, 48);
+  const gcTraj = getGalacticCoreTrajectory(date, lat, lng, 48);
+  const moonPhase = getMoonPhase(date);
+
+  let start: Date | null = null;
+  let end: Date | null = null;
+
+  for (let i = 0; i < sunTraj.length; i++) {
+    const isDark = sunTraj[i].alt <= -18;
+    const isMoonless = moonTraj[i].alt <= 0 || moonPhase.illumination < 5;
+    const isGCVisible = gcTraj[i].alt >= 0;
+
+    // Is this specific moment valid?
+    if (isDark && isMoonless && isGCVisible) {
+      if (!start) start = sunTraj[i].time;
+      end = sunTraj[i].time;
+    } else if (start && end) {
+      // If we were in a window and it just ended, and it was long enough (>30m), we return it.
+      if (end.getTime() - start.getTime() > 30 * 60 * 1000) {
+        // If this window is in the future relative to the input date, we found it.
+        if (end.getTime() > date.getTime()) {
+          return { start, end, isOptimal: true };
+        }
+      }
+      // Reset to look for the NEXT one if this one was in the past.
+      start = null;
+      end = null;
+    }
+  }
+
+  return {
+    start: start,
+    end: end,
+    isOptimal: !!(start && end),
+  };
+}
