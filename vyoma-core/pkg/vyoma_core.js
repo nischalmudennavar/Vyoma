@@ -21,21 +21,6 @@ export class PollutionEngine {
         return ret;
     }
     /**
-     * @param {number} north
-     * @param {number} south
-     * @param {number} east
-     * @param {number} west
-     * @param {number} stride
-     * @param {number} max_bortle
-     * @returns {Float64Array}
-     */
-    get_viewport_dark_sites(north, south, east, west, stride, max_bortle) {
-        const ret = wasm.pollutionengine_get_viewport_dark_sites(this.__wbg_ptr, north, south, east, west, stride, max_bortle);
-        var v1 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
-        wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
-        return v1;
-    }
-    /**
      * @param {Uint8Array} data
      * @param {number} width
      * @param {number} height
@@ -52,33 +37,23 @@ export class PollutionEngine {
         PollutionEngineFinalization.register(this, this.__wbg_ptr, this);
         return this;
     }
+    /**
+     * @param {number} nw_lat
+     * @param {number} nw_lng
+     * @param {number} se_lat
+     * @param {number} se_lng
+     * @param {number} width
+     * @param {number} height
+     * @returns {Uint8Array}
+     */
+    render_image(nw_lat, nw_lng, se_lat, se_lng, width, height) {
+        const ret = wasm.pollutionengine_render_image(this.__wbg_ptr, nw_lat, nw_lng, se_lat, se_lng, width, height);
+        var v1 = getArrayU8FromWasm0(ret[0], ret[1]).slice();
+        wasm.__wbindgen_free(ret[0], ret[1] * 1, 1);
+        return v1;
+    }
 }
 if (Symbol.dispose) PollutionEngine.prototype[Symbol.dispose] = PollutionEngine.prototype.free;
-
-/**
- * @param {number} north
- * @param {number} south
- * @param {number} east
- * @param {number} west
- * @param {number} stride
- * @param {number} max_bortle
- * @param {Uint8Array} map_data
- * @param {number} width
- * @param {number} height
- * @param {number} origin_lon
- * @param {number} origin_lat
- * @param {number} pixel_width
- * @param {number} pixel_height
- * @returns {Float64Array}
- */
-export function get_viewport_dark_sites(north, south, east, west, stride, max_bortle, map_data, width, height, origin_lon, origin_lat, pixel_width, pixel_height) {
-    const ptr0 = passArray8ToWasm0(map_data, wasm.__wbindgen_malloc);
-    const len0 = WASM_VECTOR_LEN;
-    const ret = wasm.get_viewport_dark_sites(north, south, east, west, stride, max_bortle, ptr0, len0, width, height, origin_lon, origin_lat, pixel_width, pixel_height);
-    var v2 = getArrayF64FromWasm0(ret[0], ret[1]).slice();
-    wasm.__wbindgen_free(ret[0], ret[1] * 8, 8);
-    return v2;
-}
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
@@ -105,17 +80,9 @@ const PollutionEngineFinalization = (typeof FinalizationRegistry === 'undefined'
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_pollutionengine_free(ptr, 1));
 
-function getArrayF64FromWasm0(ptr, len) {
+function getArrayU8FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
-    return getFloat64ArrayMemory0().subarray(ptr / 8, ptr / 8 + len);
-}
-
-let cachedFloat64ArrayMemory0 = null;
-function getFloat64ArrayMemory0() {
-    if (cachedFloat64ArrayMemory0 === null || cachedFloat64ArrayMemory0.byteLength === 0) {
-        cachedFloat64ArrayMemory0 = new Float64Array(wasm.memory.buffer);
-    }
-    return cachedFloat64ArrayMemory0;
+    return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
 }
 
 function getStringFromWasm0(ptr, len) {
@@ -158,7 +125,6 @@ function __wbg_finalize_init(instance, module) {
     wasmInstance = instance;
     wasm = instance.exports;
     wasmModule = module;
-    cachedFloat64ArrayMemory0 = null;
     cachedUint8ArrayMemory0 = null;
     wasm.__wbindgen_start();
     return wasm;

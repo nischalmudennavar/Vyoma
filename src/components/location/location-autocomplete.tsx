@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 
 interface SearchResult {
@@ -12,7 +13,17 @@ interface SearchResult {
   lon: string;
 }
 
-export function LocationAutocomplete() {
+interface LocationAutocompleteProps {
+  className?: string;
+  hideLabel?: boolean;
+  placeholder?: string;
+}
+
+export function LocationAutocomplete({
+  className,
+  hideLabel = false,
+  placeholder = "e.g., Ladakh, India",
+}: LocationAutocompleteProps) {
   const { location, updateLocation } = useVyomaStore();
   const [query, setQuery] = useState(location.label);
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -82,17 +93,18 @@ export function LocationAutocomplete() {
   }, [query, location.label]);
 
   return (
-    <div className="space-y-2 relative" ref={wrapperRef}>
-      <Label htmlFor="location-search">Search</Label>
+    <div className="relative w-full" ref={wrapperRef}>
+      {!hideLabel && <Label htmlFor="location-search">Search</Label>}
       <Input
         id="location-search"
-        placeholder="e.g., Ladakh, India"
+        placeholder={placeholder}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onFocus={() => {
           if (results.length > 0) setIsOpen(true);
         }}
         autoComplete="off"
+        className={cn(className)}
       />
 
       {isOpen && results.length > 0 && (

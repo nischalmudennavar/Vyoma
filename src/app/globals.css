@@ -81,9 +81,8 @@
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(0.1558 0.0393 15.4394);
   --sidebar-ring: oklch(0.6122 0.2082 22.241);
-  --font-sans: "Inter", "Lora", sans-serif;
-  --font-serif: "Lora", serif;
-  --font-mono: "Fira Code", monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Jura", monospace;
   --radius: 0px;
   --shadow-x: 0px;
   --shadow-y: 3px;
@@ -105,9 +104,29 @@
     0px 3px 4px 0.5px hsl(0 0% 0% / 0.2), 0px 8px 10px -0.5px hsl(0 0% 0% / 0.2);
   --shadow-2xl: 0px 3px 4px 0.5px hsl(0 0% 0% / 0.5);
 
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
   /* Dynamic UI Settings */
   --ui-opacity: 0.8;
   --base-font-size: 14px;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
 }
 
 .dark {
@@ -177,4 +196,50 @@
   border-top-left-radius: none;
   border-top-right-radius: none;
   padding: 8px 46px;
+}
+
+.ephermis-container {
+  /* biome-ignore lint/correctness/noUnknownProperty: future update */
+  corner-shape: bevel;
+  border-radius: 128px 128px 0px 0px;
+  border-top-left-radius: none;
+  border-top-right-radius: none;
+
+  background: var(--background);
+}
+
+@utility shadow-tactical {
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 1);
+}
+
+@utility bg-tactical {
+  background-color: rgba(26, 26, 26, 0.85);
+}
+
+.tactical-glass {
+  background-color: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 1);
+}
+
+.tactical-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  font-family:
+    var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.tactical-value {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-family:
+    var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }

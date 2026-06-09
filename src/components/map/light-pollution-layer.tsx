@@ -2,28 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useMap } from "@/components/ui/map";
-import { useVyomaSelector } from "@/store/use-vyoma-store";
+import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
 
 export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
   const { map, isLoaded } = useMap();
-  const { lpOpacity } = useVyomaSelector(["lpOpacity"]);
+  const { lpOpacity, location } = useVyomaSelector(["lpOpacity", "location"]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [workerReady, setWorkerReady] = useState(false);
-  const [hasEverBeenVisible, setHasEverBeenVisible] = useState(false);
   const workerRef = useRef<Worker | null>(null);
 
-  // Track visibility to trigger lazy load
+  // 1. Initialize Worker (ALWAYS LOAD for background lookups)
   useEffect(() => {
-    if (isVisible && !hasEverBeenVisible) {
-      setHasEverBeenVisible(true);
-    }
-  }, [isVisible, hasEverBeenVisible]);
-
-  // 1. Initialize Worker (LAZY LOAD)
-  useEffect(() => {
-    if (!hasEverBeenVisible) return;
-
     const worker = new Worker(
       new URL("../../lib/pollution.worker.ts", import.meta.url),
     );
@@ -32,6 +22,9 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
     worker.onmessage = (e) => {
       if (e.data.type === "READY") {
         setWorkerReady(true);
+      } else if (e.data.type === "BORTLE_RESULT") {
+        const { bortle } = e.data.payload;
+        useVyomaStore.getState().setBortle(bortle);
       }
     };
 
@@ -58,9 +51,19 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
     return () => {
       worker.terminate();
     };
-  }, [hasEverBeenVisible]);
+  }, []); // Run once on mount
 
-  // 2. Pass OffscreenCanvas to Worker
+  // 2. Request Bortle on location change
+  useEffect(() => {
+    if (!workerRef.current || !workerReady) return;
+
+    workerRef.current.postMessage({
+      type: "GET_BORTLE",
+      payload: { lat: location.lat, lng: location.lng },
+    });
+  }, [location.lat, location.lng, workerReady]);
+
+  // 3. Pass OffscreenCanvas to Worker (only when visible/ready)
   useEffect(() => {
     if (!workerRef.current || !canvasRef.current || !workerReady) return;
 
@@ -73,9 +76,9 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
     } catch (err) {
       console.error("Failed to transfer canvas to worker:", err);
     }
-  }, [workerReady]);
+  }, [workerReady]); // Re-bind if visibility changes and canvas is remounted
 
-  // 3. The Render Loop (Triggered by map movement)
+  // 4. The Render Loop (Triggered by map movement)
   useEffect(() => {
     if (!isVisible || !isLoaded || !map || !workerReady || !workerRef.current)
       return;
@@ -116,12 +119,10 @@ export function LightPollutionLayer({ isVisible }: { isVisible: boolean }) {
     };
   }, [isVisible, isLoaded, map, workerReady]);
 
-  if (!isVisible) return null;
-
   return (
     <canvas
       ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full pointer-events-none z-10"
+      className={`absolute top-0 left-0 w-full h-full pointer-events-none z-10 transition-opacity duration-500 ${isVisible ? "opacity-100" : "opacity-0 invisible"}`}
       style={{
         imageRendering: "auto",
         mixBlendMode: "screen",

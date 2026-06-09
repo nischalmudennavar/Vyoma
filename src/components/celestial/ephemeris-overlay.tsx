@@ -5,23 +5,62 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef } from "react";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import {
-  getGalacticCoreTrajectory,
-  getMoonTrajectory,
-  getSunTrajectory,
-  getTwilightPhases,
-} from "@/lib/astrometry";
+import { DatePicker } from "@/components/ui/date-picker";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import type { TrajectoryPoint, TwilightPhases } from "@/lib/astrometry";
 import { useVyomaStore } from "@/store/use-vyoma-store";
 import { EphemerisTimeline } from "./ephemeris-timeline";
-// import { Joystick } from "@/components/ui/joystick";
+
+interface EphemerisResult {
+  trajectories: {
+    sun: TrajectoryPoint[];
+    moon: TrajectoryPoint[];
+    gc: TrajectoryPoint[];
+  };
+  twilightPhases: TwilightPhases;
+}
 
 export function EphemerisOverlay() {
   const { viewDate, location, updateTime, updateDate } = useVyomaStore();
 
-  // const [spatialData, setSpatialData] = useState({ x: 0, y: 0 });
-  // const [temporalData, setTemporalData] = useState({ x: 0, y: 0 });
-
   const activeKeys = useRef<Set<string>>(new window.Set());
+
+  const ephemerisPayload = useMemo(
+    () => ({
+      date: viewDate,
+      lat: location.lat,
+      lng: location.lng,
+    }),
+    [viewDate, location.lat, location.lng],
+  );
+
+  const { data: ephemerisData } = useCelestialWorker<EphemerisResult>(
+    "CALCULATE_EPHEMERIS",
+    ephemerisPayload,
+  );
+
+  const trajectories = useMemo(() => {
+    if (!ephemerisData) return [];
+    return [
+      {
+        id: "sun" as const,
+        color: "var(--chart-4)",
+        points: ephemerisData.trajectories.sun,
+      },
+      {
+        id: "moon" as const,
+        color: "var(--muted-foreground)",
+        points: ephemerisData.trajectories.moon,
+      },
+      {
+        id: "core" as const,
+        color: "var(--primary)",
+        points: ephemerisData.trajectories.gc,
+      },
+    ];
+  }, [ephemerisData]);
+
+  const twilightPhases = ephemerisData?.twilightPhases || null;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -148,48 +187,32 @@ export function EphemerisOverlay() {
     return () => cancelAnimationFrame(animationFrameId);
   }, []);
 
-  const { trajectories, twilightPhases } = useMemo(() => {
-    // Create a buffer starting 24 hours before the current viewDate
-    const bufferStartDate = new Date(viewDate);
-    bufferStartDate.setHours(0, 0, 0, 0);
-    bufferStartDate.setDate(bufferStartDate.getDate() - 1);
+  const currentAltitudes = useMemo(() => {
+    return trajectories.map((traj) => {
+      let alt = 0;
+      const tCurrent = viewDate.getTime();
+      const pts = traj.points;
 
-    return {
-      trajectories: [
-        {
-          id: "sun" as const,
-          color: "var(--chart-4)",
-          points: getSunTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-        {
-          id: "moon" as const,
-          color: "var(--muted-foreground)",
-          points: getMoonTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-        {
-          id: "core" as const,
-          color: "var(--primary)",
-          points: getGalacticCoreTrajectory(
-            bufferStartDate,
-            location.lat,
-            location.lng,
-            72,
-          ),
-        },
-      ],
-      twilightPhases: getTwilightPhases(viewDate, location.lat, location.lng),
-    };
-  }, [viewDate, location.lat, location.lng]);
+      if (pts.length > 0) {
+        let found = false;
+        for (let i = 0; i < pts.length - 1; i++) {
+          const t1 = pts[i].time.getTime();
+          const t2 = pts[i + 1].time.getTime();
+          if (tCurrent >= t1 && tCurrent <= t2) {
+            const progress = (tCurrent - t1) / (t2 - t1);
+            alt = pts[i].alt + (pts[i + 1].alt - pts[i].alt) * progress;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          if (tCurrent < pts[0].time.getTime()) alt = pts[0].alt;
+          else alt = pts[pts.length - 1].alt;
+        }
+      }
+      return { id: traj.id, color: traj.color, alt };
+    });
+  }, [trajectories, viewDate]);
 
   const handleTimeChange = (newTime: Date) => {
     if (
@@ -205,28 +228,58 @@ export function EphemerisOverlay() {
   return (
     <Container
       applyUiOpacity
-      className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[80%] md:min-w-150 max-w-250 h-20 rounded-none shadow-2xl bg-background/50 backdrop-blur-xl border border-border group overflow-hidden flex items-stretch"
+      className="absolute bottom-13 left-1/2 -translate-x-1/2 z-20 w-[94%] md:w-[96%] md:min-w-250 max-w-250 h-32 rounded-none group overflow-hidden flex flex-col "
     >
-      {/* 
-      <div className="flex items-center justify-center px-4 md:px-8 border-r border-border/40 bg-background/20 z-10 shrink-0 pointer-events-auto">
-        <Joystick
-          size={56}
-          knobSize={24}
-          title=""
-          labels={{ top: "N", bottom: "S", left: "W", right: "E" }}
-          onDrag={setSpatialData}
-        />
+      <div className="flex items-center w-[84%] left-20 relative justify-between px-4 py-2  pointer-events-auto">
+        <div className="flex gap-6">
+          {currentAltitudes.map((h) => (
+            <div key={`stat-${h.id}`} className="flex flex-col">
+              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">
+                {h.id}
+              </span>
+              <span
+                className="text-xs font-mono font-bold"
+                style={{ color: h.color }}
+              >
+                {h.alt.toFixed(1)}°
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] font-bold tracking-tighter text-foreground leading-none">
+              {viewDate.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            <DatePicker
+              date={viewDate}
+              setDate={(date) => date && updateDate(date)}
+            >
+              <span className="text-[8px] uppercase font-mono text-muted-foreground tracking-widest cursor-pointer hover:text-primary transition-colors">
+                {viewDate.toLocaleDateString([], {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            </DatePicker>
+          </div>
+        </div>
       </div>
-      */}
 
       <div className="flex-1 relative pointer-events-auto">
-        <EphemerisTimeline
-          activeDate={viewDate}
-          currentTime={viewDate}
-          trajectories={trajectories}
-          twilightPhases={twilightPhases}
-          onTimeChange={handleTimeChange}
-        />
+        {twilightPhases && (
+          <EphemerisTimeline
+            currentTime={viewDate}
+            trajectories={trajectories}
+            twilightPhases={twilightPhases}
+            onTimeChange={handleTimeChange}
+          />
+        )}
       </div>
 
       {/*

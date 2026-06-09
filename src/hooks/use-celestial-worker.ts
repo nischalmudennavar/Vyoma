@@ -1,54 +1,63 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-
-interface WorkerPayload {
-  date: string | Date | number;
-  lat: number;
-  lng: number;
-  [key: string]: unknown;
-}
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
- * Custom hook to interact with the Celestial Web Worker.
- * Offloads heavy astronomy calculations from the main thread.
+ * useCelestialWorker
+ *
+ * A hook to interact with the celestial calculation web worker.
+ * Handles worker instantiation, message passing, and state management.
  */
-export function useCelestialWorker<T>(type: string, payload: WorkerPayload) {
+export function useCelestialWorker<T>(type: string, payload: any) {
   const [data, setData] = useState<T | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    // Initialize worker
-    workerRef.current = new Worker(
-      new URL("../lib/astrometry.worker.ts", import.meta.url),
-    );
+    // Create worker only on client side
+    if (typeof window === "undefined") return;
 
-    workerRef.current.onmessage = (event: MessageEvent) => {
+    if (!workerRef.current) {
+      workerRef.current = new Worker(
+        new URL("../lib/astrometry.worker.ts", import.meta.url),
+        { type: "module" },
+      );
+    }
+
+    const worker = workerRef.current;
+
+    const handleMessage = (event: MessageEvent) => {
       const { type: responseType, payload: responsePayload } = event.data;
 
       if (responseType === `${type}_SUCCESS`) {
         setData(responsePayload);
         setIsLoading(false);
+        setError(null);
       } else if (responseType === "ERROR") {
         setError(responsePayload);
         setIsLoading(false);
       }
     };
 
-    return () => {
-      workerRef.current?.terminate();
-    };
-  }, [type]);
-
-  useEffect(() => {
-    if (!workerRef.current || !payload.date || !payload.lat || !payload.lng)
-      return;
+    worker.addEventListener("message", handleMessage);
 
     setIsLoading(true);
-    workerRef.current.postMessage({ type, payload });
-  }, [type, payload.date, payload.lat, payload.lng]);
+    worker.postMessage({ type, payload });
+
+    return () => {
+      worker.removeEventListener("message", handleMessage);
+    };
+  }, [type, payload]);
+
+  // Cleanup worker on unmount
+  useEffect(() => {
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+        workerRef.current = null;
+      }
+    };
+  }, []);
 
   return { data, isLoading, error };
 }

@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { Geist, Jura } from "next/font/google";
 import "./globals.css";
 import { UIRootProvider } from "@/components/layout/ui-root-provider";
 import { ThemeProvider } from "@/context/theme-provider";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({
+const jura = Jura({
   subsets: ["latin"],
   variable: "--font-mono",
 });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -37,9 +32,8 @@ export default function RootLayout({
         "h-full",
         "antialiased",
         geistSans.variable,
-        geistMono.variable,
         "font-mono",
-        jetbrainsMono.variable,
+        jura.variable,
       )}
       suppressHydrationWarning
     >

@@ -31,7 +31,7 @@ export function WeatherSync() {
           setWeatherLoading(false);
         }
       }
-    }, 5000);
+    }, 1500);
 
     return () => {
       active = false;

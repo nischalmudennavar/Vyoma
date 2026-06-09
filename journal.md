@@ -61,11 +61,39 @@ Implemented a fully offline, microsecond-fast light pollution lookup engine by c
 
 ---
 
-## **Current Project State (May 17, 2026)**
+### **2026-05-19: UI Consolidation & Ergonomics**
+- **Panel Consolidation:** Resolved vertical UI bloat by refactoring four dense floating panels (`UtilsPane`, `ControlPanel`, `AstronomyDetails`, `WeatherPanel`) into a single, comprehensive `LeftPane`.
+- **Accordion Integration:** Implemented a robust accordion system (via Radix UI) within the `LeftPane` to allow users to toggle sections (Geospatial & Time, System Parameters, Celestial Metrics, Meteorological), significantly reducing control fatigue.
+- **Keyboard Ergonomics:** Extracted keyboard shortcuts from the persistent control panel into a dedicated, accessible `KeyboardShortcutsModal`, further cleaning up the primary interface while maintaining discoverability.
+- **Aesthetic Enforcement:** Ensured all new components strictly adhere to the project's "Technical Brutalism" standard (zero-radii, high contrast, semantic tokens).
+
+---
+
+### **2026-05-20: Documentation Architecture & Sidebar Refinement**
+- **Component Modularization:** Refactored the internal `NavContent` from the documentation layout into a standalone, reusable `DocsSidebar` component. This improves maintainability and separation of concerns.
+- **UI/UX Enhancement:** Significantly improved the sidebar's navigation experience:
+    - Implemented high-contrast hover states (`hover:bg-primary/10`) for better visibility in all themes.
+    - Added a primary-accented hover indicator (indicator dot) to provide clearer interactive feedback.
+    - Refined typography and spacing to align with the project's **Swiss Aesthetic** (zero-radii, uppercase tracking, mono-font hierarchy).
+- **Typography Migration:** Replaced Geist Mono with **Jura** as the project's primary monospace font, enhancing the technical and celestial aesthetic.
+- **LeftPane Legibility Overhaul:** Significantly improved the visibility of numerical data within the primary control interface:
+    - Increased data font size to `text-base` (16px) and weight to `font-black`.
+    - Expanded vertical spacing and alignment between data rows to reduce cognitive load.
+    - Standardized inputs and display metrics for a high-contrast, "instrument-cluster" feel.
+- **Floating Control Island:** Extracted Geospatial and Chronological controls into a new `FloatingSearchBar` component:
+    - Positioned at top-center for prominence and ease of access (Airbnb-style search).
+    - Maintained **Swiss Aesthetic** with sharp corners and high-contrast tactile elements.
+    - Streamlined the `LeftPane` by removing redundant control groups.
+- **Layout Cleanup:** Streamlined `src/app/docs/layout.tsx` by removing redundant code and improving the mobile menu integration.
+
+---
+
+## **Current Project State (May 20, 2026)**
 The project has evolved into a sophisticated celestial navigation tool. Key strengths include:
 - **Offline Intelligence:** High-performance light pollution and celestial data available without connectivity.
 - **High-Precision Astrometry:** Worker-based calculations for smooth performance.
 - **Modern Infrastructure:** Powered by Next.js 16, React 19, and Bun for a cutting-edge development experience.
+- **Modular Architecture:** Increasingly component-driven, with reusable UI patterns for both the dashboard and documentation.
 - **Rigorous Design System:** Strict adherence to the Swiss Aesthetic and semantic tokens.
 - **Real-time Synchronization:** Seamless integration of time, location, and weather data.
 

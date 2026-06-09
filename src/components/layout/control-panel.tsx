@@ -4,20 +4,20 @@ import { Clock, Keyboard, MapPin } from "lucide-react";
 import { Container } from "@/components/layout/container";
 import { PaneItemContainer } from "@/components/layout/pane-item-container";
 import { LocationAutocomplete } from "@/components/location/location-autocomplete";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 export function ControlPanel() {
   const { location, viewDate, updateDate, updateTime, updateLocation } =
-    useVyomaStore();
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) {
-      const [year, month, day] = e.target.value.split("-").map(Number);
-      updateDate(new Date(year, month - 1, day));
-    }
-  };
+    useVyomaSelector([
+      "location",
+      "viewDate",
+      "updateDate",
+      "updateTime",
+      "updateLocation",
+    ]);
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
@@ -25,11 +25,6 @@ export function ControlPanel() {
       updateTime(hours, minutes);
     }
   };
-
-  const year = viewDate.getFullYear();
-  const month = (viewDate.getMonth() + 1).toString().padStart(2, "0");
-  const day = viewDate.getDate().toString().padStart(2, "0");
-  const dateString = `${year}-${month}-${day}`;
 
   const hours = viewDate.getHours().toString().padStart(2, "0");
   const minutes = viewDate.getMinutes().toString().padStart(2, "0");
@@ -108,12 +103,9 @@ export function ControlPanel() {
             >
               Date
             </Label>
-            <Input
-              id="date"
-              type="date"
-              value={dateString}
-              onChange={handleDateChange}
-              className="bg-background/50"
+            <DatePicker
+              date={viewDate}
+              setDate={(date) => date && updateDate(date)}
             />
           </div>
           <div className="space-y-2">

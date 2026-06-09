@@ -2,9 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
-import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
-import { LightPollutionLayer } from "./light-pollution-layer";
 import type { MapRef } from "@/components/ui/map";
+import { getReverseGeocode } from "@/lib/geocoding";
+import { useVyomaSelector, useVyomaStore } from "@/store/use-vyoma-store";
+import { CuratedSpotsLayer } from "./curated-spots-layer";
+import { HandpickedSpotsLayer } from "./handpicked-spots-layer";
+import { LightPollutionLayer } from "./light-pollution-layer";
 
 const MapCelestialOverlay = dynamic(
   () =>
@@ -55,27 +58,6 @@ function CoordinateTooltip() {
       </div>
     </div>
   );
-}
-
-/**
- * Performs reverse geocoding to get a human-readable address from coordinates.
- */
-async function getReverseGeocode(lat: number, lng: number): Promise<string> {
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
-      {
-        headers: {
-          "Accept-Language": "en",
-        },
-      },
-    );
-    const data = await res.json();
-    return data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-  } catch (error) {
-    console.error("[MapView] Reverse geocoding failed:", error);
-    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-  }
 }
 
 /**
@@ -131,12 +113,18 @@ export function MapView() {
     return unsubscribe;
   }, []);
 
+  const lastUpdateRef = useRef(0);
+
   const handleViewportChangeWrapper = useCallback(
     (vp: { center: [number, number]; zoom: number }) => {
       // If the map is moving because of a store update, don't sync back to the store.
       if (isInternalUpdate.current) return;
 
-      // Continuous update for store (used by Tooltip and Astronomy calculations).
+      const now = Date.now();
+      if (now - lastUpdateRef.current < 100) return;
+      lastUpdateRef.current = now;
+
+      // Throttled update for store (used by Tooltip and Astronomy calculations).
       // We pull current label directly from store to avoid a React dependency on 'location'.
       const currentLabel = useVyomaStore.getState().location.label;
       updateLocation(vp.center[1], vp.center[0], currentLabel);
@@ -168,6 +156,12 @@ export function MapView() {
         doubleClickZoom={true}
         touchZoomRotate={{ around: "center" }}
       >
+        {/* Curated Dark Sky Spots */}
+        <CuratedSpotsLayer />
+
+        {/* Handpicked Dark Sky Spots (Filtered by proximity) */}
+        <HandpickedSpotsLayer />
+
         {/* The WASM Canvas Engine Layer */}
         <LightPollutionLayer isVisible={showLightPollution} />
 

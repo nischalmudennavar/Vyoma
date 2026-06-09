@@ -1,12 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { FloatingSearchBar } from "@/components/layout/floating-search-bar";
 // Import modular components
-import { AstronomyDetails } from "@/components/celestial/astronomy-details";
-import { ControlPanel } from "@/components/layout/control-panel";
 import { Header } from "@/components/layout/header";
-import { UtilsPane } from "@/components/layout/utils-pane";
-import { WeatherPanel } from "@/components/weather/weather-panel";
+import { LeftPane } from "@/components/layout/left-pane";
+import { RightPane } from "@/components/layout/right-pane";
 
 const MapView = dynamic(
   () =>
@@ -49,28 +48,17 @@ export function Dashboard() {
   return (
     <div className="h-screen w-full overflow-hidden bg-background text-foreground relative">
       <Header />
+      <FloatingSearchBar />
       {/* <CommandPalette /> */}
 
       <main className="w-full h-full relative">
         <MapView />
 
-        {/* Desktop Left Control Panel */}
-        <div className="hidden md:flex absolute top-28 left-8 z-20 flex-col gap-6 max-h-[calc(100%-6rem)] overflow-y-auto pointer-events-none">
-          <div className="pointer-events-auto">
-            <UtilsPane />
-          </div>
-          <div className="pointer-events-auto">
-            <ControlPanel />
-          </div>
-        </div>
-
-        {/* Desktop Right Info Panels */}
-        <div className="hidden md:flex absolute top-28 right-8 z-20 flex-col gap-6 max-h-[calc(100%-4rem)] overflow-y-auto pointer-events-none">
-          <div className="pointer-events-auto">
-            <AstronomyDetails />
-          </div>
-          <div className="pointer-events-auto">
-            <WeatherPanel />
+        {/* Desktop Controls */}
+        <div className="hidden md:block pointer-events-none">
+          <LeftPane />
+          <div className="hidden xl:block">
+            <RightPane />
           </div>
         </div>
 

@@ -10,12 +10,29 @@ export interface WeatherData {
   weatherCode: number;
   condition: string;
   cloudCover: number;
+  cloudCoverHigh: number;
+  cloudCoverMid: number;
+  cloudCoverLow: number;
   pressure: number;
+  dewPoint: number;
+  seeing: number; // 1-5
+  transparency: number; // 1-5
+  bortle: number; // 1-9
 }
 
 export interface PanelPosition {
   x: number;
   y: number;
+}
+
+export interface CuratedSpot {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  bortle: number;
+  description: string;
+  distance?: number;
 }
 
 interface VyomaState {
@@ -29,10 +46,12 @@ interface VyomaState {
   baseFontSize: number;
   weather: WeatherData | null;
   isWeatherLoading: boolean;
+  bortle: number; // Single source of truth for Bortle class
   panelPositions: Record<string, PanelPosition>;
   panelsLocked: boolean;
   showSettings: boolean;
   showLightPollution: boolean;
+  handpickedSpots: CuratedSpot[];
   updateTime: (hours: number, minutes: number) => void;
   updateDate: (date: Date) => void;
   updateLocation: (lat: number, lng: number, label?: string) => void;
@@ -45,9 +64,11 @@ interface VyomaState {
   setBaseFontSize: (size: number) => void;
   setWeather: (weather: WeatherData | null) => void;
   setWeatherLoading: (loading: boolean) => void;
+  setBortle: (bortle: number) => void;
   updatePanelPosition: (id: string, position: PanelPosition) => void;
   setPanelsLocked: (locked: boolean) => void;
   toggleSettings: () => void;
+  setHandpickedSpots: (spots: CuratedSpot[]) => void;
 }
 
 export const useVyomaStore = create<VyomaState>()(
@@ -62,10 +83,12 @@ export const useVyomaStore = create<VyomaState>()(
     baseFontSize: 14,
     weather: null,
     isWeatherLoading: false,
+    bortle: 1, // Default Bortle
     panelPositions: {},
     panelsLocked: false,
     showSettings: false,
     showLightPollution: false,
+    handpickedSpots: [],
     updateTime: (hours, minutes) =>
       set((state) => {
         const newDate = new Date(state.viewDate);
@@ -94,6 +117,7 @@ export const useVyomaStore = create<VyomaState>()(
     setBaseFontSize: (size) => set({ baseFontSize: size }),
     setWeather: (weather) => set({ weather }),
     setWeatherLoading: (loading) => set({ isWeatherLoading: loading }),
+    setBortle: (bortle) => set({ bortle }),
     updatePanelPosition: (id, position) =>
       set((state) => ({
         panelPositions: { ...state.panelPositions, [id]: position },
@@ -101,6 +125,7 @@ export const useVyomaStore = create<VyomaState>()(
     setPanelsLocked: (locked) => set({ panelsLocked: locked }),
     toggleSettings: () =>
       set((state) => ({ showSettings: !state.showSettings })),
+    setHandpickedSpots: (handpickedSpots) => set({ handpickedSpots }),
   })),
 );
 

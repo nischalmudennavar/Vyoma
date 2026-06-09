@@ -1,0 +1,58 @@
+[
+  {
+    "id": "hanle",
+    "name": "Hanle Dark Sky Reserve",
+    "lat": 32.7794,
+    "lng": 78.9754,
+    "bortle": 1,
+    "description": "India's first Dark Sky Reserve, located in the high-altitude desert of Ladakh."
+  },
+  {
+    "id": "cherry-springs",
+    "name": "Cherry Springs State Park",
+    "lat": 41.6639,
+    "lng": -77.8222,
+    "bortle": 2,
+    "description": "One of the best dark sky spots in the Eastern US."
+  },
+  {
+    "id": "mauna-kea",
+    "name": "Mauna Kea",
+    "lat": 19.8206,
+    "lng": -155.4681,
+    "bortle": 1,
+    "description": "Premier astronomical site with world-class observatories."
+  },
+  {
+    "id": "teide",
+    "name": "Teide National Park",
+    "lat": 28.2723,
+    "lng": -16.6425,
+    "bortle": 2,
+    "description": "Exceptional dark skies in the Canary Islands."
+  },
+  {
+    "id": "warrumbungle",
+    "name": "Warrumbungle National Park",
+    "lat": -31.2721,
+    "lng": 149.0681,
+    "bortle": 1,
+    "description": "Australia's first International Dark Sky Park."
+  },
+  {
+    "id": "namib-rand",
+    "name": "NamibRand Nature Reserve",
+    "lat": -24.9602,
+    "lng": 15.8953,
+    "bortle": 1,
+    "description": "Pristine dark skies in the Namib Desert."
+  },
+  {
+    "id": "ataca-desert",
+    "name": "Atacama Desert",
+    "lat": -23.8634,
+    "lng": -67.4847,
+    "bortle": 1,
+    "description": "Unparalleled clarity and darkness in Chile."
+  }
+]

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import type { TrajectoryPoint, TwilightPhases } from "@/lib/astrometry";
 
 interface EphemerisTimelineProps {
-  activeDate: Date;
   currentTime: Date;
   trajectories: {
     id: "sun" | "moon" | "core";
@@ -16,7 +15,6 @@ interface EphemerisTimelineProps {
 }
 
 export function EphemerisTimeline({
-  activeDate,
   currentTime,
   trajectories,
   twilightPhases,
@@ -27,6 +25,13 @@ export function EphemerisTimeline({
   const [isDragging, setIsDragging] = useState(false);
   const [localTime, setLocalTime] = useState(currentTime.getTime());
 
+  // Hover state
+  const [hoverX, setHoverX] = useState<number | null>(null);
+  const [hoverTimeMs, setHoverTimeMs] = useState<number | null>(null);
+  const [hoverAltitudes, setHoverAltitudes] = useState<
+    { id: string; color: string; alt: number }[]
+  >([]);
+
   // Sync local time when external time changes and we aren't dragging
   useEffect(() => {
     if (!isDragging) {
@@ -35,17 +40,18 @@ export function EphemerisTimeline({
   }, [currentTime, isDragging]);
 
   useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.offsetWidth,
-          height: containerRef.current.offsetHeight,
-        });
-      }
-    };
-    updateDimensions();
-    window.addEventListener("resize", updateDimensions);
-    return () => window.removeEventListener("resize", updateDimensions);
+    const el = containerRef.current;
+    if (!el) return;
+
+    const observer = new ResizeObserver(() => {
+      setDimensions({
+        width: el.offsetWidth,
+        height: el.offsetHeight,
+      });
+    });
+
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -54,18 +60,64 @@ export function EphemerisTimeline({
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || e.buttons === 0) return;
+    if (isDragging && e.buttons > 0) {
+      // Pan interaction: e.movementX pixels corresponds to shifting time
+      // We keep 24 hours of width on the screen
+      const msPerPixel = (24 * 60 * 60 * 1000) / dimensions.width;
 
-    // Pan interaction: e.movementX pixels corresponds to shifting time
-    // We keep 24 hours of width on the screen
-    const msPerPixel = (24 * 60 * 60 * 1000) / dimensions.width;
+      // Dragging right moves the graph right -> moves backwards in time
+      const deltaMs = -e.movementX * msPerPixel;
 
-    // Dragging right moves the graph right -> moves backwards in time
-    const deltaMs = -e.movementX * msPerPixel;
+      const newTimeMs = localTime + deltaMs;
+      setLocalTime(newTimeMs);
+      onTimeChange(new Date(newTimeMs));
 
-    const newTimeMs = localTime + deltaMs;
-    setLocalTime(newTimeMs);
-    onTimeChange(new Date(newTimeMs));
+      setHoverX(null);
+      setHoverTimeMs(null);
+    } else if (!isDragging && containerRef.current) {
+      // Hover interaction
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      setHoverX(x);
+
+      const msPerPixel = (24 * 60 * 60 * 1000) / dimensions.width;
+      const msDiff = (x - dimensions.width / 2) * msPerPixel;
+      const timeAtHover = localTime + msDiff;
+      setHoverTimeMs(timeAtHover);
+
+      const altData = trajectories.map((traj) => {
+        let interpolatedAlt = 0;
+        if (traj.points.length > 0) {
+          let found = false;
+          for (let i = 0; i < traj.points.length - 1; i++) {
+            const t1 = traj.points[i].time.getTime();
+            const t2 = traj.points[i + 1].time.getTime();
+            if (timeAtHover >= t1 && timeAtHover <= t2) {
+              const progress = (timeAtHover - t1) / (t2 - t1);
+              interpolatedAlt =
+                traj.points[i].alt +
+                (traj.points[i + 1].alt - traj.points[i].alt) * progress;
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            if (timeAtHover < traj.points[0].time.getTime())
+              interpolatedAlt = traj.points[0].alt;
+            else interpolatedAlt = traj.points[traj.points.length - 1].alt;
+          }
+        }
+        return { id: traj.id, color: traj.color, alt: interpolatedAlt };
+      });
+      setHoverAltitudes(altData);
+    }
+  };
+
+  const handlePointerLeave = () => {
+    if (!isDragging) {
+      setHoverX(null);
+      setHoverTimeMs(null);
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -201,25 +253,32 @@ export function EphemerisTimeline({
   };
 
   const currentDisplayDate = new Date(localTime);
-  const timeString = currentDisplayDate.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const dayString = currentDisplayDate.toLocaleDateString([], {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full select-none touch-none rounded-none overflow-hidden cursor-ew-resize bg-transparent"
+      className="relative w-full h-full select-none touch-none rounded-none  border-background overflow-hidden cursor-ew-resize bg-transparent ephermis-container shadow-tactical"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
     >
+      {/* Legend */}
+      {/* <div className="absolute top-2 left-3 pointer-events-none flex gap-2 z-10">
+        {trajectories.map((traj) => (
+          <div key={`legend-${traj.id}`} className="flex items-center gap-1.5">
+            <div
+              className="w-2 h-2 rounded-none shadow-sm"
+              style={{ backgroundColor: traj.color }}
+            />
+            <span className="text-[8px] uppercase font-mono font-bold text-foreground/80 tracking-wider">
+              {traj.id}
+            </span>
+          </div>
+        ))}
+      </div> */}
+
       <svg
         width={width}
         height={height}
@@ -323,19 +382,33 @@ export function EphemerisTimeline({
         />
       </svg>
 
-      {/* Soft Fade Gradients overlay to make it look like a rolling cylinder */}
-      <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background to-transparent pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+      {/* Hover Tooltip & Markers */}
+      {hoverX !== null && hoverTimeMs !== null && !isDragging && (
+        <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+          {/* Vertical line at hover */}
+          <div
+            className="absolute top-0 bottom-0 border-l border-foreground/50 border-dashed"
+            style={{ left: hoverX }}
+          />
 
-      {/* Info Overlay */}
-      <div className="absolute bottom-1 right-4 pointer-events-none text-right">
-        <div className="text-sm font-bold tracking-tighter text-foreground leading-none">
-          {timeString}
+          {/* Hover points on the curves */}
+          {hoverAltitudes.map((h) => (
+            <div
+              key={`pt-${h.id}`}
+              className="absolute w-2 h-2 -ml-1 -mt-1 rounded-none shadow-sm"
+              style={{
+                left: hoverX,
+                top: altToY(h.alt),
+                backgroundColor: h.color,
+              }}
+            />
+          ))}
         </div>
-        <div className="text-[8px] uppercase font-mono text-muted-foreground">
-          {dayString}
-        </div>
-      </div>
+      )}
+
+      {/* Soft Fade Gradients overlay to make it look like a rolling cylinder */}
+      <div className="absolute inset-y-0 left-0 w-16 bg-linear-to-r from-background to-transparent pointer-events-none" />
+      <div className="absolute inset-y-0 right-0 w-16 bg-linear-to-l from-background to-transparent pointer-events-none" />
     </div>
   );
 }

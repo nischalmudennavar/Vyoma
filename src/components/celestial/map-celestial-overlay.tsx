@@ -1,56 +1,250 @@
 "use client";
 
-import { useMemo } from "react";
-import { MapMarker, MarkerContent } from "@/components/ui/map";
-import {
-  getGalacticCorePosition,
-  getGalacticCoreTrajectory,
-  getMoonPosition,
-  getSunPosition,
-} from "@/lib/astrometry";
+import { memo, useEffect, useState } from "react";
+import { MapMarker, MarkerContent, useMap } from "@/components/ui/map";
+import { useCelestialContext } from "@/context/celestial-context";
 import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
+ * Throttled SVG content that only re-renders when celestial data actually changes.
+ */
+const CelestialSVG = memo(
+  ({
+    sun,
+    moon,
+    core,
+    trajectory,
+    bearing,
+  }: {
+    sun: any;
+    moon: any;
+    core: any;
+    trajectory: any[];
+    bearing: number;
+  }) => {
+    const RADAR_SIZE = 400;
+    const CENTER = RADAR_SIZE / 2;
+    const RADIUS = CENTER - 40;
+
+    // Helper to convert Az/Alt to SVG coordinates
+    const polarToCartesian = (az: number, alt: number, r: number) => {
+      const angleRad = ((az - 90) * Math.PI) / 180;
+      const currentR = r * (1 - Math.max(0, alt) / 90);
+      return {
+        x: CENTER + currentR * Math.cos(angleRad),
+        y: CENTER + currentR * Math.sin(angleRad),
+      };
+    };
+
+    const sunXY = polarToCartesian(sun.az, sun.alt, RADIUS);
+    const moonXY = polarToCartesian(moon.az, moon.alt, RADIUS);
+    const coreXY = polarToCartesian(core.az, core.alt, RADIUS);
+
+    return (
+      <svg
+        width={RADAR_SIZE}
+        height={RADAR_SIZE}
+        viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`}
+        className="overflow-visible"
+      >
+        <defs>
+          <radialGradient id="radar-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <g
+          style={{
+            transform: `rotate(${-bearing}deg)`,
+            transformOrigin: "center",
+          }}
+        >
+          {/* 0. Visibility Wedge (FOV) */}
+          <path
+            d={`M ${CENTER} ${CENTER} L ${CENTER + RADIUS * Math.cos(((-30 - 90) * Math.PI) / 180)} ${CENTER + RADIUS * Math.sin(((-30 - 90) * Math.PI) / 180)} A ${RADIUS} ${RADIUS} 0 0 1 ${CENTER + RADIUS * Math.cos(((30 - 90) * Math.PI) / 180)} ${CENTER + RADIUS * Math.sin(((30 - 90) * Math.PI) / 180)} Z`}
+            fill="var(--primary)"
+            className="opacity-5"
+          />
+
+          {/* 1. The Reticle (Concentric Elevation Rings) */}
+          <circle
+            cx={CENTER}
+            cy={CENTER}
+            r={RADIUS}
+            fill="url(#radar-glow)"
+            stroke="currentColor"
+            className="text-foreground/10"
+            strokeWidth="1"
+          />
+          {[30, 60].map((alt) => (
+            <circle
+              key={alt}
+              cx={CENTER}
+              cy={CENTER}
+              r={RADIUS * (1 - alt / 90)}
+              fill="none"
+              stroke="currentColor"
+              className="text-foreground/5"
+              strokeWidth="0.5"
+              strokeDasharray="4 4"
+            />
+          ))}
+
+          {/* Cardinal Markers */}
+          {["N", "E", "S", "W"].map((label, i) => {
+            const angle = (i * 90 * Math.PI) / 180 - Math.PI / 2;
+            const tx = CENTER + (RADIUS + 15) * Math.cos(angle);
+            const ty = CENTER + (RADIUS + 15) * Math.sin(angle);
+            return (
+              <text
+                key={label}
+                x={tx}
+                y={ty}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="fill-foreground/40 font-mono text-[10px] font-black uppercase tracking-widest"
+                transform={`rotate(${bearing}, ${tx}, ${ty})`}
+              >
+                {label}
+              </text>
+            );
+          })}
+
+          {/* 3. Galactic Arc (Trajectory) */}
+          <g className="galactic-arc">
+            {trajectory.map((point, i) => {
+              if (point.alt < 0) return null;
+              const { x, y } = polarToCartesian(point.az, point.alt, RADIUS);
+              const size = 0.5 + (point.alt / 90) * 2;
+              const opacity = 0.1 + (point.alt / 90) * 0.6;
+              return (
+                <circle
+                  key={i}
+                  cx={x}
+                  cy={y}
+                  r={size}
+                  className="fill-primary"
+                  style={{ opacity }}
+                />
+              );
+            })}
+          </g>
+
+          {/* 4. Active Bodies */}
+          {sun.isAboveHorizon && (
+            <g filter="url(#glow)">
+              <circle
+                cx={sunXY.x}
+                cy={sunXY.y}
+                r="4"
+                className="fill-primary shadow-tactical"
+              />
+              <text
+                x={sunXY.x}
+                y={sunXY.y - 8}
+                textAnchor="middle"
+                className="fill-primary font-mono text-[8px] font-black uppercase tracking-tighter"
+                transform={`rotate(${bearing}, ${sunXY.x}, ${sunXY.y - 8})`}
+              >
+                SUN
+              </text>
+            </g>
+          )}
+
+          {moon.isAboveHorizon && (
+            <g>
+              <circle
+                cx={moonXY.x}
+                cy={moonXY.y}
+                r="3"
+                className="fill-foreground"
+              />
+              <text
+                x={moonXY.x}
+                y={moonXY.y - 8}
+                textAnchor="middle"
+                className="fill-foreground font-mono text-[8px] font-black uppercase tracking-tighter"
+                transform={`rotate(${bearing}, ${moonXY.x}, ${moonXY.y - 8})`}
+              >
+                MOON
+              </text>
+            </g>
+          )}
+
+          {core.isAboveHorizon && (
+            <g filter="url(#glow)">
+              <circle
+                cx={coreXY.x}
+                cy={coreXY.y}
+                r="5"
+                className="fill-primary animate-pulse"
+              />
+              <text
+                x={coreXY.x}
+                y={coreXY.y - 10}
+                textAnchor="middle"
+                className="fill-primary font-mono text-[9px] font-black uppercase tracking-tighter"
+                transform={`rotate(${bearing}, ${coreXY.x}, ${coreXY.y - 10})`}
+              >
+                CORE
+              </text>
+            </g>
+          )}
+
+          {/* 5. Center Pivot */}
+          <circle
+            cx={CENTER}
+            cy={CENTER}
+            r={4}
+            className="fill-background stroke-primary stroke-[2]"
+          />
+          <circle cx={CENTER} cy={CENTER} r={1} className="fill-primary" />
+        </g>
+      </svg>
+    );
+  },
+);
+
+CelestialSVG.displayName = "CelestialSVG";
+
+/**
  * MapCelestialOverlay
- * A geographically-synced SVG layer that renders celestial trajectories,
- * current azimuths, and a precision reticle centered on the observer.
- * Uses MapMarker for absolute precision and zero drift.
+ * Sit directly on the map view, providing a technical instrumentation layer.
  */
 export function MapCelestialOverlay() {
-  const { location, viewDate } = useVyomaSelector(["location", "viewDate"]);
+  const { map } = useMap();
+  const { location } = useVyomaSelector(["location"]);
+  const [bearing, setBearing] = useState(0);
 
-  const data = useMemo(() => {
-    const sunPos = getSunPosition(viewDate, location.lat, location.lng);
-    const moonPos = getMoonPosition(viewDate, location.lat, location.lng);
-    const corePos = getGalacticCorePosition(
-      viewDate,
-      location.lat,
-      location.lng,
-    );
-    const coreTrajectory = getGalacticCoreTrajectory(
-      viewDate,
-      location.lat,
-      location.lng,
-      24,
-    );
+  const {
+    sunPos: sun,
+    moonPos: moon,
+    gcPos: core,
+    ephemeris,
+    isLoading,
+  } = useCelestialContext();
 
-    return { sunPos, moonPos, corePos, coreTrajectory };
-  }, [viewDate, location.lat, location.lng]);
-
-  const lineLength = 2000;
-
-  // Helper to convert azimuth to SVG coordinates
-  const azToCoords = (az: number, length: number) => {
-    // Note: Since the marker is viewport-aligned, we don't need to factor in bearing here
-    // as the azimuth lines are rendered relative to the viewport.
-    // Wait, actually we DO need bearing if we want them to point to geographic north.
-    // But if we want it to be an instrument overlay, we can use map-alignment.
-    const rad = ((az - 90) * Math.PI) / 180;
-    return {
-      x: length * Math.cos(rad),
-      y: length * Math.sin(rad),
+  useEffect(() => {
+    if (!map) return;
+    setBearing(map.getBearing());
+    const handleMove = () => setBearing(map.getBearing());
+    map.on("move", handleMove);
+    return () => {
+      map.off("move", handleMove);
     };
-  };
+  }, [map]);
+
+  if (!sun || !moon || !core) return null;
+
+  const trajectory = ephemeris?.trajectories.gc || [];
 
   return (
     <MapMarker
@@ -61,182 +255,18 @@ export function MapCelestialOverlay() {
       anchor="center"
     >
       <MarkerContent>
-        <svg
-          width="1"
-          height="1"
-          className="pointer-events-none"
-          style={{ overflow: "visible" }}
-        >
-          <defs>
-            <radialGradient
-              id="fov-gradient"
-              gradientUnits="userSpaceOnUse"
-              cx="0"
-              cy="0"
-              r="400"
-            >
-              <stop offset="0%" stopColor="white" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="white" stopOpacity="0" />
-            </radialGradient>
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="blur" />
-              <feComposite in="SourceGraphic" in2="blur" operator="over" />
-            </filter>
-          </defs>
-
-          {/* 1. The Reticle (Concentric Circles) */}
-          <g className="reticle">
-            {[100, 200, 300].map((radius) => (
-              <circle
-                key={radius}
-                cx="0"
-                cy="0"
-                r={radius}
-                fill="none"
-                stroke="white"
-                strokeWidth="1"
-                strokeOpacity="0.1"
-              />
-            ))}
-            {[0, 90, 180, 270].map((az) => {
-              const p1 = azToCoords(az, 90);
-              const p2 = azToCoords(az, 310);
-              return (
-                <line
-                  key={`axis-${az}`}
-                  x1={p1.x}
-                  y1={p1.y}
-                  x2={p2.x}
-                  y2={p2.y}
-                  stroke="white"
-                  strokeWidth="1"
-                  strokeOpacity="0.05"
-                />
-              );
-            })}
-          </g>
-
-          {/* 2. The Visibility/FOV Wedge */}
-          <g className="fov-wedge">
-            {(() => {
-              const startAz = data.corePos.az - 30;
-              const endAz = data.corePos.az + 30;
-              const p1 = azToCoords(startAz, 400);
-              const p2 = azToCoords(endAz, 400);
-
-              return (
-                <path
-                  d={`M 0 0 L ${p1.x} ${p1.y} A 400 400 0 0 1 ${p2.x} ${p2.y} Z`}
-                  fill="url(#fov-gradient)"
-                  stroke="white"
-                  strokeWidth="0.5"
-                  strokeOpacity="0.2"
-                  className="backdrop-blur-[1px]"
-                />
-              );
-            })()}
-          </g>
-
-          {/* 3. The Galactic Arc */}
-          <g className="galactic-arc">
-            {data.coreTrajectory.map((point, i) => {
-              const radius = ((90 - point.alt) / 90) * 300;
-              if (point.alt < -20 || radius > 400) return null;
-
-              const coords = azToCoords(point.az, radius);
-              const opacity = Math.max(0.05, (point.alt + 20) / 110);
-              const size = Math.max(1, (point.alt + 20) / 30);
-
-              return (
-                <circle
-                  key={`core-traj-${i}`}
-                  cx={coords.x}
-                  cy={coords.y}
-                  r={size}
-                  fill="white"
-                  fillOpacity={opacity}
-                />
-              );
-            })}
-          </g>
-
-          {/* 4. Current Ephemeris Lines */}
-          <g className="ephemeris-lines">
-            {/* Sun Line */}
-            <g>
-              <line
-                x1="0"
-                y1="0"
-                x2={azToCoords(data.sunPos.az, lineLength).x}
-                y2={azToCoords(data.sunPos.az, lineLength).y}
-                stroke="#fbbf24"
-                strokeWidth="1.5"
-                strokeOpacity={data.sunPos.isAboveHorizon ? 0.8 : 0.3}
-              />
-              <text
-                {...azToCoords(data.sunPos.az, 180)}
-                fill="#fbbf24"
-                fillOpacity={data.sunPos.isAboveHorizon ? 0.9 : 0.4}
-                fontSize="10"
-                fontWeight="900"
-                className="font-mono uppercase tracking-[0.2em]"
-                textAnchor="start"
-                dx="10"
-                transform={`rotate(${data.sunPos.az - 90}, ${azToCoords(data.sunPos.az, 180).x}, ${azToCoords(data.sunPos.az, 180).y})`}
-              >
-                Sun
-              </text>
-            </g>
-
-            {/* Moon Line */}
-            <g>
-              <line
-                x1="0"
-                y1="0"
-                x2={azToCoords(data.moonPos.az, lineLength).x}
-                y2={azToCoords(data.moonPos.az, lineLength).y}
-                stroke="white"
-                strokeWidth="1.5"
-                strokeOpacity={data.moonPos.isAboveHorizon ? 0.8 : 0.3}
-                strokeDasharray={data.moonPos.isAboveHorizon ? "none" : "4 4"}
-              />
-              <text
-                {...azToCoords(data.moonPos.az, 180)}
-                fill="white"
-                fillOpacity={data.moonPos.isAboveHorizon ? 0.9 : 0.4}
-                fontSize="10"
-                fontWeight="900"
-                className="font-mono uppercase tracking-[0.2em]"
-                textAnchor="start"
-                dx="10"
-                transform={`rotate(${data.moonPos.az - 90}, ${azToCoords(data.moonPos.az, 180).x}, ${azToCoords(data.moonPos.az, 180).y})`}
-              >
-                Moon
-              </text>
-            </g>
-          </g>
-
-          {/* 5. Center Pivot */}
-          <g className="center-pivot">
-            <circle
-              cx="0"
-              cy="0"
-              r="8"
-              fill="none"
-              stroke="oklch(0.7 0.1 40)"
-              strokeWidth="1.5"
-            />
-            <circle
-              cx="0"
-              cy="0"
-              r="4"
-              fill="oklch(0.15 0.02 15)"
-              stroke="oklch(0.7 0.1 40)"
-              strokeWidth="0.5"
-            />
-            <circle cx="0" cy="0" r="1" fill="oklch(0.7 0.1 40)" />
-          </g>
-        </svg>
+        <div className="relative w-[400px] h-[400px] flex items-center justify-center">
+          <CelestialSVG
+            sun={sun}
+            moon={moon}
+            core={core}
+            trajectory={trajectory}
+            bearing={bearing}
+          />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 font-mono text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+            Celestial Radar
+          </div>
+        </div>
       </MarkerContent>
     </MapMarker>
   );
