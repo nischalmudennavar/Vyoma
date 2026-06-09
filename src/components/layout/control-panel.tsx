@@ -7,11 +7,17 @@ import { LocationAutocomplete } from "@/components/location/location-autocomplet
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 export function ControlPanel() {
   const { location, viewDate, updateDate, updateTime, updateLocation } =
-    useVyomaStore();
+    useVyomaSelector([
+      "location",
+      "viewDate",
+      "updateDate",
+      "updateTime",
+      "updateLocation",
+    ]);
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {

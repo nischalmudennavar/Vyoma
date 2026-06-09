@@ -1,9 +1,9 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MapMarker, MarkerContent, MarkerTooltip } from "@/components/ui/map";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Star } from "lucide-react";
 
 interface CuratedSpot {
   id: string;
@@ -48,7 +48,10 @@ export function CuratedSpotsLayer() {
               <div className="absolute inset-0 bg-yellow-400/30 rounded-none blur-md group-hover:bg-yellow-400/50 transition-colors animate-pulse" />
               {/* Swiss Aesthetic Marker: Diamond/Square rotated */}
               <div className="relative h-4 w-4 rotate-45 border border-yellow-400 bg-background flex items-center justify-center shadow-[0_0_10px_rgba(250,204,21,0.4)] transition-transform group-hover:scale-110 active:scale-95">
-                <Star className="w-2.5 h-2.5 text-yellow-400 -rotate-45" fill="currentColor" />
+                <Star
+                  className="w-2.5 h-2.5 text-yellow-400 -rotate-45"
+                  fill="currentColor"
+                />
               </div>
             </div>
           </MarkerContent>

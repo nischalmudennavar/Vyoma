@@ -11,8 +11,6 @@ import { useEffect, useState } from "react";
 
 import { Container } from "@/components/layout/container";
 import { KeyboardShortcutsModal } from "@/components/layout/keyboard-shortcuts-modal";
-import { useCelestialWorker } from "@/hooks/use-celestial-worker";
-import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
 import {
   Accordion,
   AccordionContent,
@@ -23,11 +21,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Slider } from "@/components/ui/slider";
+import { useCelestialContext } from "@/context/celestial-context";
+import { useCelestialWorker } from "@/hooks/use-celestial-worker";
+import type { CelestialCoordinates, TwilightPhases } from "@/lib/astrometry";
+import { cn } from "@/lib/utils";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 import { ScoutModePanel } from "./scout-mode-panel";
 import { SkyQualityBadge } from "./sky-quality-badge";
-import { useCelestialContext } from "@/context/celestial-context";
-import { cn } from "@/lib/utils";
-import { useVyomaStore } from "@/store/use-vyoma-store";
 
 // --- Helper Functions (Shared from previous panels) ---
 
@@ -94,10 +94,6 @@ export function LeftPane() {
 
   const {
     location,
-    viewDate,
-    updateDate,
-    updateTime,
-    updateLocation,
     uiOpacity,
     setUiOpacity,
     mapVisibility,
@@ -114,8 +110,25 @@ export function LeftPane() {
     toggleLightPollution,
     weather,
     isWeatherLoading,
-    bortle,
-  } = useVyomaStore();
+  } = useVyomaSelector([
+    "location",
+    "uiOpacity",
+    "setUiOpacity",
+    "mapVisibility",
+    "setMapVisibility",
+    "lpOpacity",
+    "setLpOpacity",
+    "baseFontSize",
+    "setBaseFontSize",
+    "panelsLocked",
+    "setPanelsLocked",
+    "showMoon",
+    "toggleMoon",
+    "showLightPollution",
+    "toggleLightPollution",
+    "weather",
+    "isWeatherLoading",
+  ]);
 
   useEffect(() => {
     const handleFullscreenChange = () => {

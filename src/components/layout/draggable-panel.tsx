@@ -4,7 +4,7 @@ import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 interface DraggablePanelProps {
   id: string;
@@ -19,7 +19,10 @@ export function DraggablePanel({
   defaultPosition = { x: 24, y: 24 },
   className,
 }: DraggablePanelProps) {
-  const { panelPositions, panelsLocked } = useVyomaStore();
+  const { panelPositions, panelsLocked } = useVyomaSelector([
+    "panelPositions",
+    "panelsLocked",
+  ]);
   const position = panelPositions[id] || defaultPosition;
 
   const { attributes, listeners, setNodeRef, transform, isDragging } =

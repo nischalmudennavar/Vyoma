@@ -1,8 +1,8 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { MapMarker, MarkerContent, MarkerTooltip } from "@/components/ui/map";
 import { useVyomaStore } from "@/store/use-vyoma-store";
-import { Star } from "lucide-react";
 
 export function HandpickedSpotsLayer() {
   const { handpickedSpots, updateLocation } = useVyomaStore();
@@ -34,7 +34,9 @@ export function HandpickedSpotsLayer() {
               <span className="font-black uppercase tracking-[0.2em] text-[9px] text-primary">
                 Handpicked Dark Site
               </span>
-              <span className="font-bold text-sm text-foreground">{spot.name}</span>
+              <span className="font-bold text-sm text-foreground">
+                {spot.name}
+              </span>
               <span className="text-[10px] text-muted-foreground uppercase font-mono">
                 Bortle {spot.bortle} • {spot.distance?.toFixed(0)}km away
               </span>

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { useVyomaStore } from "@/store/use-vyoma-store";
+import { useVyomaSelector } from "@/store/use-vyoma-store";
 
 /**
  * SettingsPanel component refactored into a detailed dialog.
@@ -37,7 +37,18 @@ export function SettingsPanel() {
     toggleMoon,
     showLightPollution,
     toggleLightPollution,
-  } = useVyomaStore();
+  } = useVyomaSelector([
+    "showSettings",
+    "toggleSettings",
+    "mapVisibility",
+    "setMapVisibility",
+    "baseFontSize",
+    "setBaseFontSize",
+    "showMoon",
+    "toggleMoon",
+    "showLightPollution",
+    "toggleLightPollution",
+  ]);
 
   const handleFontSizeChange = (delta: number) => {
     setBaseFontSize(Math.max(10, Math.min(24, baseFontSize + delta)));

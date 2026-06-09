@@ -1,8 +1,8 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * useCelestialWorker
- * 
+ *
  * A hook to interact with the celestial calculation web worker.
  * Handles worker instantiation, message passing, and state management.
  */
@@ -10,7 +10,7 @@ export function useCelestialWorker<T>(type: string, payload: any) {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export function useCelestialWorker<T>(type: string, payload: any) {
     if (!workerRef.current) {
       workerRef.current = new Worker(
         new URL("../lib/astrometry.worker.ts", import.meta.url),
-        { type: "module" }
+        { type: "module" },
       );
     }
 

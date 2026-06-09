@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useVyomaStore } from "@/store/use-vyoma-store";
-import { getNextGCObservationWindow, type ObservationWindow } from "@/lib/astrometry";
-import { Button } from "@/components/ui/button";
 import { FastForward, Info, Timer } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  getNextGCObservationWindow,
+  type ObservationWindow,
+} from "@/lib/astrometry";
 import { cn } from "@/lib/utils";
+import { useVyomaStore } from "@/store/use-vyoma-store";
 
 export function ScoutModePanel() {
   const { viewDate, location, updateDate } = useVyomaStore();
@@ -13,7 +16,11 @@ export function ScoutModePanel() {
 
   useEffect(() => {
     // Calculate the next window whenever date or location changes
-    const result = getNextGCObservationWindow(viewDate, location.lat, location.lng);
+    const result = getNextGCObservationWindow(
+      viewDate,
+      location.lat,
+      location.lng,
+    );
     setWindow(result);
   }, [viewDate, location.lat, location.lng]);
 
@@ -33,10 +40,13 @@ export function ScoutModePanel() {
     );
   }
 
-  const isCurrentlyInWindow = viewDate >= window.start && viewDate <= window.end;
+  const isCurrentlyInWindow =
+    viewDate >= window.start && viewDate <= window.end;
   const timeUntilStart = window.start.getTime() - viewDate.getTime();
   const hoursUntil = Math.floor(timeUntilStart / (1000 * 60 * 60));
-  const minutesUntil = Math.floor((timeUntilStart % (1000 * 60 * 60)) / (1000 * 60));
+  const minutesUntil = Math.floor(
+    (timeUntilStart % (1000 * 60 * 60)) / (1000 * 60),
+  );
 
   const formatTime = (date: Date) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -49,33 +59,45 @@ export function ScoutModePanel() {
   const handleJump = () => {
     if (window.start) {
       // Update global store to the start of the window
-      // Note: use-vyoma-store has updateDate but it preserves hours/mins? 
+      // Note: use-vyoma-store has updateDate but it preserves hours/mins?
       // Actually updateDate in store sets Year/Month/Day but preserves time.
       // We might need a full setViewDate or use updateDate + updateTime.
-      
+
       // Let's use updateDate then updateTime (hacky but works with current store)
       updateDate(window.start);
-      useVyomaStore.getState().updateTime(window.start.getHours(), window.start.getMinutes());
+      useVyomaStore
+        .getState()
+        .updateTime(window.start.getHours(), window.start.getMinutes());
     }
   };
 
   return (
-    <div className={cn(
-      "border p-4 space-y-4 transition-colors",
-      isCurrentlyInWindow 
-        ? "bg-primary/10 border-primary/50" 
-        : "bg-background border-border/60"
-    )}>
+    <div
+      className={cn(
+        "border p-4 space-y-4 transition-colors",
+        isCurrentlyInWindow
+          ? "bg-primary/10 border-primary/50"
+          : "bg-background border-border/60",
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Timer className={cn("w-4 h-4", isCurrentlyInWindow ? "text-primary" : "text-muted-foreground")} />
+          <Timer
+            className={cn(
+              "w-4 h-4",
+              isCurrentlyInWindow ? "text-primary" : "text-muted-foreground",
+            )}
+          />
           <h3 className="text-[10px] font-black uppercase tracking-widest">
-            {isCurrentlyInWindow ? "Optimal Window Active" : "Next Observation Window"}
+            {isCurrentlyInWindow
+              ? "Optimal Window Active"
+              : "Next Observation Window"}
           </h3>
         </div>
         {!isCurrentlyInWindow && (
           <span className="font-mono text-[10px] text-muted-foreground font-bold">
-            IN {hoursUntil > 0 ? `${hoursUntil}H ` : ""}{minutesUntil}M
+            IN {hoursUntil > 0 ? `${hoursUntil}H ` : ""}
+            {minutesUntil}M
           </span>
         )}
       </div>
@@ -91,14 +113,18 @@ export function ScoutModePanel() {
           </span>
         </div>
         <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
-          {window.start.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+          {window.start.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          })}
         </p>
       </div>
 
       {!isCurrentlyInWindow && (
-        <Button 
-          variant="primary" 
-          size="sm" 
+        <Button
+          variant="default"
+          size="sm"
           className="w-full h-8 text-[10px] font-black uppercase tracking-widest gap-2"
           onClick={handleJump}
         >

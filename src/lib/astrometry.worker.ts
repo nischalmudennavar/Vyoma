@@ -1,3 +1,4 @@
+import { Observer } from "astronomy-engine";
 import {
   getGalacticCorePosition,
   getGalacticCoreTrajectory,
@@ -30,21 +31,23 @@ self.onmessage = (event: MessageEvent) => {
     const { durationHours = 24 } = payload;
 
     switch (type) {
-      case "CALCULATE_ALL":
+      case "CALCULATE_ALL": {
+        const observer = new Observer(lat, lng, 0);
         result = {
-          gcPos: getGalacticCorePosition(viewDate, lat, lng),
-          sunPos: getSunPosition(viewDate, lat, lng),
-          moonPos: getMoonPosition(viewDate, lat, lng),
+          gcPos: getGalacticCorePosition(viewDate, lat, lng, observer),
+          sunPos: getSunPosition(viewDate, lat, lng, observer),
+          moonPos: getMoonPosition(viewDate, lat, lng, observer),
           gcVis: getGalacticCoreVisibility(viewDate, lat, lng),
-          sunPhases: getTwilightPhases(viewDate, lat, lng),
-          moonRiseSet: getMoonRiseSet(viewDate, lat, lng),
+          sunPhases: getTwilightPhases(viewDate, lat, lng, observer),
+          moonRiseSet: getMoonRiseSet(viewDate, lat, lng, observer),
           moonFreeWindow: getMoonFreeWindow(viewDate, lat, lng),
-          goldenHour: getGoldenHour(viewDate, lat, lng),
-          sunDetails: getSunDetails(viewDate, lat, lng),
+          goldenHour: getGoldenHour(viewDate, lat, lng, observer),
+          sunDetails: getSunDetails(viewDate, lat, lng, observer),
           moonDetails: getMoonDetails(viewDate),
           moonPhase: getMoonPhase(viewDate),
         };
         break;
+      }
 
       case "CALCULATE_TRAJECTORIES":
         result = {

@@ -1,14 +1,23 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { Star, MapPin, Navigation } from "lucide-react";
+import { MapPin, Navigation, Star } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/layout/container";
-import { useVyomaStore, useVyomaSelector, type CuratedSpot } from "@/store/use-vyoma-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import {
+  type CuratedSpot,
+  useVyomaSelector,
+  useVyomaStore,
+} from "@/store/use-vyoma-store";
 
 // Haversine formula to calculate distance in km
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) {
   const R = 6371; // Earth's radius in km
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLon = (lon2 - lon1) * (Math.PI / 180);
@@ -26,9 +35,14 @@ const CACHE_KEY = "vyoma-curated-spots";
 const RADIUS_KM = 1000;
 
 export function RightPane() {
-  const { location } = useVyomaSelector(["location"]);
-  const { updateLocation, updateZoom, setHandpickedSpots } = useVyomaStore();
-  
+  const { location, updateLocation, updateZoom, setHandpickedSpots } =
+    useVyomaSelector([
+      "location",
+      "updateLocation",
+      "updateZoom",
+      "setHandpickedSpots",
+    ]);
+
   const [allSpots, setAllSpots] = useState<CuratedSpot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isGlobalMode, setIsGlobalMode] = useState(false);
@@ -66,7 +80,12 @@ export function RightPane() {
       .filter((spot) => spot.bortle <= 3)
       .map((spot) => ({
         ...spot,
-        distance: calculateDistance(location.lat, location.lng, spot.lat, spot.lng),
+        distance: calculateDistance(
+          location.lat,
+          location.lng,
+          spot.lat,
+          spot.lng,
+        ),
       }))
       .sort((a, b) => a.distance! - b.distance!);
 
@@ -76,9 +95,10 @@ export function RightPane() {
     return { local, global };
   }, [allSpots, location.lat, location.lng]);
 
-  const displaySpots = isGlobalMode || processedSpots.local.length === 0 
-    ? processedSpots.global 
-    : processedSpots.local;
+  const displaySpots =
+    isGlobalMode || processedSpots.local.length === 0
+      ? processedSpots.global
+      : processedSpots.local;
 
   // 3. Update global state for map layer
   useEffect(() => {
@@ -101,11 +121,15 @@ export function RightPane() {
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-black tracking-widest uppercase">
-                {isGlobalMode || processedSpots.local.length === 0 ? "Global Highlights" : "Nearby Dark Sites"}
+                {isGlobalMode || processedSpots.local.length === 0
+                  ? "Global Highlights"
+                  : "Nearby Dark Sites"}
               </h2>
             </div>
             <span className="text-[9px] font-mono text-muted-foreground uppercase tracking-tight">
-              {isGlobalMode || processedSpots.local.length === 0 ? "Top World Sites" : `Within ${RADIUS_KM}km`}
+              {isGlobalMode || processedSpots.local.length === 0
+                ? "Top World Sites"
+                : `Within ${RADIUS_KM}km`}
             </span>
           </div>
           <div className="text-[10px] font-mono text-primary font-bold uppercase bg-primary/10 px-2 py-0.5 border border-primary/20">
@@ -119,11 +143,13 @@ export function RightPane() {
             {showFallback && (
               <div className="p-4 mb-2 bg-primary/5 border border-primary/20 text-center">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono leading-relaxed">
-                  No sites within {RADIUS_KM}km.<br/>Showing Global Highlights instead.
+                  No sites within {RADIUS_KM}km.
+                  <br />
+                  Showing Global Highlights instead.
                 </p>
               </div>
             )}
-            
+
             {displaySpots.length === 0 ? (
               <div className="p-8 text-center">
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
@@ -152,7 +178,12 @@ export function RightPane() {
                   <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground uppercase">
                     <div className="flex items-center gap-1">
                       <Navigation className="w-3 h-3" />
-                      <span>{spot.distance > 5000 ? ">5000" : spot.distance?.toFixed(0)} km</span>
+                      <span>
+                        {spot.distance > 5000
+                          ? ">5000"
+                          : spot.distance?.toFixed(0)}{" "}
+                        km
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <MapPin className="w-3 h-3 text-primary" />
@@ -173,7 +204,12 @@ export function RightPane() {
             onClick={() => setIsGlobalMode(!isGlobalMode)}
             className="text-[9px] font-mono text-muted-foreground hover:text-primary uppercase tracking-widest transition-colors flex items-center gap-2"
           >
-            <div className={cn("w-2 h-2 border border-muted-foreground", isGlobalMode && "bg-primary border-primary")} />
+            <div
+              className={cn(
+                "w-2 h-2 border border-muted-foreground",
+                isGlobalMode && "bg-primary border-primary",
+              )}
+            />
             {isGlobalMode ? "Switch to Nearby" : "Show All Global Sites"}
           </button>
         </div>

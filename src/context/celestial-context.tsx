@@ -117,11 +117,9 @@ export function CelestialProvider({ children }: { children: React.ReactNode }) {
     return () => worker.terminate();
   }, []);
 
-  // Sync calculation on location/time change
+  // Sync calculation on location/time change with debouncing
   useEffect(() => {
     if (!workerRef.current) return;
-
-    setState((s) => ({ ...s, isLoading: true }));
 
     const payload = {
       date: viewDate.toISOString(),
@@ -129,8 +127,21 @@ export function CelestialProvider({ children }: { children: React.ReactNode }) {
       lng: location.lng,
     };
 
-    workerRef.current.postMessage({ type: "CALCULATE_ALL", payload });
-    workerRef.current.postMessage({ type: "CALCULATE_EPHEMERIS", payload });
+    // 1. Lightweight update (Current positions, details) - 200ms debounce
+    const fastTimeout = setTimeout(() => {
+      setState((s) => ({ ...s, isLoading: true }));
+      workerRef.current?.postMessage({ type: "CALCULATE_ALL", payload });
+    }, 200);
+
+    // 2. Heavy update (72h trajectories) - 500ms debounce
+    const slowTimeout = setTimeout(() => {
+      workerRef.current?.postMessage({ type: "CALCULATE_EPHEMERIS", payload });
+    }, 500);
+
+    return () => {
+      clearTimeout(fastTimeout);
+      clearTimeout(slowTimeout);
+    };
   }, [location.lat, location.lng, viewDate]);
 
   return (

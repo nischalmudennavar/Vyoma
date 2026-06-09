@@ -29,16 +29,17 @@ export interface TrajectoryPoint extends CelestialCoordinates {
  * Calculates the current position of the Galactic Core.
  */
 export function getGalacticCorePosition(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): CelestialCoordinates {
-  const time = MakeTime(date);
-  const observer = new Observer(lat, lng, 0);
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
+  const obs = observer || new Observer(lat, lng, 0);
 
   const horizon = Horizon(
     time,
-    observer,
+    obs,
     GALACTIC_CORE_RA,
     GALACTIC_CORE_DEC,
     "normal",
@@ -55,14 +56,15 @@ export function getGalacticCorePosition(
  * Calculates the current position of the Sun.
  */
 export function getSunPosition(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): CelestialCoordinates {
-  const time = MakeTime(date);
-  const observer = new Observer(lat, lng, 0);
-  const eq = Equator(Body.Sun, time, observer, true, true);
-  const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
+  const obs = observer || new Observer(lat, lng, 0);
+  const eq = Equator(Body.Sun, time, obs, true, true);
+  const horizon = Horizon(time, obs, eq.ra, eq.dec, "normal");
 
   return {
     alt: horizon.altitude,
@@ -75,14 +77,15 @@ export function getSunPosition(
  * Calculates the current position of the Moon.
  */
 export function getMoonPosition(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): CelestialCoordinates {
-  const time = MakeTime(date);
-  const observer = new Observer(lat, lng, 0);
-  const eq = Equator(Body.Moon, time, observer, true, true);
-  const horizon = Horizon(time, observer, eq.ra, eq.dec, "normal");
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
+  const obs = observer || new Observer(lat, lng, 0);
+  const eq = Equator(Body.Moon, time, obs, true, true);
+  const horizon = Horizon(time, obs, eq.ra, eq.dec, "normal");
 
   return {
     alt: horizon.altitude,
@@ -95,11 +98,17 @@ function generateTrajectory(
   date: Date,
   lat: number,
   lng: number,
-  positionFn: (d: Date, lat: number, lng: number) => CelestialCoordinates,
+  positionFn: (
+    d: any,
+    lat: number,
+    lng: number,
+    obs: Observer,
+  ) => CelestialCoordinates,
   durationHours = 24,
 ): TrajectoryPoint[] {
   const trajectory: TrajectoryPoint[] = [];
   const baseDate = new Date(date);
+  const observer = new Observer(lat, lng, 0);
 
   // Start of the currently selected day
   baseDate.setHours(0, 0, 0, 0);
@@ -107,8 +116,10 @@ function generateTrajectory(
   // Calculate position every 15 minutes
   const totalPoints = (durationHours * 60) / 15;
   for (let i = 0; i <= totalPoints; i++) {
-    const timePoint = new Date(baseDate.getTime() + i * 15 * 60 * 1000);
-    const pos = positionFn(timePoint, lat, lng);
+    const timeMillis = baseDate.getTime() + i * 15 * 60 * 1000;
+    const timePoint = new Date(timeMillis);
+    const timeObj = MakeTime(timePoint);
+    const pos = positionFn(timeObj, lat, lng, observer);
     trajectory.push({ ...pos, time: timePoint });
   }
 
@@ -160,24 +171,19 @@ export interface TwilightPhases {
 }
 
 export function getTwilightPhases(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): TwilightPhases {
-  const observer = new Observer(lat, lng, 0);
-  const baseDate = new Date(date);
+  const obs = observer || new Observer(lat, lng, 0);
+  const baseDate =
+    date instanceof Date ? new Date(date) : new Date(date.date || date);
   baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude(
-      Body.Sun,
-      observer,
-      direction,
-      time,
-      1,
-      altitude,
-    );
+    const res = SearchAltitude(Body.Sun, obs, direction, time, 1, altitude);
     return res ? res.date : null;
   };
 
@@ -194,17 +200,19 @@ export function getTwilightPhases(
 }
 
 export function getMoonRiseSet(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): { rise: Date | null; set: Date | null } {
-  const observer = new Observer(lat, lng, 0);
-  const baseDate = new Date(date);
+  const obs = observer || new Observer(lat, lng, 0);
+  const baseDate =
+    date instanceof Date ? new Date(date) : new Date(date.date || date);
   baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
-  const rise = SearchAltitude(Body.Moon, observer, 1, time, 1, 0);
-  const set = SearchAltitude(Body.Moon, observer, -1, time, 1, 0);
+  const rise = SearchAltitude(Body.Moon, obs, 1, time, 1, 0);
+  const set = SearchAltitude(Body.Moon, obs, -1, time, 1, 0);
 
   return {
     rise: rise ? rise.date : null,
@@ -256,12 +264,12 @@ export function getGalacticCoreVisibility(
   return { rise, set };
 }
 
-export function getMoonPhase(date: Date): {
+export function getMoonPhase(date: Date | any): {
   phase: number;
   name: string;
   illumination: number;
 } {
-  const time = MakeTime(date);
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
   const phase = MoonPhase(time);
 
   // Illumination calculation based on phase angle
@@ -284,27 +292,22 @@ export function getMoonPhase(date: Date): {
  * Calculates Golden Hour (when Sun altitude is between -4 and 6 degrees).
  */
 export function getGoldenHour(
-  date: Date,
+  date: Date | any,
   lat: number,
   lng: number,
+  observer?: Observer,
 ): {
   morning: { start: Date | null; end: Date | null };
   evening: { start: Date | null; end: Date | null };
 } {
-  const observer = new Observer(lat, lng, 0);
-  const baseDate = new Date(date);
+  const obs = observer || new Observer(lat, lng, 0);
+  const baseDate =
+    date instanceof Date ? new Date(date) : new Date(date.date || date);
   baseDate.setHours(0, 0, 0, 0);
   const time = MakeTime(baseDate);
 
   const search = (direction: number, altitude: number) => {
-    const res = SearchAltitude(
-      Body.Sun,
-      observer,
-      direction,
-      time,
-      1,
-      altitude,
-    );
+    const res = SearchAltitude(Body.Sun, obs, direction, time, 1, altitude);
     return res ? res.date : null;
   };
 
@@ -361,11 +364,16 @@ export function getMoonFreeWindow(
   return { start, end };
 }
 
-export function getSunDetails(date: Date, lat: number, lng: number) {
-  const time = MakeTime(date);
-  const observer = new Observer(lat, lng, 0);
+export function getSunDetails(
+  date: Date | any,
+  lat: number,
+  lng: number,
+  observer?: Observer,
+) {
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
+  const obs = observer || new Observer(lat, lng, 0);
   // Using Equator for Sun with the observer to get topocentric distance
-  const eq = Equator(Body.Sun, time, observer, true, true);
+  const eq = Equator(Body.Sun, time, obs, true, true);
   const distanceAU = eq.dist;
   const distanceKm = distanceAU * AU_TO_KM;
   const angularDiameter = calculateAngularDiameter(SUN_RADIUS_KM, distanceKm);
@@ -376,8 +384,8 @@ export function getSunDetails(date: Date, lat: number, lng: number) {
   };
 }
 
-export function getMoonDetails(date: Date) {
-  const time = MakeTime(date);
+export function getMoonDetails(date: Date | any) {
+  const time = date instanceof Date ? MakeTime(date) : (date as any);
   // Libration gives distance in km and angular diameter in degrees directly
   const lib = Libration(time);
 

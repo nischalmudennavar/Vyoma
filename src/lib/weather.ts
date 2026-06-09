@@ -37,10 +37,24 @@ export function getWeatherCondition(code: number): string {
   return mapping[code] || "Unknown";
 }
 
+const weatherCache = new Map<
+  string,
+  { data: WeatherData; timestamp: number }
+>();
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
 export async function fetchWeather(
   lat: number,
   lng: number,
 ): Promise<WeatherData | null> {
+  const cacheKey = `${lat.toFixed(2)}_${lng.toFixed(2)}`;
+  const cached = weatherCache.get(cacheKey);
+  const now = Date.now();
+
+  if (cached && now - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,snowfall,weather_code,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&timezone=auto`;
     const response = await fetch(url);
@@ -75,7 +89,7 @@ export async function fetchWeather(
     else if (wind < 30) seeing = 3;
     else if (wind < 50) seeing = 2;
 
-    return {
+    const result: WeatherData = {
       temperature: temp,
       humidity: humid,
       windSpeed: wind,
@@ -92,6 +106,10 @@ export async function fetchWeather(
       transparency,
       bortle: 1, // Placeholder, updated via lookup
     };
+
+    weatherCache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+    return result;
   } catch (error) {
     console.error("Error fetching weather:", error);
     return null;
